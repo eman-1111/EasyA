@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="eman.app.android.easya.CoursesList"
+    tools:showIn="@layout/courses_list"
+    android:id="@+id/search_recyclerviews">
+
+    <GridView
+        android:id="@+id/image_gridview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:stretchMode="columnWidth"
+        android:numColumns="3"
+        android:gravity="center" />
+
+</RelativeLayout>

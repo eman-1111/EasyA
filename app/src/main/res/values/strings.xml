@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">EasyA</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_courses_list">Classes</string>
+    <string name="title_activity_subject_list">SubjectList</string>
+    <string name="title_activity_add_subject_titel">AddSubjectTitel</string>
+    <string name="title_activity_add_lesson_detail">AddLessonDetail</string>
+    <string name="title_activity_subject_detail">SubjectDetail</string>
+
+    <string name="action_share">Share</string>
+    <string name="action_favorite">Favorite</string>
+    <string name="action_edit">Edit</string>
+
+    <string name="pref_sort_label">Sort By</string>
+    <string name="pref_sort_key" translatable="false">sort_by</string>
+    <string name="pref_sort_default" translatable="false">date</string>
+    <string-array name="sort_type_name">
+        <item>Favorite</item>
+        <item>Date</item>
+    </string-array>
+    <string-array name="sort_type_value">
+        <item>favorite</item>
+        <item>date</item>
+    </string-array>
+    <!-- Account type (for sync-adapter authenticator) -->
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">easya.android.app</string>
+    <string name="content_authority">eman.app.android.easya</string>
+
+    <string name="hint_link">Link the lesson to different things.</string>
+    <string name="hint_debug">look for the difference between your link and the lesson.</string>
+    <string name="hint_title">Write an idea/ example where you can use the lesson</string>
+    <string name="hint_descr">Write your idea in details</string>
+
+    <string name="info_link">Link the lesson to something else, Try using that (reminds me of) Science concepts remind you of history which remind you of the movie you saw. Put in mind that, Lesson come from somewhere, doesn’t stand alone, and it follows patterns. Try linking the lesson to other ideas that interest you. It doesn’t matter if the ideas are ridiculous or completely unrelated.</string>
+    <string name="info_debug">how is your link different from  the lesson </string>
+    <string name="info_title">Find a way you can apply what you learn to your own life, an idea or example that you have seen or listened to before.</string>
+    <string name="info_descr">Summarize the idea. what does it means, methods ,most important results and conclusions.</string>
+
+
+
+    <string name="detail_desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+        eiusmod tempor incididunt ut</string>
+    <string name="detail_location">"8 Rue Scribe, 75009 Paris, France"</string>
+    <string name="title_activity_image_search">ImageSearch</string>
+</resources>
