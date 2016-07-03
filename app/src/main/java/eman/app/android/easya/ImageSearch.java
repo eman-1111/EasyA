@@ -42,6 +42,7 @@ public class ImageSearch extends AppCompatActivity {
     ImageAdapter mImageAdapter;
     String searchValue;
     String imageName,lessonID ;
+    Bundle data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class ImageSearch extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Intent intent = getIntent();
+        data = intent.getExtras();
         searchValue = intent.getStringExtra("SearchValue");
         imageName = intent.getStringExtra("imageName");
         lessonID = intent.getStringExtra("CourseId");
@@ -161,7 +163,7 @@ public class ImageSearch extends AppCompatActivity {
             String imageJsonStr = null;
 
 
-            String apiKey = "========";
+            String apiKey = "++++++";
             String high_resolution = "high_resolution";
             String safeSearch = "true";
             ArrayList<Image> imageUrl = null;
@@ -328,7 +330,8 @@ public class ImageSearch extends AppCompatActivity {
                 .setPositiveButton("Save",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
-                                startImageIIntent(image.getImageHD());
+                                //TODO MAKE IT HD
+                                startImageIIntent(image.getImage());
 
                             }
                         })
@@ -355,7 +358,9 @@ public class ImageSearch extends AppCompatActivity {
             intent.putExtra("outlineImage", url);
         }else if(imageName.equals("linkImage")){
             intent = new Intent(this, AddLessonDetail.class);
+            Log.e("LinkSearch",url);
             intent.putExtra("linkImage", url);
+
         }else if(imageName.equals("debugImage")){
             intent = new Intent(this, AddLessonDetail.class);
             intent.putExtra("debugImage", url);
@@ -367,6 +372,7 @@ public class ImageSearch extends AppCompatActivity {
         }
         intent.putExtra("CourseId", lessonID);
         intent.putExtra("SavedStatue", "back");
+        intent.putExtras( data);
         startActivity(intent);
         finish();
     }

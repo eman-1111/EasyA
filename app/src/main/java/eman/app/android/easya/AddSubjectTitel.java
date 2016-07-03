@@ -37,37 +37,23 @@ import com.squareup.picasso.Picasso;
 import eman.app.android.easya.data.CourseContract;
 
 
-public class AddSubjectTitel extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AddSubjectTitel extends AppCompatActivity {
 
+    private static final String LOG_TAG = AddSubjectTitel.class.getSimpleName();
     EditText lessonNameET, lessonOverViewET;
     ImageView outlineImage;
     TextInputLayout inputLayoutName, inputLayoutOutline;
 
-    String lessonId, lessonOverView, lessonName,lessonNameOld;
-    String imageUrl = "l";
-
-
-    boolean edit = false;
+    String lessonId, lessonOverView, lessonName, lessonNameOld;
+    String imageUrl;
+    // Bundle data;
+    Bundle dataB;
+    boolean back = false, edit = false;
     private Uri mUri;
-    private static final int DETAIL_LOADER = 0;
-
-    private static final String[] DETAIL_COLUMNS = {
-            CourseContract.SubjectEntry.COLUMN_COURSE_ID,
-            CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE,
-            CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE
-    };
-
-
-    public static final int COL_COURSE_ID = 0;
-    public static final int COL_LESSON_TITLE = 1;
-    public static final int COL_LESSON_OUTLINE = 2;
-    public static final int COL_COURSE_NAME = 3;
-    public static final int COL_OUTLINE_IMAGE = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_subject_titel);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -85,29 +71,34 @@ public class AddSubjectTitel extends AppCompatActivity implements LoaderManager.
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        Intent intent = getIntent();
         setUpID();
+        Intent intent = getIntent();
 
-        if(intent.getStringExtra("SavedStatue") != null){
-            getSavedInstanceState();
+        if (getIntent().getExtras() != null) {
+            //dataB = getIntent().getExtras();
+            getSavedInstanceState( getIntent().getExtras());
+        }
+        if (intent.getStringExtra("SavedStatue") != null) {
+            Log.e(LOG_TAG, "back == true");
+            back = true;
 
         }
-
         lessonId = intent.getStringExtra("CourseId");
+
         if (intent.getStringExtra("LessonURL") != null) {
             edit = true;
             mUri = Uri.parse(intent.getStringExtra("LessonURL"));
-            getSupportLoaderManager().initLoader(DETAIL_LOADER, null, this);
+            lessonOverView = intent.getStringExtra("LessonURL");
+            lessonName = intent.getStringExtra("LessonURL");
         }
-
         if (intent.getStringExtra("outlineImage") != null) {
             imageUrl = intent.getStringExtra("outlineImage");
-        }
+        } else {
+            imageUrl = "l";
 
+        }
         Picasso.with(this).load(imageUrl).error(R.drawable.air_plan)
                 .into(outlineImage);
-
-
         lessonNameET.addTextChangedListener(new MyTextWatcher(lessonNameET));
         lessonOverViewET.addTextChangedListener(new MyTextWatcher(lessonOverViewET));
 
@@ -118,6 +109,7 @@ public class AddSubjectTitel extends AppCompatActivity implements LoaderManager.
             public void onClick(View view) {
                 lessonName = lessonNameET.getText().toString();
                 lessonOverView = lessonOverViewET.getText().toString();
+                Log.e(LOG_TAG, lessonName + lessonOverView);
                 startDetailIntent();
             }
 
@@ -172,7 +164,10 @@ public class AddSubjectTitel extends AppCompatActivity implements LoaderManager.
 
         }
         intent.putExtra("CourseId", lessonId);
-        addLessonData(lessonId, lessonName, lessonOverView, imageUrl);
+        intent.putExtra("LessonName", lessonName);
+        intent.putExtra("LessonOverview", lessonOverView);
+        intent.putExtra("ImageUrl", imageUrl);
+        Log.e(LOG_TAG, lessonName + lessonOverView);
         setSavedInstanceState();
         startActivity(intent);
     }
@@ -182,7 +177,7 @@ public class AddSubjectTitel extends AppCompatActivity implements LoaderManager.
         intent.putExtra("SearchValue", lessonNameET.getText().toString());
         intent.putExtra("CourseId", lessonId);
         intent.putExtra("imageName", "outlineImage");
-        setSavedInstanceState();
+        intent.putExtras(setSavedInstanceState());
         startActivity(intent);
     }
 
@@ -243,138 +238,61 @@ public class AddSubjectTitel extends AppCompatActivity implements LoaderManager.
         }
     }
 
-    /**
-     * Helper method to handle insertion of a new location in the weather database.
-     *
-     * @param lessonId            .
-     * @param lessonName          .
-     * @param lessonOverview      .
-     * @param lessonOverviewImage .
-     */
-    void addLessonData(String lessonId, String lessonName,
-                       String lessonOverview, String lessonOverviewImage) {
-
-        long courseID;
-
-        Cursor courseCursor = this.getContentResolver().query(
-                CourseContract.SubjectEntry.CONTENT_URI,
-                new String[]{CourseContract.SubjectEntry._ID},
-                CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ?",
-                new String[]{lessonName},
-                null);
-
-        if (edit == true) {
-            ContentValues courseValues = new ContentValues();
-
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_COURSE_ID, lessonId);
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE, lessonName);
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE, lessonOverview);
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE, lessonOverviewImage);
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Log.e(LOG_TAG, "onResume()");
+//        if (back) {
+//            getSavedInstanceState(dataB);
+//        }
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        Log.e(LOG_TAG, "onPause()");
+//        //dataB = setSavedInstanceState();
+//    }
 
 
-            this.getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
-                    courseValues,
-                    CourseContract.SubjectEntry.TABLE_NAME +
-                            "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
-                    new String[]{lessonNameOld});
-        } else {
-
-            ContentValues courseValues = new ContentValues();
-
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_COURSE_ID, lessonId);
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE, lessonName);
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE, lessonOverview);
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE, lessonOverviewImage);
-
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, 0);
-
-            // Finally, insert Course data into the database.
-            Uri insertedUri = this.getContentResolver().insert(
-                    CourseContract.SubjectEntry.CONTENT_URI,
-                    courseValues);
-
-            // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
-            courseID = ContentUris.parseId(insertedUri);
-        }
-
-        courseCursor.close();
-        // Wait, that worked?  Yes!
-        Intent intent = new Intent(this, SubjectList.class);
-        /// intent.putExtra("CourseName", lessonName);
-        startActivity(intent);
-
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        if (null != mUri) {
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(
-                    this,
-                    mUri,
-                    DETAIL_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
-        }
-        return null;
-    }
-
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        if (data != null && data.moveToFirst()) {
-
-            Picasso.with(this).load(data.getString(COL_OUTLINE_IMAGE)).error(R.drawable.air_plan)
-                    .into(outlineImage);
-            lessonId =  data.getString(COL_COURSE_ID);
-            lessonNameOld = data.getString(COL_LESSON_TITLE);
-            lessonNameET.setText(lessonNameOld);
-            lessonOverViewET.setText(data.getString(COL_LESSON_OUTLINE));
-        }
-    }
-
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-    }
-
-
-    public void setSavedInstanceState()
-    {
+    public Bundle setSavedInstanceState() {
         // Store values between instances here
-        SharedPreferences.Editor savedInstanceState = getPreferences(MODE_PRIVATE).edit();
+        // SharedPreferences.Editor savedInstanceState = getPreferences(MODE_PRIVATE).edit();
+        Bundle data = new Bundle();
+        data.putString("LessonId", lessonId);
 
-        savedInstanceState.putString("LessonId", lessonId);
+        lessonName = lessonNameET.getText().toString();
+        lessonOverView = lessonOverViewET.getText().toString();
 
-        savedInstanceState.putString("LessonOverView", lessonOverView);
-        savedInstanceState.putString("LessonName", lessonName);
-        savedInstanceState.putString("ImageUrl", imageUrl);
+        data.putString("LessonOverView", lessonOverView);
+        data.putString("LessonName", lessonName);
+        data.putString("ImageUrl", imageUrl);
 
-        savedInstanceState.commit();
+        return data;
     }
 
 
-    public void getSavedInstanceState() {
-        SharedPreferences savedInstanceState = getPreferences(MODE_PRIVATE);
-        lessonId = savedInstanceState.getString("LessonId", "No name defined");
+    public void getSavedInstanceState(Bundle data) {
 
-        lessonOverView = savedInstanceState.getString("LessonOverView", "No name defined");
-        lessonName = savedInstanceState.getString("LessonName", "No name defined");
-        imageUrl = savedInstanceState.getString("ImageUrl", "No name defined");
+        if (data.getString("LessonName") != null) {
+            lessonName = data.getString("LessonName", null);
+            lessonNameET.setText(lessonName);
+        }
+        lessonId = data.getString("LessonId");
 
-        lessonNameET.setText(lessonName);
-        lessonOverViewET.setText(lessonOverView);
-        Picasso.with(this).load(imageUrl).error(R.drawable.air_plan)
-                .into(outlineImage);
+        if (data.getString("LessonOverView") != null) {
+            lessonOverView = data.getString("LessonOverView");
+            lessonOverViewET.setText(lessonOverView);
+        }
+
+        if (data.getString("ImageUrl") != null) {
+            imageUrl = data.getString("ImageUrl");
+
+
+        }
 
     }
-
 
 
 }

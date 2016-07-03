@@ -86,11 +86,9 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
     public static final int COL_LESSON_PRACTICAL_IMAGE= 13;
     int favorite = 0;
 
-    private TextView mLessonLink;
-    private TextView mLessonDebug;
-    private TextView mLessonPracticalTitle;
-    private TextView mLessonPractical;
-    private TextView mLessonOutline;
+    private TextView mLessonLink,  mLessonDebug, mLessonPracticalTitle, mLessonPractical,
+            mLessonOutline, mLink,  mDebug;
+
     CollapsingToolbarLayout collapsingToolbar;
 
     public SubjectDetailFragment() {
@@ -225,8 +223,14 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             collapsingToolbar.setTitle(lessonName);
             lessonLink = data.getString(COL_LESSON_LINK);
             mLessonLink.setText(lessonLink);
+            if(mLessonLink.equals("")){
+                mLink.setText("");
+            }
 
             lessonDebug = data.getString(COL_LESSON_DEBUG);
+            if(lessonDebug.equals("")){
+                mDebug.setText("");
+            }
             mLessonDebug.setText(lessonDebug);
 
             lessonPracticalTitle = data.getString(COL_LESSON_PRACTICAL_TITLE);
@@ -243,30 +247,37 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
             String outlineImageS = data.getString(COL_LESSON_OUTLINE_IMAGE);
             if(outlineImageS == null){
-                outlineImageS ="l";
+               outlineImageS = "l";
+
             }
+
+            Log.e(LOG_TAG,outlineImageS);
             Picasso.with(getActivity()).load(outlineImageS)
                     .error(R.drawable.rock).into(outlineImage);
             String linkImageS = data.getString(COL_LESSON_LINK_IMAGE);
-            if(linkImageS == null){
-                linkImageS = "l";
+
+            if(!linkImageS.equals("l")){
+                Picasso.with(getActivity()).load(linkImageS)
+                        .error(R.drawable.rock).into(linkImage);
+                Log.e(LOG_TAG,linkImageS);
             }
-            Picasso.with(getActivity()).load(linkImageS)
-                    .error(R.drawable.rock).into(linkImage);
+
 
             String debugImageS = data.getString(COL_LESSON_DEBUG_IMAGE);
-            if(debugImageS == null){
-                debugImageS = "l";
+            if(!debugImageS.equals("l")){
+                Picasso.with(getActivity()).load(debugImageS)
+                        .error(R.drawable.rock).into(debugImage);
+                Log.e(LOG_TAG,debugImageS);
             }
-            Picasso.with(getActivity()).load(debugImageS)
-                    .error(R.drawable.rock).into(debugImage);
+
 
             String appImageS = data.getString(COL_LESSON_PRACTICAL_IMAGE);
-            if(appImageS == null){
-                appImageS = "l";
+            if(!appImageS.equals("l")){
+                Picasso.with(getActivity()).load(appImageS)
+                        .error(R.drawable.rock).into(appImage);
+                Log.e(LOG_TAG,appImageS);
+
             }
-            Picasso.with(getActivity()).load(appImageS)
-                    .error(R.drawable.rock).into(appImage);
 
             favorite = data.getInt(COL_FAVORITE);
 
@@ -292,9 +303,11 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
     }
     private void setUpIds(View rootView) {
         mLessonLink = (TextView) rootView.findViewById(R.id.lesson_linkx_content_tv);
+        mLink = (TextView) rootView.findViewById(R.id.lesson_linkx_d_tv);
         mLessonPracticalTitle = (TextView) rootView.findViewById(R.id.lesson_app_title_d_tv);
         mLessonPractical = (TextView) rootView.findViewById(R.id.lesson_app_content_tv);
         mLessonDebug = (TextView) rootView.findViewById(R.id.lesson_debug_content_tv);
+        mDebug = (TextView) rootView.findViewById(R.id.lesson_debugx_title_tv);
         mLessonOutline = (TextView) rootView.findViewById(R.id.lesson_overview_content_tv);
 
         linkImage = (ImageView) rootView.findViewById(R.id.link_iv);

@@ -14,6 +14,8 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.squareup.picasso.Picasso;
+
 import eman.app.android.easya.data.CourseContract;
 
 /**
@@ -107,22 +109,24 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
 
         String lessonName = mCursor.getString(SubjectListFragment.CO_LESSON_TITLE);
         subjectAdapterViewHolder.lessonName.setText(lessonName);
-        String letter;
-
-        if (lessonName.substring(0,1) == null) {
-            letter = "X";
-        }else {
-            letter =lessonName.substring(0,1);
-        }
-        TextDrawable drawable = TextDrawable.builder()
-                .buildRound(letter, generator.getRandomColor());
-
-        subjectAdapterViewHolder.lessonImage.setImageDrawable(drawable);
+//        String letter;
+//
+//        if (lessonName.substring(0,1) == null) {
+//            letter = "X";
+//        }else {
+//            letter =lessonName.substring(0,1);
+//        }
+//        TextDrawable drawable = TextDrawable.builder()
+//                .buildRound(letter, generator.getRandomColor());
+//
+//        subjectAdapterViewHolder.lessonImage.setImageDrawable(drawable);
 
         String practical_title_Name = mCursor.getString(SubjectListFragment.COL_LESSON_LINK);
         subjectAdapterViewHolder.practicalLink.setText(practical_title_Name);
 
 
+        Picasso.with(mContext).load(mCursor.getString(SubjectListFragment.COL_LESSON_OUTLINE_IMAGE))
+                .error(R.drawable.air_plan).into(subjectAdapterViewHolder.lessonImage);
 
     }
 

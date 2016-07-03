@@ -26,5 +26,5 @@
         android:drawable="@color/colorPrimaryLight" />
 
     <!-- Default, "just hangin' out" state. -->
-    <item android:drawable="@android:color/transparent" />
+    <item android:drawable="@color/off_white" />
 </selector>

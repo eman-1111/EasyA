@@ -17,10 +17,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import eman.app.android.easya.data.CourseContract;
+
 
 /**
  * A placeholder fragment containing a simple view.
@@ -40,6 +42,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         public void onItemSelected(Uri idUri);
     }
 
+   // RecyclerView mRecyclerView;
     RecyclerView mRecyclerView;
     private SubjectAdapter mSubjectAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -87,6 +90,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
         // Get a reference to the RecyclerView, and attach this adapter to it.
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+      //  mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
 
         // Set the layout manager
@@ -120,7 +124,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
                 return false;
             }
         });
-        mRecyclerView.setAdapter(mSubjectAdapter);
+        mRecyclerView.setAdapter( mSubjectAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
             // swapout in onLoadFinished.
@@ -187,7 +191,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         if (mPosition != ListView.INVALID_POSITION) {
             // Ifp we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
-            mRecyclerView.smoothScrollToPosition(mPosition);
+           mRecyclerView.smoothScrollToPosition(mPosition);
 
         }
 

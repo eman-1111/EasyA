@@ -1,10 +1,9 @@
 package eman.app.android.easya;
 
-
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,19 +24,23 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+
 import eman.app.android.easya.data.CourseContract;
 
 public class AddLessonDetail extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
-    String lessonId;
+    private static final String LOG_TAG = AddLessonDetail.class.getSimpleName();
+
+    String lessonId, lessonName, lessonOverView, imageOutline;
     boolean edit = false;
     TextInputLayout inputLayoutLink, inputLayoutDebug, inputLayoutAppTitle, inputLayoutApp;
     EditText lessonLink, lessonDebug, lessonLifeAppTitle, lessonLifeApp;
     ImageView infoLink, infoDebug, infoTitle, infoApp;
     ImageView imageLink, imageDebug, imageApp;
-    String imageLinkS ="l", imageDebugS = "l", imageAppS = "l";
-    String lessonLinks, lessonDebugs,lessonLifeAppTitles,lessonLifeApps;
+    String imageLinkS = "l" , imageDebugS = "l", imageAppS = "l";
+    String lessonLinks, lessonDebugs, lessonLifeAppTitles, lessonLifeApps;
 
+    Bundle dataB;
 
     private Uri mUri;
     private static final int DETAIL_LOADER = 0;
@@ -47,6 +50,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
             CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE,
             CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL,
             CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG,
+            CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
             CourseContract.CourseEntry.COLUMN_COURSE_NAME
     };
 
@@ -56,7 +60,8 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
     public static final int COL_LESSON_PRACTICAL_TITLE = 2;
     public static final int COL_LESSON_PRACTICAL = 3;
     public static final int COL_LESSON_DEBUG = 4;
-    public static final int COL_COURSE_NAME = 5;
+    public static final int COL_LESSON_NAME = 5;
+    public static final int COL_COURSE_NAME = 6;
 
 
     @Override
@@ -81,9 +86,17 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         setUpIds();
 
         Intent intent = getIntent();
+
         lessonId = intent.getStringExtra("CourseId");
-        if(intent.getStringExtra("SavedStatue") != null){
-            getSavedInstanceState();
+        if (intent.getStringExtra("LessonName") != null) {
+            lessonName = intent.getStringExtra("LessonName");
+            lessonOverView = intent.getStringExtra("LessonOverview");
+            imageOutline = intent.getStringExtra("ImageUrl");
+            Log.e("Extra ",lessonName + lessonOverView + imageOutline);
+        }
+
+        if (getIntent().getExtras() != null) {
+            getSavedInstanceState(getIntent().getExtras());
         }
         if (intent.getStringExtra("LessonURL") != null) {
             mUri = Uri.parse(intent.getStringExtra("LessonURL"));
@@ -93,14 +106,22 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
 
         if (intent.getStringExtra("linkImage") != null) {
             imageLinkS = intent.getStringExtra("linkImage");
-        } else if (intent.getStringExtra("debugImage") != null) {
-            imageDebugS = intent.getStringExtra("debugImage");
-        } else if (intent.getStringExtra("appImage") != null) {
-            imageAppS = intent.getStringExtra("appImage");
+            Log.e(LOG_TAG+" Linksss", imageLinkS);
+
         }
 
-        Picasso.with(this).load(imageLinkS).error(R.drawable.air_plan)
+        if (intent.getStringExtra("debugImage") != null) {
+            imageDebugS = intent.getStringExtra("debugImage");
+            Log.e(LOG_TAG +" Debug", imageDebugS);
+        }
+        if (intent.getStringExtra("appImage") != null) {
+            imageAppS = intent.getStringExtra("appImage");
+            Log.e(LOG_TAG +" App", imageAppS);
+        }
+
+        Picasso.with(this).load(imageLinkS).error(R.drawable.air_plan).resize(80, 50)
                 .into(imageLink);
+
 
         Picasso.with(this).load(imageDebugS).error(R.drawable.air_plan)
                 .into(imageDebug);
@@ -119,7 +140,10 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
                 lessonLifeAppTitles = lessonLifeAppTitle.getText().toString();
                 lessonLifeApps = lessonLifeApp.getText().toString();
 
-                addLessonData(lessonId, lessonLinks, imageLinkS,
+                Log.e("Insert",lessonId +lessonName+ lessonOverView+ " "+imageOutline+ " "+lessonLinks+
+                        imageLinkS+ lessonLifeAppTitles+ lessonLifeApps+ imageAppS+
+                        lessonDebugs+ imageDebugS);
+                addLessonData(lessonId, lessonName, lessonOverView, imageOutline, lessonLinks, imageLinkS,
                         lessonLifeAppTitles, lessonLifeApps, imageAppS,
                         lessonDebugs, imageDebugS);
                 Intent intent = new Intent(AddLessonDetail.this, SubjectList.class)
@@ -178,7 +202,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         Intent intent = new Intent(this, ImageSearch.class);
         intent.putExtra("imageName", extra);
         intent.putExtra("CourseId", lessonId);
-        setSavedInstanceState();
+        intent.putExtras(setSavedInstanceState());
         startActivity(intent);
     }
 
@@ -200,19 +224,22 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
      * @param lessonLink         .
      * @param lessonLinkImage    .
      * @param lessonDebugs       .
-     * @param lessonDebugsImage
+     * @param lessonDebugsImage  .
      * @param lessonLifeAppTitle .
      * @param lessonLifeApp      .
      * @param lessonAppImage
      */
-    void addLessonData(String lessonId, String lessonLink, String lessonLinkImage,
-                       String lessonLifeAppTitle, String lessonLifeApp, String lessonAppImage,
-                       String lessonDebugs, String lessonDebugsImage) {
-
+    void addLessonData(String lessonId, String lessonName, String lessonOutline, String lessonOutlineImage,
+                       String lessonLink, String lessonLinkImage, String lessonLifeAppTitle,
+                       String lessonLifeApp, String lessonAppImage, String lessonDebugs,
+                       String lessonDebugsImage) {
 
         ContentValues courseValues = new ContentValues();
 
         courseValues.put(CourseContract.SubjectEntry.COLUMN_COURSE_ID, lessonId);
+        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE, lessonName);
+        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE, lessonOutline);
+        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE, lessonOutlineImage);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_LINK, lessonLink);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE, lessonLinkImage);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE, lessonLifeAppTitle);
@@ -222,11 +249,25 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG_IMAGE, lessonDebugsImage);
 
 
-        this.getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
-                courseValues,
-                CourseContract.SubjectEntry.TABLE_NAME +
-                        "." + CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ? ",
-                new String[]{lessonId});
+        if (edit) {
+
+
+            this.getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
+                    courseValues,
+                    CourseContract.SubjectEntry.TABLE_NAME +
+                            "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
+                    new String[]{lessonName});
+        } else {
+            courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, 0);
+
+            this.getContentResolver().insert(
+                    CourseContract.SubjectEntry.CONTENT_URI,
+                    courseValues);
+
+
+        }
+        // Wait, that worked?  Yes!
+
         // Wait, that worked?  Yes!
         Intent intent = new Intent(this, SubjectList.class);
         startActivity(intent);
@@ -262,6 +303,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         imageDebug.setOnClickListener(this);
         imageApp.setOnClickListener(this);
     }
+
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
@@ -299,6 +341,9 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
             lessonDebug.setText(data.getString(COL_LESSON_DEBUG));
             lessonLifeAppTitle.setText(data.getString(COL_LESSON_PRACTICAL_TITLE));
             lessonLifeApp.setText(data.getString(COL_LESSON_PRACTICAL));
+
+            lessonId = data.getString(COL_COURSE_ID);
+            lessonName = data.getString(COL_LESSON_NAME);
         }
     }
 
@@ -307,93 +352,103 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        super.onSaveInstanceState(savedInstanceState);
-        // Save UI state changes to the savedInstanceState.
-        // This bundle will be passed to onCreate if the process is
 
-        savedInstanceState.putString("ImageLink", imageLinkS);
-        savedInstanceState.putString("ImageDebug", imageDebugS);
-        savedInstanceState.putString("ImageApp", imageAppS);
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//        Log.e(LOG_TAG, "onResume()");
+//
+//        getSavedInstanceState(dataB);
+//
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        Log.e(LOG_TAG, "onPause()");
+//       // dataB = setSavedInstanceState();
+//    }
 
-        savedInstanceState.putString("LessonId", lessonId);
 
-        savedInstanceState.putString("LessonLink", lessonLinks);
-        savedInstanceState.putString("LessonDebug", lessonDebugs);
-        savedInstanceState.putString("LessonLifeAppTitle", lessonLifeAppTitles);
-        savedInstanceState.putString("LessonLifeApp", lessonLifeApps);
-        // etc.
-    }
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        // Restore UI state from the savedInstanceState.
-        // This bundle has also been passed to onCreate.
-        imageLinkS = savedInstanceState.getString("ImageLink");
-        imageDebugS = savedInstanceState.getString("ImageDebug");
-        imageAppS = savedInstanceState.getString("ImageApp");
-
-        lessonId = savedInstanceState.getString("LessonId");
-
-        lessonLinks = savedInstanceState.getString("LessonLink");
-        lessonDebugs = savedInstanceState.getString("LessonDebug");
-        lessonLifeAppTitles = savedInstanceState.getString("LessonLifeAppTitle");
-        lessonLifeApps = savedInstanceState.getString("LessonLifeApp");
-    }
-
-    public void setSavedInstanceState()
-    {
+    public Bundle setSavedInstanceState() {
         // Store values between instances here
-        SharedPreferences.Editor savedInstanceState = getPreferences(MODE_PRIVATE).edit();
+        // SharedPreferences.Editor savedInstanceState = getPreferences(MODE_PRIVATE).edit();
+        Bundle data = new Bundle();
 
-        savedInstanceState.putString("ImageLink", imageLinkS);
-        savedInstanceState.putString("ImageDebug", imageDebugS);
-        savedInstanceState.putString("ImageApp", imageAppS);
+        data.putString("ImageLink", imageLinkS);
+        data.putString("ImageDebug", imageDebugS);
+        data.putString("ImageApp", imageAppS);
 
-        savedInstanceState.putString("LessonId", lessonId);
+        data.putString("lessonName", lessonName);
+        data.putString("lessonOverView", lessonOverView);
+        data.putString("imageOutline", imageOutline);
 
-        savedInstanceState.putString("LessonLink", lessonLinks);
-        savedInstanceState.putString("LessonDebug", lessonDebugs);
-        savedInstanceState.putString("LessonLifeAppTitle", lessonLifeAppTitles);
-        savedInstanceState.putString("LessonLifeApp", lessonLifeApps);
+        lessonLinks = lessonLink.getText().toString();
+        lessonDebugs = lessonDebug.getText().toString();
+        lessonLifeAppTitles = lessonLifeAppTitle.getText().toString();
+        lessonLifeApps = lessonLifeApp.getText().toString();
+
+        data.putString("LessonLink", lessonLinks);
+        data.putString("LessonDebug", lessonDebugs);
+        data.putString("LessonLifeAppTitle", lessonLifeAppTitles);
+        data.putString("LessonLifeApp", lessonLifeApps);
+
+        Log.e("setSavedInstanceState()", lessonName + lessonLinks + lessonDebugs+ lessonLifeAppTitles);
+        return data;
         // Commit to storage
-        savedInstanceState.commit();
+        // savedInstanceState.commit();
     }
 
 
-    public void getSavedInstanceState() {
-        SharedPreferences savedInstanceState = getPreferences(MODE_PRIVATE);
-        lessonId = savedInstanceState.getString("LessonId", "No name defined");
+    public void getSavedInstanceState(Bundle data) {
 
-        imageLinkS = savedInstanceState.getString("ImageLink", "No name defined");
-        imageDebugS = savedInstanceState.getString("ImageDebug", "No name defined");
-        imageAppS = savedInstanceState.getString("ImageApp", "No name defined");
+        if (data.getString("lessonName") != null) {
+            lessonName = data.getString("lessonName");
+        }
+        if (data.getString("lessonOverView") != null) {
+            lessonOverView = data.getString("lessonOverView");
+        }
+        if (data.getString("imageOutline") != null) {
+            imageOutline = data.getString("imageOutline");
+        }
+
+        if (data.getString("LessonLink") != null) {
+            lessonLinks = data.getString("LessonLink");
+            Log.e("Link", lessonLinks);
+            lessonLink.setText(lessonLinks);
+        }
+        if (data.getString("LessonDebug") != null) {
+            lessonDebugs = data.getString("LessonDebug");
+            Log.e("Link & debug", lessonDebugs + lessonLinks);
+            lessonDebug.setText(lessonDebugs);
+        }
+        if (data.getString("LessonLifeAppTitle") != null) {
+            lessonLifeAppTitles = data.getString("LessonLifeAppTitle");
+            lessonLifeAppTitle.setText(lessonLifeAppTitles);
+        }
+        if (data.getString("LessonLifeApp") != null) {
+            lessonLifeApps = data.getString("LessonLifeApp");
+            lessonLifeApp.setText(lessonLifeApps);
+        }
 
 
-        lessonLinks = savedInstanceState.getString("LessonLink", "No name defined");
-        lessonDebugs = savedInstanceState.getString("LessonDebug", "No name defined");
-        lessonLifeAppTitles = savedInstanceState.getString("LessonLifeAppTitle", "No name defined");
-        lessonLifeApps = savedInstanceState.getString("LessonLifeApp", "No name defined");
+        if (data.getString("ImageLink") != null) {
+            imageLinkS = data.getString("ImageLink");
+        }
+        if (data.getString("ImageDebug") != null) {
+            imageDebugS = data.getString("ImageDebug");
 
-        Picasso.with(this).load(imageLinkS).error(R.drawable.air_plan)
-                .into(imageLink);
 
-        Picasso.with(this).load(imageDebugS).error(R.drawable.air_plan)
-                .into(imageDebug);
-
-        Picasso.with(this).load(imageAppS).error(R.drawable.air_plan)
-                .into(imageApp);
-
-        lessonLink.setText(lessonLinks);
-        lessonDebug.setText(lessonDebugs);
-        lessonLifeAppTitle.setText(lessonLifeAppTitles);
-        lessonLifeApp.setText(lessonLifeApps);
+        }
+        if (data.getString("ImageApp") != null) {
+            imageAppS = data.getString("ImageApp");
+        }
+        Log.e("getSavedInstanceState()", lessonName + lessonLinks + lessonDebugs+lessonLifeAppTitles);
     }
 
-    //    "linking lessons to something else make it easy to remember"
-//            "Look for similarity and difference between the lesson and the link you came up with"
-//            "If you can not come up with an idea you can put any example where the lesson is used"
-//            "Write a brief summary of your application"
+//    "linking lessons to something else make it easy to remember"
+//    "Look for similarity and difference between the lesson and the link you came up with"
+//    "If you can not come up with an idea you can put any example where the lesson is used"
+//    "Write a brief summary of your application"
 
 }

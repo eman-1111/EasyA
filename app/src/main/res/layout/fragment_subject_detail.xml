@@ -83,8 +83,7 @@
                     android:id="@+id/lesson_linkx_content_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/md_keylines"
-                    android:paddingRight="@dimen/md_keylines"
+                    android:padding="@dimen/md_keylines"
                     tools:text="@string/detail_desc" />
                 <ImageView
                     android:id="@+id/link_iv"
@@ -92,7 +91,7 @@
                     android:layout_width="match_parent"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:layout_height="200dp" />
+                    android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/lesson_debugx_title_tv"
                     android:layout_width="match_parent"
@@ -108,8 +107,7 @@
                     android:id="@+id/lesson_debug_content_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/md_keylines"
-                    android:paddingRight="@dimen/md_keylines"
+                    android:padding="@dimen/md_keylines"
                     tools:text="@string/detail_location" />
                 <ImageView
                     android:id="@+id/debug_iv"
@@ -117,7 +115,7 @@
                     android:layout_width="match_parent"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:layout_height="200dp" />
+                    android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/lesson_app_title_d_tv"
                     android:layout_width="match_parent"
@@ -133,8 +131,7 @@
                     android:id="@+id/lesson_app_content_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingLeft="@dimen/md_keylines"
-                    android:paddingRight="@dimen/md_keylines"
+                    android:padding="@dimen/md_keylines"
                     tools:text="@string/detail_location" />
                 <ImageView
                     android:id="@+id/app_iv"
@@ -142,7 +139,7 @@
                     android:layout_width="match_parent"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:layout_height="200dp" />
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
         </ScrollView>

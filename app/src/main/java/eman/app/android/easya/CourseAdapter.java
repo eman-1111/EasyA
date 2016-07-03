@@ -98,15 +98,17 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     @Override
     public void onBindViewHolder(final CourseAdapterViewHolder courseAdapterViewHolder, int position) {
-        mCursor.moveToPosition(position);
+        int[] rainbow = mContext.getResources().getIntArray(R.array.rainbow);
         int color = 0;
-        if (position > 16) {
-            color = position - 16;
+
+        mCursor.moveToPosition(position);
+        if (position > 10) {
+            color = position - 10;
         } else {
             color = position;
         }
 
-        courseAdapterViewHolder.listItemCours.setBackgroundColor(generator.getColor(color));
+        courseAdapterViewHolder.listItemCours.setBackgroundColor(rainbow[color]);
         int courseId = mCursor.getInt(CourseListFragment.COL_COURSE_ID);
         String teacherPhotoURL = mCursor.getString(CourseListFragment.COL_TEACHER_PHOTO_URL);
         int image = 0;

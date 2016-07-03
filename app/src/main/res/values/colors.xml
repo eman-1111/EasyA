@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#c2185b</color>
-    <color name="colorPrimaryDark">#880e4f</color>
-    <color name="colorPrimaryLight">#F48FB1</color>
-    <color name="colorAccent">#69f0ae</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimaryLight">#C5CAE9</color>
+    <color name="colorAccent">#FF4081</color>
 
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
-    <color name="accent">#FFD740</color>
+
+    <color name="icons">#FFFFFF</color>
+    <color name="divider">#B6B6B6</color>
+
 
     <color name="white">#FFFFFF</color>
     <color name="off_white">#f9f9f9</color>
+    <color name="off_whites">#EEEEEE</color>
     <color name="grey">#cccccc</color>
     <color name="grey_700">#646464</color>
     <color name="black">#000000</color>
@@ -19,4 +23,30 @@
     <!-- our detail accent colors -->
     <color name="detail_accent_pane_background">#455A64</color>
     <color name="detail_accent_label">#90A4AE</color>
+
+    <color name="deep_purple">#5e35b1</color>
+    <color name="teal_darken">#00796b</color>
+    <color name="light_blue">#0277bd</color>
+    <color name="purple_darken">#8e24aa</color>
+    <color name="red_darken">#e53935</color>
+    <color name="pink_darken">#d81b60</color>
+    <color name="amber">#ffc107</color>
+    <color name="orange">#ff9800</color>
+    <color name="cyan">#00acc1</color>
+    <color name="teal">#009688</color>
+
+
+    <array name="rainbow">
+        <item>@color/teal</item>
+        <item>@color/pink_darken</item>
+        <item>@color/teal_darken</item>
+        <item>@color/light_blue</item>
+        <item>@color/orange</item>
+        <item>@color/red_darken</item>
+        <item>@color/purple_darken</item>
+        <item>@color/amber</item>
+        <item>@color/cyan</item>
+        <item>@color/deep_purple</item>
+    </array>
+
 </resources>
