@@ -22,10 +22,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import com.firebase.client.Firebase;
+import com.firebase.client.ServerValue;
 import com.squareup.picasso.Picasso;
 
 
+import java.util.HashMap;
+
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.utils.Constants;
 
 public class AddLessonDetail extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -92,7 +97,6 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
             lessonName = intent.getStringExtra("LessonName");
             lessonOverView = intent.getStringExtra("LessonOverview");
             imageOutline = intent.getStringExtra("ImageUrl");
-            Log.e("Extra ",lessonName + lessonOverView + imageOutline);
         }
 
         if (getIntent().getExtras() != null) {
@@ -106,17 +110,15 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
 
         if (intent.getStringExtra("linkImage") != null) {
             imageLinkS = intent.getStringExtra("linkImage");
-            Log.e(LOG_TAG+" Linksss", imageLinkS);
 
         }
 
         if (intent.getStringExtra("debugImage") != null) {
             imageDebugS = intent.getStringExtra("debugImage");
-            Log.e(LOG_TAG +" Debug", imageDebugS);
         }
         if (intent.getStringExtra("appImage") != null) {
             imageAppS = intent.getStringExtra("appImage");
-            Log.e(LOG_TAG +" App", imageAppS);
+
         }
 
         Picasso.with(this).load(imageLinkS).error(R.drawable.air_plan).resize(80, 50)
@@ -247,7 +249,11 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE, lessonAppImage);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG, lessonDebugs);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG_IMAGE, lessonDebugsImage);
-
+//        String COURSE_ID, String LESSON_TITLE, String LESSON_OUTLINE,
+//                String LESSON_OUTLINE_IMAGE, String LESSON_LINK, String LESSON_LINK_IMAGE,
+//                String LESSON_DEBUG, String LESSON_DEBUG_IMAGE,
+//                String LESSON_PRACTICAL_TITLE, String LESSON_PRACTICAL,
+//                String LESSON_PRACTICAL_IMAGE, String FAVORITE) {
 
         if (edit) {
 
@@ -257,9 +263,28 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
                     CourseContract.SubjectEntry.TABLE_NAME +
                             "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
                     new String[]{lessonName});
+
         } else {
             courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, 0);
 
+            // Get the string that the user entered into the EditText
+            // Go to the "listName" child node of the root node.
+            // This will create the node for you if it doesn't already exist.
+            // Then using the setValue menu it will set value the node to userEnteredName.
+
+            Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + lessonId
+                    + "/" + Constants.FIREBASE_COURSE_LIST);
+            Firebase newListRef = listsSubject.push();
+
+            /* Save listsRef.push() to maintain same random Id */
+            final String listSubjectId = newListRef.getKey();
+            HashMap<String, Object> timestampCreated = new HashMap<>();
+            timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+
+            SubjectContent subjectContent = new SubjectContent(lessonId, lessonName, lessonOutline, lessonOutlineImage,
+                    lessonLink, lessonLinkImage, lessonDebugs, lessonDebugsImage, lessonLifeAppTitle,lessonLifeApp,
+                    lessonAppImage,"", timestampCreated);
+            listsSubject.child("NewLesson").setValue(subjectContent);
             this.getContentResolver().insert(
                     CourseContract.SubjectEntry.CONTENT_URI,
                     courseValues);
@@ -393,7 +418,6 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         data.putString("LessonLifeAppTitle", lessonLifeAppTitles);
         data.putString("LessonLifeApp", lessonLifeApps);
 
-        Log.e("setSavedInstanceState()", lessonName + lessonLinks + lessonDebugs+ lessonLifeAppTitles);
         return data;
         // Commit to storage
         // savedInstanceState.commit();
@@ -414,12 +438,10 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
 
         if (data.getString("LessonLink") != null) {
             lessonLinks = data.getString("LessonLink");
-            Log.e("Link", lessonLinks);
             lessonLink.setText(lessonLinks);
         }
         if (data.getString("LessonDebug") != null) {
             lessonDebugs = data.getString("LessonDebug");
-            Log.e("Link & debug", lessonDebugs + lessonLinks);
             lessonDebug.setText(lessonDebugs);
         }
         if (data.getString("LessonLifeAppTitle") != null) {
@@ -443,7 +465,6 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         if (data.getString("ImageApp") != null) {
             imageAppS = data.getString("ImageApp");
         }
-        Log.e("getSavedInstanceState()", lessonName + lessonLinks + lessonDebugs+lessonLifeAppTitles);
     }
 
 //    "linking lessons to something else make it easy to remember"

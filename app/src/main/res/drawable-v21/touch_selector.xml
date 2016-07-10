@@ -28,4 +28,5 @@
 
     <!-- Default, "just hangin' out" state. -->
     <item android:drawable="@android:color/transparent" />
+
 </selector>

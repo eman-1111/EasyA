@@ -1,36 +1,23 @@
 package eman.app.android.easya;
 
 
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
-
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.transition.Explode;
 import android.transition.Fade;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 
 import com.squareup.picasso.Picasso;
 
@@ -56,6 +43,7 @@ public class AddSubjectTitel extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_subject_titel);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Fade fade = new Fade();
             fade.setDuration(1000);
@@ -66,7 +54,10 @@ public class AddSubjectTitel extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        /* Initialize Firebase */
+//        Firebase.setAndroidContext(this);
+//        /* Enable disk persistence  */
+//        Firebase.getDefaultConfig().setPersistenceEnabled(true);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -109,6 +100,9 @@ public class AddSubjectTitel extends AppCompatActivity {
             public void onClick(View view) {
                 lessonName = lessonNameET.getText().toString();
                 lessonOverView = lessonOverViewET.getText().toString();
+
+
+
                 Log.e(LOG_TAG, lessonName + lessonOverView);
                 startDetailIntent();
             }
@@ -264,6 +258,8 @@ public class AddSubjectTitel extends AppCompatActivity {
 
         lessonName = lessonNameET.getText().toString();
         lessonOverView = lessonOverViewET.getText().toString();
+
+
 
         data.putString("LessonOverView", lessonOverView);
         data.putString("LessonName", lessonName);

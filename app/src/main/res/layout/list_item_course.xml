@@ -4,13 +4,10 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/touch_selector"
+    android:background="@drawable/shadow"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
-    android:layout_marginBottom="@dimen/list_item_extra_padding"
-    android:layout_marginLeft="@dimen/list_item_extra_padding"
-    android:layout_marginRight="@dimen/list_item_extra_padding"
-    android:layout_marginTop="@dimen/list_item_extra_padding"
+    android:layout_margin="8dp"
     card_view:cardCornerRadius="2dp"
     android:elevation="2dp">
 

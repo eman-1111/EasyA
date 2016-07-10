@@ -25,6 +25,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,9 @@ import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import eman.app.android.easya.data.CourseContract;
+
+import com.firebase.client.Firebase;
+import com.firebase.client.ServerValue;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -57,9 +61,11 @@ import com.google.api.services.classroom.model.Teacher;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import eman.app.android.easya.utils.Constants;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -90,6 +96,13 @@ public class CoursesList extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /* Initialize Firebase */
+        Firebase.setAndroidContext(this);
+
+        /**
+         * Create Firebase references
+         */
+
 
         setContentView(R.layout.courses_list);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -103,6 +116,7 @@ public class CoursesList extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         mErrorText = (TextView) findViewById(R.id.error_tv);
 
         mProgress = new ProgressDialog(this);
@@ -113,6 +127,7 @@ public class CoursesList extends AppCompatActivity
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         try {
             getResultsFromApi();
@@ -125,7 +140,7 @@ public class CoursesList extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startDialog( view);
+                startDialog(view);
             }
         });
     }
@@ -542,6 +557,17 @@ public class CoursesList extends AppCompatActivity
             if (teacherPhoto == null) {
                 teacherPhoto = "Not Found";
             }
+            /**
+             * Create Firebase references
+             */
+            Firebase userRef = new Firebase(Constants.FIREBASE_URL);
+            Firebase newCourseRef = userRef.push();
+
+            /* Save listsRef.push() to maintain same random Id */
+            final String courseFireId = newCourseRef.getKey();
+            if(courseFireId != null){
+                courseId = courseFireId;
+            }
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_ID, courseId);
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_NAME, courseName);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL, teacherEmail);
@@ -553,6 +579,20 @@ public class CoursesList extends AppCompatActivity
                     CourseContract.CourseEntry.CONTENT_URI,
                     courseValues);
 
+
+            /**
+             * Set raw version of date to the ServerValue.TIMESTAMP value and save into
+             * timestampCreatedMap
+             */
+            HashMap<String, Object> timestampCreated = new HashMap<>();
+            timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+
+            /* Build the shopping list */
+            CourseContent newCourse = new CourseContent(courseId, courseName, teacherName, teacherPhoto,
+                    teacherEmail, timestampCreated);
+
+            /* Add the shopping list */
+            newCourseRef.setValue(newCourse);
             // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
             courseID = ContentUris.parseId(insertedUri);
         }
@@ -561,7 +601,6 @@ public class CoursesList extends AppCompatActivity
         // Wait, that worked?  Yes!
         return courseID;
     }
-
 
 
     protected void startDialog(final View view) {
@@ -587,15 +626,15 @@ public class CoursesList extends AppCompatActivity
                 .setCancelable(false)
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 Random randomGenerator = new Random();
                                 int random = randomGenerator.nextInt(8964797);
                                 String courseId = "user" + random;
-                                if(courseNameET.getText().toString().trim().isEmpty()){
+                                if (courseNameET.getText().toString().trim().isEmpty()) {
                                     Snackbar.make(view, "Please fill in the course name",
                                             Snackbar.LENGTH_LONG).show();
 
-                                }else{
+                                } else {
                                     addCourseData(courseNameET.getText().toString(), teacherNameET.getText().toString(),
                                             null, null, courseId);
                                 }
@@ -604,7 +643,7 @@ public class CoursesList extends AppCompatActivity
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         });

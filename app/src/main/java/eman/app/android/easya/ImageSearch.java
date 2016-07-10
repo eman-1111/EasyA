@@ -163,7 +163,7 @@ public class ImageSearch extends AppCompatActivity {
             String imageJsonStr = null;
 
 
-            String apiKey = "++++++";
+            String apiKey = BuildConfig.UNIQUE_PIXABAY_KEY;
             String high_resolution = "high_resolution";
             String safeSearch = "true";
             ArrayList<Image> imageUrl = null;
