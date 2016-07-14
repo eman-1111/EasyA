@@ -47,7 +47,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
     private ShareActionProvider mShareActionProvider;
     private Uri mUri;
-
+    String outlineImageS;
     private static final int DETAIL_LOADER = 0;
 
     private static final String[] DETAIL_COLUMNS = {
@@ -157,6 +157,9 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         if (id == R.id.action_edit) {
             Intent intent = new Intent(getActivity(), AddSubjectTitel.class);
             intent.putExtra("LessonURL", mUri.toString());
+            intent.putExtra("lessonOverView",lessonOutline);
+            intent.putExtra("lessonName", lessonName);
+            intent.putExtra("outlineImage",outlineImageS);
 
             startActivity(intent);
         } else if (id == R.id.action_favorite) {
@@ -245,7 +248,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             teacherEmail = data.getString(COL_LESSON_OUTLINE);
 
 
-            String outlineImageS = data.getString(COL_LESSON_OUTLINE_IMAGE);
+            outlineImageS = data.getString(COL_LESSON_OUTLINE_IMAGE);
             if(outlineImageS == null){
                outlineImageS = "l";
 

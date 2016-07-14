@@ -3,6 +3,7 @@ package eman.app.android.easya;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +21,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 import eman.app.android.easya.data.CourseContract;
 
@@ -54,10 +67,8 @@ public class AddSubjectTitel extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        /* Initialize Firebase */
-//        Firebase.setAndroidContext(this);
-//        /* Enable disk persistence  */
-//        Firebase.getDefaultConfig().setPersistenceEnabled(true);
+
+
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -78,9 +89,12 @@ public class AddSubjectTitel extends AppCompatActivity {
 
         if (intent.getStringExtra("LessonURL") != null) {
             edit = true;
+            Log.e(LOG_TAG, "edit true");
             mUri = Uri.parse(intent.getStringExtra("LessonURL"));
-            lessonOverView = intent.getStringExtra("LessonURL");
-            lessonName = intent.getStringExtra("LessonURL");
+            lessonOverView = intent.getStringExtra("lessonOverView");
+            lessonName = intent.getStringExtra("lessonName");
+            lessonNameET.setText(lessonName);
+            lessonOverViewET.setText(lessonOverView);
         }
         if (intent.getStringExtra("outlineImage") != null) {
             imageUrl = intent.getStringExtra("outlineImage");
@@ -167,7 +181,7 @@ public class AddSubjectTitel extends AppCompatActivity {
     }
 
     public void startImageIntent() {
-        Intent intent = new Intent(this, ImageSearch.class);
+        Intent intent = new Intent(this, ImagesSearch.class);
         intent.putExtra("SearchValue", lessonNameET.getText().toString());
         intent.putExtra("CourseId", lessonId);
         intent.putExtra("imageName", "outlineImage");
@@ -232,23 +246,6 @@ public class AddSubjectTitel extends AppCompatActivity {
         }
     }
 
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        Log.e(LOG_TAG, "onResume()");
-//        if (back) {
-//            getSavedInstanceState(dataB);
-//        }
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        Log.e(LOG_TAG, "onPause()");
-//        //dataB = setSavedInstanceState();
-//    }
-
 
     public Bundle setSavedInstanceState() {
         // Store values between instances here
@@ -289,6 +286,5 @@ public class AddSubjectTitel extends AppCompatActivity {
         }
 
     }
-
 
 }

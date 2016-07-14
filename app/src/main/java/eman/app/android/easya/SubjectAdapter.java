@@ -66,8 +66,9 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
         public boolean onLongClick(View v) {
             int adapterPostion = getAdapterPosition();
             mCursor.moveToPosition(adapterPostion);
+            int idCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_COURSE_ID);
             int titleCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE);
-            mClickHolder.onLongClick(mCursor.getString(titleCulomnIndex));
+            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex),mCursor.getString(titleCulomnIndex));
             return true;
         }
 
@@ -81,7 +82,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
 
     public static interface SubjectAdapterOnClickHolder {
         void onClick(String id, String lessonName, SubjectAdapterViewHolder vh);
-        boolean onLongClick(String lessonName);
+        boolean onLongClick(String id,String lessonName);
     }
 
 
@@ -109,17 +110,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
 
         String lessonName = mCursor.getString(SubjectListFragment.CO_LESSON_TITLE);
         subjectAdapterViewHolder.lessonName.setText(lessonName);
-//        String letter;
-//
-//        if (lessonName.substring(0,1) == null) {
-//            letter = "X";
-//        }else {
-//            letter =lessonName.substring(0,1);
-//        }
-//        TextDrawable drawable = TextDrawable.builder()
-//                .buildRound(letter, generator.getRandomColor());
-//
-//        subjectAdapterViewHolder.lessonImage.setImageDrawable(drawable);
+
 
         String practical_title_Name = mCursor.getString(SubjectListFragment.COL_LESSON_LINK);
         subjectAdapterViewHolder.practicalLink.setText(practical_title_Name);

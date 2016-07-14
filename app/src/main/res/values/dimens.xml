@@ -20,7 +20,7 @@
     <dimen name="text_padding_add">6dp</dimen>
     <dimen name="et_padding_add">16dp</dimen>
 
-
+    <dimen name="lv_header_text_size">10sp</dimen>
     <!-- Text Sizes - We are using DP here rather than SP because these are already large
          font sizes, and going larger will cause lots of view problems.  This is only for
          the large forecast numbers in the forecast list -->
@@ -48,19 +48,14 @@
     <dimen name="subject_detail_padding_wide">16dp</dimen>
     <dimen name="detail_container_bottom_margin">@dimen/detail_view_padding</dimen>
 
-    <dimen name="detail_card_elevation">6dp</dimen>
+    <dimen name="detail_card_padding">6dp</dimen>
     <dimen name="landscape_subject_view_width">450dp</dimen>
-
-    <!-- Today Widget -->
-    <dimen name="widget_today_default_width">110dp</dimen>
-    <dimen name="widget_today_default_height">40dp</dimen>
-    <dimen name="widget_today_min_resize_width">40dp</dimen>
-    <dimen name="widget_today_min_resize_height">@dimen/widget_today_default_height</dimen>
-    <dimen name="widget_today_large_width">220dp</dimen>
-
-    <dimen name="widget_detail_default_width">250dp</dimen>
-    <dimen name="widget_detail_default_height">180dp</dimen>
-    <dimen name="widget_detail_min_resize_width">220dp</dimen>
-    <dimen name="widget_detail_min_resize_height">@dimen/widget_detail_default_height</dimen>
+    <dimen name="edit_text_padding">14dp</dimen>
+    <dimen name="login_buttons_text_size">15.3sp</dimen>
+    <dimen name="lists_row_height">70dp</dimen>
+    <dimen name="empty_footer_height">80dp</dimen>
+    <dimen name="logo_image_size">100dp</dimen>
+    <dimen name="lists_title_bottom_margin">13dp</dimen>
+    <dimen name="input_field_height">50dp</dimen>
 
 </resources>

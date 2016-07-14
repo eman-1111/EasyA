@@ -73,6 +73,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     }
 
+
     public static interface CourseAdapterOnClickHolder {
         void onClick(String id, String courseName, CourseAdapterViewHolder vh);
         boolean onLongClick(String id);

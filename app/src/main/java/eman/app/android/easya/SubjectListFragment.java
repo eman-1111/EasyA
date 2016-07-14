@@ -2,8 +2,10 @@ package eman.app.android.easya;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -21,7 +23,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.firebase.client.Firebase;
+
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.utils.Constants;
 
 
 /**
@@ -108,7 +113,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
             }
 
             @Override
-            public boolean onLongClick(final String lessonName) {
+            public boolean onLongClick( final String lessonId,final String lessonName) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                 builder2.setMessage("Are you sure you want to delete this Lesson ");
                 builder2.setPositiveButton("Delete",
@@ -117,6 +122,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
                                 getContext().getContentResolver().delete(CourseContract.SubjectEntry.CONTENT_URI,
                                         CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ?",
                                         new String[]{lessonName});
+                                removeItem(lessonId);
                             }
                         });
                 builder2.setNegativeButton("Cancel", null);
@@ -203,6 +209,15 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         mSubjectAdapter.swapCursor(null);
 
     }
+    private void removeItem(String itemId) {
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
+        Log.e("URL",Constants.FIREBASE_URL +"/" + userKey + "/"+itemId);
+        Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + userKey + "/" + itemId
+                + "/" + Constants.FIREBASE_COURSE_LIST);
 
+        /* Do the update */
+        listsSubject.removeValue();;
+    }
 }
 

@@ -1,12 +1,15 @@
 package eman.app.android.easya;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.LoaderManager;
@@ -30,13 +33,14 @@ import com.squareup.picasso.Picasso;
 import java.util.HashMap;
 
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.firebase.SubjectContent;
 import eman.app.android.easya.utils.Constants;
 
 public class AddLessonDetail extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = AddLessonDetail.class.getSimpleName();
 
-    String lessonId, lessonName, lessonOverView, imageOutline;
+    String courseId, lessonName, lessonOverView, imageOutline;
     boolean edit = false;
     TextInputLayout inputLayoutLink, inputLayoutDebug, inputLayoutAppTitle, inputLayoutApp;
     EditText lessonLink, lessonDebug, lessonLifeAppTitle, lessonLifeApp;
@@ -92,7 +96,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
 
         Intent intent = getIntent();
 
-        lessonId = intent.getStringExtra("CourseId");
+        courseId = intent.getStringExtra("CourseId");
         if (intent.getStringExtra("LessonName") != null) {
             lessonName = intent.getStringExtra("LessonName");
             lessonOverView = intent.getStringExtra("LessonOverview");
@@ -142,14 +146,14 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
                 lessonLifeAppTitles = lessonLifeAppTitle.getText().toString();
                 lessonLifeApps = lessonLifeApp.getText().toString();
 
-                Log.e("Insert",lessonId +lessonName+ lessonOverView+ " "+imageOutline+ " "+lessonLinks+
+                Log.e("Insert",courseId +lessonName+ lessonOverView+ " "+imageOutline+ " "+lessonLinks+
                         imageLinkS+ lessonLifeAppTitles+ lessonLifeApps+ imageAppS+
                         lessonDebugs+ imageDebugS);
-                addLessonData(lessonId, lessonName, lessonOverView, imageOutline, lessonLinks, imageLinkS,
+                addLessonData(courseId, lessonName, lessonOverView, imageOutline, lessonLinks, imageLinkS,
                         lessonLifeAppTitles, lessonLifeApps, imageAppS,
                         lessonDebugs, imageDebugS);
                 Intent intent = new Intent(AddLessonDetail.this, SubjectList.class)
-                        .setData(CourseContract.SubjectEntry.buildSubjectWithID(lessonId));
+                        .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
                 startActivity(intent);
 
 
@@ -201,9 +205,9 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
     }
 
     private void startIntent(String extra) {
-        Intent intent = new Intent(this, ImageSearch.class);
+        Intent intent = new Intent(this, ImagesSearch.class);
         intent.putExtra("imageName", extra);
-        intent.putExtra("CourseId", lessonId);
+        intent.putExtra("CourseId", courseId);
         intent.putExtras(setSavedInstanceState());
         startActivity(intent);
     }
@@ -212,7 +216,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, AddSubjectTitel.class);
-            intent.putExtra("CourseId", lessonId);
+            intent.putExtra("CourseId", courseId);
             intent.putExtra("SavedStatue", "back");
             startActivity(intent);
         }
@@ -222,7 +226,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
     /**
      * Helper method to handle insertion of a new location in the weather database.
      *
-     * @param lessonId           .
+     * @param courseId           .
      * @param lessonLink         .
      * @param lessonLinkImage    .
      * @param lessonDebugs       .
@@ -231,14 +235,14 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
      * @param lessonLifeApp      .
      * @param lessonAppImage
      */
-    void addLessonData(String lessonId, String lessonName, String lessonOutline, String lessonOutlineImage,
+    void addLessonData(String courseId, String lessonName, String lessonOutline, String lessonOutlineImage,
                        String lessonLink, String lessonLinkImage, String lessonLifeAppTitle,
                        String lessonLifeApp, String lessonAppImage, String lessonDebugs,
                        String lessonDebugsImage) {
 
         ContentValues courseValues = new ContentValues();
 
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_COURSE_ID, lessonId);
+        courseValues.put(CourseContract.SubjectEntry.COLUMN_COURSE_ID, courseId);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE, lessonName);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE, lessonOutline);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE, lessonOutlineImage);
@@ -266,13 +270,12 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
 
         } else {
             courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, 0);
+            final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
 
-            // Get the string that the user entered into the EditText
-            // Go to the "listName" child node of the root node.
-            // This will create the node for you if it doesn't already exist.
-            // Then using the setValue menu it will set value the node to userEnteredName.
+            Log.e("Key Subject", userKey);
 
-            Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + lessonId
+            Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + userKey + "/" + courseId
                     + "/" + Constants.FIREBASE_COURSE_LIST);
             Firebase newListRef = listsSubject.push();
 
@@ -281,16 +284,22 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
             HashMap<String, Object> timestampCreated = new HashMap<>();
             timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
-            SubjectContent subjectContent = new SubjectContent(lessonId, lessonName, lessonOutline, lessonOutlineImage,
+            SubjectContent subjectContent = new SubjectContent(courseId, lessonName, lessonOutline, lessonOutlineImage,
                     lessonLink, lessonLinkImage, lessonDebugs, lessonDebugsImage, lessonLifeAppTitle,lessonLifeApp,
-                    lessonAppImage,"", timestampCreated);
-            listsSubject.child("NewLesson").setValue(subjectContent);
+                    lessonAppImage,"", timestampCreated,listSubjectId);
+
+            newListRef.setValue(subjectContent);
+
             this.getContentResolver().insert(
                     CourseContract.SubjectEntry.CONTENT_URI,
                     courseValues);
-
-
         }
+
+        // Get the string that the user entered into the EditText
+        // Go to the "listName" child node of the root node.
+        // This will create the node for you if it doesn't already exist.
+        // Then using the setValue menu it will set value the node to userEnteredName.
+
         // Wait, that worked?  Yes!
 
         // Wait, that worked?  Yes!
@@ -298,8 +307,31 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         startActivity(intent);
 
     }
+    private void addItem(String itemId) {
 
+    }
+    private void removeItem(String itemId) {
+        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
+        Log.e("URL",Constants.FIREBASE_URL +"/" + userKey + "/"+itemId);
+        Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + userKey + "/" + itemId
+                + "/" + Constants.FIREBASE_COURSE_LIST);
 
+        /* Do the update */
+        listsSubject.removeValue();;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Firebase.goOffline( );
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Firebase.goOnline();
+    }
     private void setUpIds() {
         inputLayoutLink = (TextInputLayout) findViewById(R.id.input_layout_linkx);
         inputLayoutDebug = (TextInputLayout) findViewById(R.id.input_layout_debug);
@@ -367,7 +399,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
             lessonLifeAppTitle.setText(data.getString(COL_LESSON_PRACTICAL_TITLE));
             lessonLifeApp.setText(data.getString(COL_LESSON_PRACTICAL));
 
-            lessonId = data.getString(COL_COURSE_ID);
+            courseId = data.getString(COL_COURSE_ID);
             lessonName = data.getString(COL_LESSON_NAME);
         }
     }
@@ -378,21 +410,6 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
 
     }
 
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//        Log.e(LOG_TAG, "onResume()");
-//
-//        getSavedInstanceState(dataB);
-//
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        Log.e(LOG_TAG, "onPause()");
-//       // dataB = setSavedInstanceState();
-//    }
 
 
     public Bundle setSavedInstanceState() {

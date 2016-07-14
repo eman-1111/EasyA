@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -59,15 +60,19 @@ import com.google.api.services.classroom.model.CourseAlias;
 import com.google.api.services.classroom.model.ListCoursesResponse;
 import com.google.api.services.classroom.model.Teacher;
 
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import eman.app.android.easya.utils.Constants;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+import eman.app.android.easya.firebase.CourseContent;
 
 
 public class CoursesList extends AppCompatActivity
@@ -82,11 +87,17 @@ public class CoursesList extends AppCompatActivity
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
 
-    private static final String PREF_ACCOUNT_NAME = "accountName";
+    private SharedPreferences mSharedPref;
+    private SharedPreferences.Editor mSharedPrefEditor;
 
-    private static final String[] SCOPES = {ClassroomScopes.CLASSROOM_COURSES_READONLY};
+   // private static final String[] SCOPES1 = {ClassroomScopes.C};
+    private static final String[] SCOPES2 = {ClassroomScopes.CLASSROOM_COURSES_READONLY,
+           ClassroomScopes.CLASSROOM_ROSTERS};
+
+
 
     private GoogleApiClient client;
+    MakeRequestTask mMakeRequestTask;
 
     /**
      * Create the main activity.
@@ -96,12 +107,9 @@ public class CoursesList extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /* Initialize Firebase */
         Firebase.setAndroidContext(this);
-
-        /**
-         * Create Firebase references
-         */
+        mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        mSharedPrefEditor = mSharedPref.edit();
 
 
         setContentView(R.layout.courses_list);
@@ -125,7 +133,7 @@ public class CoursesList extends AppCompatActivity
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
+                getApplicationContext(), Arrays.asList(SCOPES2))
                 .setBackOff(new ExponentialBackOff());
 
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
@@ -143,6 +151,7 @@ public class CoursesList extends AppCompatActivity
                 startDialog(view);
             }
         });
+        client.connect();
     }
 
     @Override
@@ -174,8 +183,22 @@ public class CoursesList extends AppCompatActivity
             // startIntent();
             mErrorText.setText("No network connection available.");
         } else {
-            new MakeRequestTask(mCredential).execute();
+            mMakeRequestTask = (MakeRequestTask) new MakeRequestTask(mCredential).execute();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Firebase.goOffline();
+        //mMakeRequestTask.cancel(true);
+        client.disconnect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Firebase.goOnline();
     }
 
     /**
@@ -193,8 +216,10 @@ public class CoursesList extends AppCompatActivity
         if (EasyPermissions.hasPermissions(
                 this, Manifest.permission.GET_ACCOUNTS)) {
             String accountName = getPreferences(Context.MODE_PRIVATE)
-                    .getString(PREF_ACCOUNT_NAME, null);
+                    .getString(Constants.PREF_ACCOUNT_NAME, null);
+
             if (accountName != null) {
+                Log.e("AccountName", accountName);
                 mCredential.setSelectedAccountName(accountName);
                 getResultsFromApi();
             } else {
@@ -202,8 +227,11 @@ public class CoursesList extends AppCompatActivity
                 startActivityForResult(
                         mCredential.newChooseAccountIntent(),
                         REQUEST_ACCOUNT_PICKER);
+
             }
         } else {
+            Log.e("AccountName", "last else");
+
             // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(
                     this,
@@ -234,6 +262,7 @@ public class CoursesList extends AppCompatActivity
 
                 } else {
                     try {
+
                         getResultsFromApi();
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -250,7 +279,17 @@ public class CoursesList extends AppCompatActivity
                         SharedPreferences settings =
                                 getPreferences(Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = settings.edit();
-                        editor.putString(PREF_ACCOUNT_NAME, accountName);
+
+                        editor.putString(Constants.PREF_ACCOUNT_NAME, accountName);
+
+                        Firebase userRef = new Firebase(Constants.FIREBASE_URL);
+                        Firebase newUserRef = userRef.push();
+
+                        String userKey = newUserRef.getKey();
+                        Log.e("key", userKey);
+                        mSharedPrefEditor.putString(Constants.PREF_USER_ACCOUNT_KEY, userKey).apply();
+
+                        newUserRef.setValue(accountName);
                         editor.apply();
                         mCredential.setSelectedAccountName(accountName);
                         try {
@@ -375,23 +414,8 @@ public class CoursesList extends AppCompatActivity
         dialog.show();
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
 
 
-        client.disconnect();
-    }
 
     /**
      * An asynchronous task that handles the Classroom API call.
@@ -421,13 +445,14 @@ public class CoursesList extends AppCompatActivity
         @Override
         protected List<String> doInBackground(Void... params) {
             try {
-
-                return getDataFromApi();
+                if (!this.isCancelled()) {
+                    return getDataFromApi();
+                }
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
                 return null;
-            }
+            }return null;
         }
 
         /**
@@ -451,20 +476,6 @@ public class CoursesList extends AppCompatActivity
                 for (Course course : courses) {
                     String courseName = course.getName();
                     String courseId = course.getId();
-                    //////////////////////////////
-                    String alias = "p:bio10p2";
-                    CourseAlias courseAlias = new CourseAlias().setAlias(alias);
-                    try {
-                        courseAlias = mService.courses().aliases().create(courseId, courseAlias).execute();
-                        System.out.printf("Alias '%s' created.\n", courseAlias.getAlias());
-                    } catch (GoogleJsonResponseException e) {
-                        GoogleJsonError error = e.getDetails();
-                        if (error.getCode() == 409) {
-                            System.out.printf("Alias '%s' is already in use.\n", alias);
-                        } else {
-                            throw e;
-                        }
-                    }
 
                     //////////////////////////////////
 
@@ -540,8 +551,8 @@ public class CoursesList extends AppCompatActivity
         Cursor courseCursor = this.getContentResolver().query(
                 CourseContract.CourseEntry.CONTENT_URI,
                 new String[]{CourseContract.CourseEntry._ID},
-                CourseContract.CourseEntry.COLUMN_COURSE_ID + " = ?",
-                new String[]{courseId},
+                CourseContract.CourseEntry.COLUMN_COURSE_NAME + " = ?",
+                new String[]{courseName},
                 null);
 
         if (courseCursor.moveToFirst()) {
@@ -560,12 +571,20 @@ public class CoursesList extends AppCompatActivity
             /**
              * Create Firebase references
              */
-            Firebase userRef = new Firebase(Constants.FIREBASE_URL);
+            final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
+
+            Log.e("Key course", userKey);
+
+//            String userKey = getPreferences(Context.MODE_PRIVATE)
+//                    .getString(Constants.PREF_USER_ACCOUNT_KEY, null);
+
+            Firebase userRef = new Firebase(Constants.FIREBASE_URL + "/" + userKey);
             Firebase newCourseRef = userRef.push();
 
             /* Save listsRef.push() to maintain same random Id */
             final String courseFireId = newCourseRef.getKey();
-            if(courseFireId != null){
+            if (courseFireId != null) {
                 courseId = courseFireId;
             }
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_ID, courseId);
@@ -589,7 +608,7 @@ public class CoursesList extends AppCompatActivity
 
             /* Build the shopping list */
             CourseContent newCourse = new CourseContent(courseId, courseName, teacherName, teacherPhoto,
-                    teacherEmail, timestampCreated);
+                    teacherEmail, timestampCreated, "add");
 
             /* Add the shopping list */
             newCourseRef.setValue(newCourse);
