@@ -181,12 +181,14 @@ public class AddSubjectTitel extends AppCompatActivity {
     }
 
     public void startImageIntent() {
-        Intent intent = new Intent(this, ImagesSearch.class);
+        Intent intent = new Intent(AddSubjectTitel.this, ImagesSearch.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("SearchValue", lessonNameET.getText().toString());
         intent.putExtra("CourseId", lessonId);
         intent.putExtra("imageName", "outlineImage");
         intent.putExtras(setSavedInstanceState());
         startActivity(intent);
+        finish();
     }
 
     private class MyTextWatcher implements TextWatcher {

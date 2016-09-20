@@ -63,7 +63,7 @@ public class SubjectDetail extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, SubjectList.class)
                     .setData(CourseContract.SubjectEntry.buildSubjectWithID(lessonId));
-          //  intent.putExtra("CourseName", lessonName);
+           intent.putExtra("CourseName", lessonName);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

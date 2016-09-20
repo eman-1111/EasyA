@@ -35,7 +35,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class ImagesSearch extends AppCompatActivity {
@@ -275,7 +276,7 @@ public class ImagesSearch extends AppCompatActivity {
                     hdImage = fullMovie.getString(OWM_HD_IMAGE);
                     imageNor = fullMovie.getString(OWM_IMAGE);
                     hashId = fullMovie.getString(OWM_HASH);
-                    //reslImageURL[i] = imageNor;
+
                     Image image = new Image(hashId, imageNor, hdImage);
                     images.add(image);
 
@@ -331,7 +332,7 @@ public class ImagesSearch extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
                                 //TODO MAKE IT HD
-                                startImageIIntent(image.getImage());
+                                startImageIIntent(image.getImageHD());
 
                             }
                         })
@@ -361,9 +362,6 @@ public class ImagesSearch extends AppCompatActivity {
             Log.e("LinkSearch",url);
             intent.putExtra("linkImage", url);
 
-        }else if(imageName.equals("debugImage")){
-            intent = new Intent(this, AddLessonDetail.class);
-            intent.putExtra("debugImage", url);
         }else if(imageName.equals("appImage")){
             intent = new Intent(this, AddLessonDetail.class);
             intent.putExtra("appImage", url);

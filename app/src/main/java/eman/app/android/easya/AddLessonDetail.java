@@ -25,15 +25,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.firebase.client.Firebase;
-import com.firebase.client.ServerValue;
+
 import com.squareup.picasso.Picasso;
 
 
 import java.util.HashMap;
 
 import eman.app.android.easya.data.CourseContract;
-import eman.app.android.easya.firebase.SubjectContent;
 import eman.app.android.easya.utils.Constants;
 
 public class AddLessonDetail extends AppCompatActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -205,11 +203,13 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
     }
 
     private void startIntent(String extra) {
-        Intent intent = new Intent(this, ImagesSearch.class);
-        intent.putExtra("imageName", extra);
+        Intent intent = new Intent(AddLessonDetail.this, ImagesSearch.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.putExtra("CourseId", courseId);
+        intent.putExtra("imageName", extra);
         intent.putExtras(setSavedInstanceState());
         startActivity(intent);
+        finish();
     }
 
     @Override
@@ -275,20 +275,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
 
             Log.e("Key Subject", userKey);
 
-            Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + userKey + "/" + courseId
-                    + "/" + Constants.FIREBASE_COURSE_LIST);
-            Firebase newListRef = listsSubject.push();
 
-            /* Save listsRef.push() to maintain same random Id */
-            final String listSubjectId = newListRef.getKey();
-            HashMap<String, Object> timestampCreated = new HashMap<>();
-            timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-
-            SubjectContent subjectContent = new SubjectContent(courseId, lessonName, lessonOutline, lessonOutlineImage,
-                    lessonLink, lessonLinkImage, lessonDebugs, lessonDebugsImage, lessonLifeAppTitle,lessonLifeApp,
-                    lessonAppImage,"", timestampCreated,listSubjectId);
-
-            newListRef.setValue(subjectContent);
 
             this.getContentResolver().insert(
                     CourseContract.SubjectEntry.CONTENT_URI,
@@ -310,28 +297,8 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
     private void addItem(String itemId) {
 
     }
-    private void removeItem(String itemId) {
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
-        Log.e("URL",Constants.FIREBASE_URL +"/" + userKey + "/"+itemId);
-        Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + userKey + "/" + itemId
-                + "/" + Constants.FIREBASE_COURSE_LIST);
 
-        /* Do the update */
-        listsSubject.removeValue();;
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Firebase.goOffline( );
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Firebase.goOnline();
-    }
     private void setUpIds() {
         inputLayoutLink = (TextInputLayout) findViewById(R.id.input_layout_linkx);
         inputLayoutDebug = (TextInputLayout) findViewById(R.id.input_layout_debug);

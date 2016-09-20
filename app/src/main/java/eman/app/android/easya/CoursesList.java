@@ -37,8 +37,7 @@ import android.widget.TextView;
 
 import eman.app.android.easya.data.CourseContract;
 
-import com.firebase.client.Firebase;
-import com.firebase.client.ServerValue;
+
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -47,8 +46,6 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.googleapis.json.GoogleJsonError;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -56,24 +53,18 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.classroom.Classroom;
 import com.google.api.services.classroom.ClassroomScopes;
 import com.google.api.services.classroom.model.Course;
-import com.google.api.services.classroom.model.CourseAlias;
 import com.google.api.services.classroom.model.ListCoursesResponse;
 import com.google.api.services.classroom.model.Teacher;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 import eman.app.android.easya.utils.Constants;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
-import eman.app.android.easya.firebase.CourseContent;
-
 
 public class CoursesList extends AppCompatActivity
         implements EasyPermissions.PermissionCallbacks, CourseListFragment.Callback {
@@ -90,7 +81,6 @@ public class CoursesList extends AppCompatActivity
     private SharedPreferences mSharedPref;
     private SharedPreferences.Editor mSharedPrefEditor;
 
-   // private static final String[] SCOPES1 = {ClassroomScopes.C};
     private static final String[] SCOPES2 = {ClassroomScopes.CLASSROOM_COURSES_READONLY,
            ClassroomScopes.CLASSROOM_ROSTERS};
 
@@ -107,20 +97,12 @@ public class CoursesList extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Firebase.setAndroidContext(this);
         mSharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         mSharedPrefEditor = mSharedPref.edit();
 
 
         setContentView(R.layout.courses_list);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Slide slide = new Slide();
-            slide.setSlideEdge(Gravity.BOTTOM);
-            slide.setDuration(1000);
-            getWindow().setEnterTransition(slide);
-            getWindow().setExitTransition(slide);
 
-        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -187,19 +169,7 @@ public class CoursesList extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Firebase.goOffline();
-        //mMakeRequestTask.cancel(true);
-        client.disconnect();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Firebase.goOnline();
-    }
 
     /**
      * Attempts to set the account used with the API credentials. If an account
@@ -282,14 +252,7 @@ public class CoursesList extends AppCompatActivity
 
                         editor.putString(Constants.PREF_ACCOUNT_NAME, accountName);
 
-                        Firebase userRef = new Firebase(Constants.FIREBASE_URL);
-                        Firebase newUserRef = userRef.push();
 
-                        String userKey = newUserRef.getKey();
-                        Log.e("key", userKey);
-                        mSharedPrefEditor.putString(Constants.PREF_USER_ACCOUNT_KEY, userKey).apply();
-
-                        newUserRef.setValue(accountName);
                         editor.apply();
                         mCredential.setSelectedAccountName(accountName);
                         try {
@@ -571,22 +534,12 @@ public class CoursesList extends AppCompatActivity
             /**
              * Create Firebase references
              */
-            final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
 
-            Log.e("Key course", userKey);
 
 //            String userKey = getPreferences(Context.MODE_PRIVATE)
 //                    .getString(Constants.PREF_USER_ACCOUNT_KEY, null);
 
-            Firebase userRef = new Firebase(Constants.FIREBASE_URL + "/" + userKey);
-            Firebase newCourseRef = userRef.push();
 
-            /* Save listsRef.push() to maintain same random Id */
-            final String courseFireId = newCourseRef.getKey();
-            if (courseFireId != null) {
-                courseId = courseFireId;
-            }
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_ID, courseId);
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_NAME, courseName);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL, teacherEmail);
@@ -599,19 +552,7 @@ public class CoursesList extends AppCompatActivity
                     courseValues);
 
 
-            /**
-             * Set raw version of date to the ServerValue.TIMESTAMP value and save into
-             * timestampCreatedMap
-             */
-            HashMap<String, Object> timestampCreated = new HashMap<>();
-            timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
-            /* Build the shopping list */
-            CourseContent newCourse = new CourseContent(courseId, courseName, teacherName, teacherPhoto,
-                    teacherEmail, timestampCreated, "add");
-
-            /* Add the shopping list */
-            newCourseRef.setValue(newCourse);
             // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
             courseID = ContentUris.parseId(insertedUri);
         }

@@ -21,11 +21,7 @@ package eman.app.android.easya;
         import android.widget.ListView;
         import android.widget.TextView;
 
-        import com.firebase.client.Firebase;
-        import com.firebase.client.ServerValue;
 
-        import java.util.HashMap;
-        import java.util.Random;
 
         import eman.app.android.easya.data.CourseContract;
         import eman.app.android.easya.utils.Constants;
@@ -177,14 +173,6 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
 
     }
     private void removeItem(String itemId) {
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
-        //https://project-5797678756428558432.firebaseio.com/-KMVEJ_8UPHx5hf_nfWS/-KMVHRX0U1RkCRF0zWuN
-        Log.e("URL",Constants.FIREBASE_URL +"/" + userKey + "/"+itemId);
 
-        Firebase firebaseRef = new Firebase(Constants.FIREBASE_URL +"/" + userKey + "/"+itemId );
-
-        /* Do the update */
-        firebaseRef.removeValue();;
     }
 }

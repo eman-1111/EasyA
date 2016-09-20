@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="eman.app.android.easya.login.LoginActivity"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="81dp">
+
+
+    <!--<com.google.android.gms.common.SignInButton -->
+
+    <ImageView
+        android:src="@drawable/cat"
+        android:layout_width="337dp"
+        android:layout_height="250dp"
+        tools:layout_editor_absoluteX="23dp"
+        tools:layout_editor_absoluteY="32dp"
+        android:id="@+id/imageView"
+        tools:layout_constraintLeft_creator="0"
+        android:layout_marginTop="32dp"
+        tools:layout_constraintTop_creator="0"
+        tools:layout_constraintRight_creator="0" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="148dp"
+        tools:layout_editor_absoluteY="396dp"
+        android:onClick="signIn"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:text="Ask Question And Get Answers on Fire"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="74dp"
+        tools:layout_editor_absoluteY="306dp"
+        android:id="@+id/textView"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp" />
+
+</android.support.constraint.ConstraintLayout>

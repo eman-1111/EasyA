@@ -23,7 +23,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
 
 import eman.app.android.easya.data.CourseContract;
 import eman.app.android.easya.utils.Constants;
@@ -72,6 +71,8 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
     static final int COL_LESSON_OUTLINE_IMAGE = 4;
 
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +80,6 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         setHasOptionsMenu(true);
 
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -210,14 +210,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
 
     }
     private void removeItem(String itemId) {
-        final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
-        Log.e("URL",Constants.FIREBASE_URL +"/" + userKey + "/"+itemId);
-        Firebase listsSubject = new Firebase(Constants.FIREBASE_URL + "/" + userKey + "/" + itemId
-                + "/" + Constants.FIREBASE_COURSE_LIST);
 
-        /* Do the update */
-        listsSubject.removeValue();;
     }
 }
 

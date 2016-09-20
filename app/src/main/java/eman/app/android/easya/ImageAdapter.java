@@ -17,6 +17,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 /**
  * Created by eman_ashour on 6/14/2016.
  */
@@ -28,6 +30,8 @@ public class ImageAdapter extends ArrayAdapter<Image> {
         super(context, resourceId, image);
         this.context = context;
     }
+
+
 
     /*private view holder class*/
     private class ViewHolder {
@@ -50,7 +54,7 @@ public class ImageAdapter extends ArrayAdapter<Image> {
         }
 
 
-        Picasso.with(context).load(imageNor.getImage()).error(R.drawable.blue)
+        Picasso.with(context).load(imageNor.getImageHD()).error(R.drawable.blue)
                 .into(holder.imageView);
 
         return convertView;
