@@ -264,7 +264,7 @@ public class ImagesSearch extends AppCompatActivity {
 
                 JSONObject imagesJson = new JSONObject(imageJsonStr);
                 JSONArray imageArray = imagesJson.getJSONArray(OWM_RESULT);
-                ArrayList<Image> images = new ArrayList<Image>();;
+                ArrayList<Image> images = new ArrayList<Image>();
                 for (int i = 0; i < imageArray.length(); i++) {
 
                     String hdImage;

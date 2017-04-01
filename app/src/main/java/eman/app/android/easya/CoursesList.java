@@ -130,7 +130,9 @@ public class CoursesList extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startDialog(view);
+                Intent addLesson = new Intent(CoursesList.this, AddNewLesson.class);
+                startActivity(addLesson);
+                //startDialog(view);
             }
         });
         client.connect();

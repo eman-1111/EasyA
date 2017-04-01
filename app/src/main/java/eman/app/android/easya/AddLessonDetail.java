@@ -273,7 +273,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
             final SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             String userKey = sharedPref.getString(Constants.PREF_USER_ACCOUNT_KEY, null);
 
-            Log.e("Key Subject", userKey);
+          //  Log.e("Key Subject", userKey);
 
 
 

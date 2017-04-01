@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "540854310832",
+    "firebase_url": "https://project-5797678756428558432.firebaseio.com",
+    "project_id": "project-5797678756428558432",
+    "storage_bucket": "project-5797678756428558432.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:540854310832:android:39e02c631bd51a4e",
+        "android_client_info": {
+          "package_name": "eman.app.android.easya"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "540854310832-ah2e9fqm46a451trlu8si1e22ojelv6s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "eman.app.android.easya",
+            "certificate_hash": "8F5DE81E541B8B97D8E8562D165E67F4CD3E4946"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQDos899fpi7WqazBdUx3GmhifnaNwTiY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

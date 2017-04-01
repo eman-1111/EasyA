@@ -89,4 +89,7 @@
 
     <string name="default_web_client_id">1:540854310832:android:39e02c631bd51a4e</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

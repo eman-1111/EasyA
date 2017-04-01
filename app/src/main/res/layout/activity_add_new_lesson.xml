@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_add_new_lesson"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="eman.app.android.easya.AddNewLesson">
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_mainContainer"
+        style="@style/ContainerLinear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_horizontal_margin">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <me.relex.circleindicator.CircleIndicator
+            android:id="@+id/indicator"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_below="@id/cv_mainContainer"
+            android:layout_gravity="bottom"
+            app:ci_drawable="@drawable/circle_indecator"
+            app:ci_drawable_unselected="@drawable/circle_indecator_unselect" />
+    </android.support.v7.widget.CardView>
+
+
+</RelativeLayout>
