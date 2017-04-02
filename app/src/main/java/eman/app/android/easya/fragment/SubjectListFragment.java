@@ -1,11 +1,8 @@
-package eman.app.android.easya;
+package eman.app.android.easya.fragment;
 
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -14,18 +11,16 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.ShareActionProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 
+import eman.app.android.easya.R;
+import eman.app.android.easya.adapter.SubjectAdapter;
 import eman.app.android.easya.data.CourseContract;
-import eman.app.android.easya.utils.Constants;
 
 
 /**
@@ -34,7 +29,7 @@ import eman.app.android.easya.utils.Constants;
 public class SubjectListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = SubjectListFragment.class.getSimpleName();
-    static final String SUBJECT_URI = "URIS";
+    public static final String SUBJECT_URI = "URIS";
     private Uri mUri;
     TextView emptyView;
 
@@ -46,7 +41,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         public void onItemSelected(Uri idUri);
     }
 
-   // RecyclerView mRecyclerView;
+    // RecyclerView mRecyclerView;
     RecyclerView mRecyclerView;
     private SubjectAdapter mSubjectAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -64,13 +59,11 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
             CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE
     };
 
-    static final int COL_COURSE_ID = 0;
-    static final int CO_LESSON_TITLE = 1;
-    static final int COL_LESSON_LINK = 2;
-    static final int COL_COURSE_NAME = 3;
-    static final int COL_LESSON_OUTLINE_IMAGE = 4;
-
-
+    public static final int COL_COURSE_ID = 0;
+    public static final int CO_LESSON_TITLE = 1;
+    public static final int COL_LESSON_LINK = 2;
+    public static final int COL_COURSE_NAME = 3;
+    public static final int COL_LESSON_OUTLINE_IMAGE = 4;
 
 
     @Override
@@ -90,12 +83,12 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
             mUri = arguments.getParcelable(SubjectListFragment.SUBJECT_URI);
         }
 
-       // getActivity().setTitle(arguments.getStringExtra("CourseName"));
+        // getActivity().setTitle(arguments.getStringExtra("CourseName"));
         //getActivity().setTitle("");
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
         // Get a reference to the RecyclerView, and attach this adapter to it.
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
-      //  mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        //  mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
 
         // Set the layout manager
@@ -113,7 +106,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
             }
 
             @Override
-            public boolean onLongClick( final String lessonId,final String lessonName) {
+            public boolean onLongClick(final String lessonId, final String lessonName) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                 builder2.setMessage("Are you sure you want to delete this Lesson ");
                 builder2.setPositiveButton("Delete",
@@ -130,7 +123,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
                 return false;
             }
         });
-        mRecyclerView.setAdapter( mSubjectAdapter);
+        mRecyclerView.setAdapter(mSubjectAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
             // swapout in onLoadFinished.
@@ -197,7 +190,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         if (mPosition != ListView.INVALID_POSITION) {
             // Ifp we don't need to restart the loader, and there's a desired position to restore
             // to, do so now.
-           mRecyclerView.smoothScrollToPosition(mPosition);
+            mRecyclerView.smoothScrollToPosition(mPosition);
 
         }
 
@@ -209,6 +202,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         mSubjectAdapter.swapCursor(null);
 
     }
+
     private void removeItem(String itemId) {
 
     }

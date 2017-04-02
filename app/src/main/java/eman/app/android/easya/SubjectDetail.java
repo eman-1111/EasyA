@@ -1,20 +1,15 @@
 package eman.app.android.easya;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.transition.Fade;
-import android.transition.Slide;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.fragment.SubjectDetailFragment;
 
 
 public class SubjectDetail extends AppCompatActivity {

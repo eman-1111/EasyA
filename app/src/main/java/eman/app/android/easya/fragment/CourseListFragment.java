@@ -1,12 +1,10 @@
-package eman.app.android.easya;
+package eman.app.android.easya.fragment;
 
 
         import android.content.DialogInterface;
-        import android.content.SharedPreferences;
         import android.database.Cursor;
         import android.net.Uri;
         import android.os.Bundle;
-        import android.preference.PreferenceManager;
         import android.support.v4.app.Fragment;
         import android.support.v4.app.LoaderManager;
         import android.support.v4.content.CursorLoader;
@@ -14,7 +12,6 @@ package eman.app.android.easya;
         import android.support.v7.app.AlertDialog;
         import android.support.v7.widget.LinearLayoutManager;
         import android.support.v7.widget.RecyclerView;
-        import android.util.Log;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
@@ -22,9 +19,9 @@ package eman.app.android.easya;
         import android.widget.TextView;
 
 
-
+        import eman.app.android.easya.adapter.CourseAdapter;
+        import eman.app.android.easya.R;
         import eman.app.android.easya.data.CourseContract;
-        import eman.app.android.easya.utils.Constants;
 
 /**
  * Created by eman_ashour on 4/21/2016.
@@ -56,10 +53,10 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
             CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL
     };
 
-    static final int COL_COURSE_ID = 0;
-    static final int COL_COURSE_NAME = 1;
-    static final int COL_TEACHER_NAME = 2;
-    static final int COL_TEACHER_PHOTO_URL = 3;
+    public static final int COL_COURSE_ID = 0;
+    public static final int COL_COURSE_NAME = 1;
+    public static final int COL_TEACHER_NAME = 2;
+    public static final int COL_TEACHER_PHOTO_URL = 3;
 
     public CourseListFragment() {
     }

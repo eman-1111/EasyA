@@ -35,8 +35,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
+
+import eman.app.android.easya.adapter.ImageAdapter;
 
 
 public class ImagesSearch extends AppCompatActivity {

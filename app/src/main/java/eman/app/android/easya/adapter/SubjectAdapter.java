@@ -1,9 +1,8 @@
-package eman.app.android.easya;
+package eman.app.android.easya.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,11 +11,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.squareup.picasso.Picasso;
 
+import eman.app.android.easya.R;
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.fragment.SubjectListFragment;
 
 /**
  * Created by eman_ashour on 4/23/2016.

@@ -16,7 +16,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -25,9 +24,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
-import android.transition.Slide;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -62,6 +59,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import eman.app.android.easya.fragment.CourseListFragment;
 import eman.app.android.easya.utils.Constants;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -130,9 +128,7 @@ public class CoursesList extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent addLesson = new Intent(CoursesList.this, AddNewLesson.class);
-                startActivity(addLesson);
-                //startDialog(view);
+                startDialog(view);
             }
         });
         client.connect();

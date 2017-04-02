@@ -7,10 +7,8 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.Slide;
-import android.transition.Transition;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -18,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.fragment.SubjectDetailFragment;
+import eman.app.android.easya.fragment.SubjectListFragment;
 
 
 public class SubjectList extends AppCompatActivity implements SubjectListFragment.Callback {
@@ -138,7 +138,8 @@ public class SubjectList extends AppCompatActivity implements SubjectListFragmen
     }
 
     public void startIntent() {
-        Intent intent = new Intent(this, AddSubjectTitel.class);
+        //Intent intent = new Intent(this, AddSubjectTitel.class);
+        Intent intent = new Intent(this, AddNewLesson.class);
         intent.putExtra("CourseId", CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
         startActivity(intent);
     }

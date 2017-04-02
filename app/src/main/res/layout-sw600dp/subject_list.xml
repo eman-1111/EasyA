@@ -48,7 +48,7 @@
             android:layout_alignRight="@id/layout_center"
             android:layout_below="@+id/appbar"
             android:layout_weight="2"
-            tools:context="eman.app.android.easya.SubjectListFragment"
+            tools:context="eman.app.android.easya.fragment.SubjectListFragment"
             tools:layout="@android:layout/list_content" />
 
 

@@ -1,4 +1,4 @@
-package eman.app.android.easya;
+package eman.app.android.easya.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -13,7 +13,9 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.squareup.picasso.Picasso;
 
+import eman.app.android.easya.R;
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.fragment.CourseListFragment;
 
 
 /**

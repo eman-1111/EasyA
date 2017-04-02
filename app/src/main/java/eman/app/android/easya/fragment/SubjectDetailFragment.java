@@ -1,4 +1,4 @@
-package eman.app.android.easya;
+package eman.app.android.easya.fragment;
 
 import android.content.ContentValues;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -22,11 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import eman.app.android.easya.AddSubjectTitel;
+import eman.app.android.easya.R;
 import eman.app.android.easya.data.CourseContract;
 
 /**
@@ -36,7 +36,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
 
     private static final String LOG_TAG = SubjectDetailFragment.class.getSimpleName();
-    static final String DETAIL_URI = "URI";
+    public static final String DETAIL_URI = "URI";
 
     private Menu menu;
 

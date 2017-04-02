@@ -1,4 +1,4 @@
-package eman.app.android.easya;
+package eman.app.android.easya.adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -17,6 +17,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import eman.app.android.easya.Image;
+import eman.app.android.easya.R;
 
 
 /**

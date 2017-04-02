@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="4dp"
-    tools:context="eman.app.android.easya.SubjectListFragment"
+    tools:context="eman.app.android.easya.fragment.SubjectListFragment"
     tools:showIn="@layout/courses_list">
 
       <android.support.v7.widget.RecyclerView
