@@ -19,13 +19,7 @@ public class SubjectDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject_detail);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Fade fade = new Fade();
-            fade.setDuration(1000);
-            getWindow().setExitTransition(fade);
-            getWindow().setEnterTransition(fade);
 
-        }
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -58,7 +52,7 @@ public class SubjectDetail extends AppCompatActivity {
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(this, SubjectList.class)
                     .setData(CourseContract.SubjectEntry.buildSubjectWithID(lessonId));
-           intent.putExtra("CourseName", lessonName);
+            intent.putExtra("CourseName", lessonName);
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);

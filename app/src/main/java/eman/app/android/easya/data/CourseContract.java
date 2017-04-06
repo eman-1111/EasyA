@@ -88,7 +88,6 @@ public class CourseContract {
         public static final String COLUMN_LESSON_LINK = "lesson_link";
         public static final String COLUMN_LESSON_LINK_IMAGE = "lesson_link_image";
         public static final String COLUMN_LESSON_DEBUG = "lesson_debug";
-        public static final String COLUMN_LESSON_DEBUG_IMAGE= "lesson_debug_image";
         public static final String COLUMN_LESSON_PRACTICAL_TITLE= "lesson_practical_title";
         public static final String COLUMN_LESSON_PRACTICAL= "lesson_practical";
         public static final String COLUMN_LESSON_PRACTICAL_IMAGE= "lesson_practical_image";

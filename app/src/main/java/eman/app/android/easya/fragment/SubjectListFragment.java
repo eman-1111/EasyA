@@ -113,8 +113,8 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 getContext().getContentResolver().delete(CourseContract.SubjectEntry.CONTENT_URI,
-                                        CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ?",
-                                        new String[]{lessonName});
+                                        CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?",
+                                        new String[]{lessonId});
                                 removeItem(lessonId);
                             }
                         });

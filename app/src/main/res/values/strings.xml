@@ -14,6 +14,11 @@
     <string name="pref_sort_label">Sort By</string>
     <string name="pref_sort_key" translatable="false">sort_by</string>
     <string name="pref_sort_default" translatable="false">date</string>
+    <string name="save" >Save</string>
+    <string name="search" >Search</string>
+
+    <string name="gallery">Gallery</string>
+    <string name="photo">Take a photo</string>
     <string-array name="sort_type_name">
         <item>Favorite</item>
         <item>Date</item>

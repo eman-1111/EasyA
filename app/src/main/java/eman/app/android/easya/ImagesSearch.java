@@ -1,9 +1,12 @@
 package eman.app.android.easya;
 
+import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -23,6 +26,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,8 +46,8 @@ import eman.app.android.easya.adapter.ImageAdapter;
 public class ImagesSearch extends AppCompatActivity {
     ImageAdapter mImageAdapter;
     String searchValue;
-    String imageName,lessonID ;
     Bundle data;
+    Bitmap imageB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +58,6 @@ public class ImagesSearch extends AppCompatActivity {
         Intent intent = getIntent();
         data = intent.getExtras();
         searchValue = intent.getStringExtra("SearchValue");
-        imageName = intent.getStringExtra("imageName");
-        lessonID = intent.getStringExtra("CourseId");
 
         mImageAdapter = new ImageAdapter(this,R.layout.list_item_search, new ArrayList<Image>());
         GridView gridView = (GridView) findViewById(R.id.image_gridview);
@@ -110,7 +112,9 @@ public class ImagesSearch extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
 
                 // Perform search here!
+                Log.e("query","query: "+ query);
                 upDateSearch(query);
+
 
                 // Clear the text in search bar but (don't trigger a new search!)
                 //  searchView.setQuery("", false);
@@ -138,6 +142,7 @@ public class ImagesSearch extends AppCompatActivity {
 
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
+            Log.e("search", query);
             searchValue = query;
             upDateSearch(searchValue);
         }
@@ -151,6 +156,7 @@ public class ImagesSearch extends AppCompatActivity {
             if (result != null) {
                 mImageAdapter.clear();
                 mImageAdapter.addAll(result);
+                mImageAdapter.notifyDataSetChanged();
             }
         }
 
@@ -324,6 +330,24 @@ public class ImagesSearch extends AppCompatActivity {
         Picasso.with(this).load(image.getImage()).error(R.drawable.blue)
                 .into(imageIV);
 
+        Picasso.with(this).load(image.getImage())
+                .into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        imageIV.setImageBitmap(bitmap);
+                        imageB = bitmap;
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                    }
+                });
 
         // set dialog message
         alertDialogBuilder
@@ -332,7 +356,13 @@ public class ImagesSearch extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,int id) {
                                 //TODO MAKE IT HD
-                                startImageIIntent(image.getImageHD());
+                                if(imageB == null){
+                                    Picasso.with(ImagesSearch.this).load(image.getImage()).into(target);
+                                    startImageIIntent(imageB);
+                                }else{
+                                    startImageIIntent(imageB);
+                                }
+
 
                             }
                         })
@@ -351,27 +381,26 @@ public class ImagesSearch extends AppCompatActivity {
 
 
     }
-    public void startImageIIntent(String url) {
-        Intent intent;
 
-        if(imageName.equals("outlineImage")){
-            intent = new Intent(this, AddSubjectTitel.class);
-            intent.putExtra("outlineImage", url);
-        }else if(imageName.equals("linkImage")){
-            intent = new Intent(this, AddLessonDetail.class);
-            Log.e("LinkSearch",url);
-            intent.putExtra("linkImage", url);
-
-        }else if(imageName.equals("appImage")){
-            intent = new Intent(this, AddLessonDetail.class);
-            intent.putExtra("appImage", url);
-        }else{
-            intent = new Intent(this, SubjectList.class);
+    private Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            imageB = bitmap;
         }
-        intent.putExtra("CourseId", lessonID);
-        intent.putExtra("SavedStatue", "back");
-        intent.putExtras( data);
-        startActivity(intent);
+
+        @Override
+        public void onBitmapFailed(Drawable errorDrawable) {
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+        }
+    };
+    public void startImageIIntent(Bitmap imageB) {
+        Intent intent=new Intent();
+        intent.putExtra("data",imageB);
+        setResult(Activity.RESULT_OK,intent);
         finish();
+
     }
 }

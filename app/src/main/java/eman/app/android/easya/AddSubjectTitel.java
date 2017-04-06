@@ -68,8 +68,6 @@ public class AddSubjectTitel extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
@@ -114,8 +112,6 @@ public class AddSubjectTitel extends AppCompatActivity {
             public void onClick(View view) {
                 lessonName = lessonNameET.getText().toString();
                 lessonOverView = lessonOverViewET.getText().toString();
-
-
 
                 Log.e(LOG_TAG, lessonName + lessonOverView);
                 startDetailIntent();

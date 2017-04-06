@@ -252,7 +252,7 @@ public class AddLessonDetail extends AppCompatActivity implements View.OnClickLi
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL, lessonLifeApp);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE, lessonAppImage);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG, lessonDebugs);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG_IMAGE, lessonDebugsImage);
+
 //        String COURSE_ID, String LESSON_TITLE, String LESSON_OUTLINE,
 //                String LESSON_OUTLINE_IMAGE, String LESSON_LINK, String LESSON_LINK_IMAGE,
 //                String LESSON_DEBUG, String LESSON_DEBUG_IMAGE,

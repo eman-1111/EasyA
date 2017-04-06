@@ -56,7 +56,7 @@ public class ImageAdapter extends ArrayAdapter<Image> {
         }
 
 
-        Picasso.with(context).load(imageNor.getImageHD()).error(R.drawable.blue)
+        Picasso.with(context).load(imageNor.getImage()).error(R.drawable.blue)
                 .into(holder.imageView);
 
         return convertView;

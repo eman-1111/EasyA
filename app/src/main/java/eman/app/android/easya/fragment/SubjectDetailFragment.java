@@ -13,7 +13,6 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,11 +22,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
+import eman.app.android.easya.AddNewLesson;
 import eman.app.android.easya.AddSubjectTitel;
 import eman.app.android.easya.R;
 import eman.app.android.easya.data.CourseContract;
+import eman.app.android.easya.utils.Helper;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -40,14 +39,13 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
     private Menu menu;
 
-    ImageView outlineImage, linkImage, debugImage,appImage;
-    String teacherEmail,lessonName,lessonOutline,lessonLink,
-            lessonDebug, lessonPracticalTitle,lessonPractical;
+    ImageView outlineImage, linkImage, appImage;
+    String teacherEmail, lessonName, lessonOutline, lessonLink,
+            lessonDebug, lessonPracticalTitle, lessonPractical;
 
 
     private ShareActionProvider mShareActionProvider;
     private Uri mUri;
-    String outlineImageS;
     private static final int DETAIL_LOADER = 0;
 
     private static final String[] DETAIL_COLUMNS = {
@@ -63,7 +61,6 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             CourseContract.SubjectEntry.COLUMN_FAVORITE,
             CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
             CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG_IMAGE,
             CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE
     };
 
@@ -82,12 +79,11 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
     public static final int COL_LESSON_OUTLINE_IMAGE = 10;
     public static final int COL_LESSON_LINK_IMAGE = 11;
-    public static final int COL_LESSON_DEBUG_IMAGE = 12;
-    public static final int COL_LESSON_PRACTICAL_IMAGE= 13;
+    public static final int COL_LESSON_PRACTICAL_IMAGE = 12;
     int favorite = 0;
 
-    private TextView mLessonLink,  mLessonDebug, mLessonPracticalTitle, mLessonPractical,
-            mLessonOutline, mLink,  mDebug;
+    private TextView mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
+            mLessonOutline, mLink, mDebug;
 
     CollapsingToolbarLayout collapsingToolbar;
 
@@ -104,7 +100,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_detail, container, false);
-        Toolbar toolbar = (Toolbar)rootView.findViewById(R.id.toolbars);
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbars);
 
 
         // Set Collapsing Toolbar layout to the screen
@@ -115,7 +111,6 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
         return rootView;
     }
-
 
 
     @Override
@@ -130,7 +125,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         // Inflate the menu; this adds items to the action bar if it is present.
         this.menu = menu;
         inflater.inflate(R.menu.menu_subject_detail, menu);
-        if(favorite == 1){
+        if (favorite == 1) {
             MenuItem favItem = menu.findItem(R.id.action_favorite);
             favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_white_24dp));
         }
@@ -155,11 +150,9 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_edit) {
-            Intent intent = new Intent(getActivity(), AddSubjectTitel.class);
+            Intent intent = new Intent(getActivity(), AddNewLesson.class);
             intent.putExtra("LessonURL", mUri.toString());
-            intent.putExtra("lessonOverView",lessonOutline);
-            intent.putExtra("lessonName", lessonName);
-            intent.putExtra("outlineImage",outlineImageS);
+            intent.putExtra("CourseId", CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
 
             startActivity(intent);
         } else if (id == R.id.action_favorite) {
@@ -226,12 +219,12 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             collapsingToolbar.setTitle(lessonName);
             lessonLink = data.getString(COL_LESSON_LINK);
             mLessonLink.setText(lessonLink);
-            if(mLessonLink.equals("")){
+            if (mLessonLink.equals("")) {
                 mLink.setText("");
             }
 
             lessonDebug = data.getString(COL_LESSON_DEBUG);
-            if(lessonDebug.equals("")){
+            if (lessonDebug.equals("")) {
                 mDebug.setText("");
             }
             mLessonDebug.setText(lessonDebug);
@@ -248,39 +241,16 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             teacherEmail = data.getString(COL_LESSON_OUTLINE);
 
 
-            outlineImageS = data.getString(COL_LESSON_OUTLINE_IMAGE);
-            if(outlineImageS == null){
-               outlineImageS = "l";
+            byte[] outlineImageB = data.getBlob(COL_LESSON_OUTLINE_IMAGE);
+            byte[] linkImageB = data.getBlob(COL_LESSON_LINK_IMAGE);
+            byte[] appImageB = data.getBlob(COL_LESSON_PRACTICAL_IMAGE);
+            if (outlineImageB != null)
+                outlineImage.setImageBitmap(Helper.getImage(outlineImageB));
+            if (linkImageB != null)
+                linkImage.setImageBitmap(Helper.getImage(linkImageB));
+            if (appImageB != null)
+                appImage.setImageBitmap(Helper.getImage(appImageB));
 
-            }
-
-            Log.e(LOG_TAG,outlineImageS);
-            Picasso.with(getActivity()).load(outlineImageS)
-                    .error(R.drawable.rock).into(outlineImage);
-            String linkImageS = data.getString(COL_LESSON_LINK_IMAGE);
-
-            if(!linkImageS.equals("l")){
-                Picasso.with(getActivity()).load(linkImageS)
-                        .error(R.drawable.rock).into(linkImage);
-                Log.e(LOG_TAG,linkImageS);
-            }
-
-
-            String debugImageS = data.getString(COL_LESSON_DEBUG_IMAGE);
-            if(!debugImageS.equals("l")){
-                Picasso.with(getActivity()).load(debugImageS)
-                        .error(R.drawable.rock).into(debugImage);
-                Log.e(LOG_TAG,debugImageS);
-            }
-
-
-            String appImageS = data.getString(COL_LESSON_PRACTICAL_IMAGE);
-            if(!appImageS.equals("l")){
-                Picasso.with(getActivity()).load(appImageS)
-                        .error(R.drawable.rock).into(appImage);
-                Log.e(LOG_TAG,appImageS);
-
-            }
 
             favorite = data.getInt(COL_FAVORITE);
 
@@ -299,11 +269,12 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_EMAIL, teacherEmail);
         shareIntent.putExtra(Intent.EXTRA_SUBJECT, lessonName);
-        shareIntent.putExtra(Intent.EXTRA_TEXT, "Link \n" + "   "+ lessonLink + "\n" +
-                "\n Debug \n" +  "   "+ lessonDebug + "\n" +
-                "\n" + lessonPracticalTitle + "\n" + "   "+  lessonPractical);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, "Link \n" + "   " + lessonLink + "\n" +
+                "\n Debug \n" + "   " + lessonDebug + "\n" +
+                "\n" + lessonPracticalTitle + "\n" + "   " + lessonPractical);
         return shareIntent;
     }
+
     private void setUpIds(View rootView) {
         mLessonLink = (TextView) rootView.findViewById(R.id.lesson_linkx_content_tv);
         mLink = (TextView) rootView.findViewById(R.id.lesson_linkx_d_tv);
@@ -314,7 +285,6 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         mLessonOutline = (TextView) rootView.findViewById(R.id.lesson_overview_content_tv);
 
         linkImage = (ImageView) rootView.findViewById(R.id.link_iv);
-        debugImage = (ImageView) rootView.findViewById(R.id.debug_iv);
         appImage = (ImageView) rootView.findViewById(R.id.app_iv);
         outlineImage = (ImageView) rootView.findViewById(R.id.outlook_iv);
 

@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import eman.app.android.easya.R;
 import eman.app.android.easya.data.CourseContract;
 import eman.app.android.easya.fragment.SubjectListFragment;
+import eman.app.android.easya.utils.Helper;
 
 /**
  * Created by eman_ashour on 4/23/2016.
@@ -25,7 +26,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
 
 
     final private Context mContext;
-    private Cursor mCursor;
+    private Cursor mCursor ;
     final private SubjectAdapterOnClickHolder mClickHolder;
     ColorGenerator generator = ColorGenerator.MATERIAL;
 
@@ -115,9 +116,12 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
         String practical_title_Name = mCursor.getString(SubjectListFragment.COL_LESSON_LINK);
         subjectAdapterViewHolder.practicalLink.setText(practical_title_Name);
 
+        byte[] image = mCursor.getBlob(SubjectListFragment.COL_LESSON_OUTLINE_IMAGE);
+        if(image != null){
+        subjectAdapterViewHolder.lessonImage.setImageBitmap(Helper.getImage(image));}
 
-        Picasso.with(mContext).load(mCursor.getString(SubjectListFragment.COL_LESSON_OUTLINE_IMAGE))
-                .error(R.drawable.air_plan).into(subjectAdapterViewHolder.lessonImage);
+//        Picasso.with(mContext).load()
+//                .error(R.drawable.air_plan).into(subjectAdapterViewHolder.lessonImage);
 
     }
 

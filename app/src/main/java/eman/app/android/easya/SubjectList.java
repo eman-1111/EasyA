@@ -30,20 +30,9 @@ public class SubjectList extends AppCompatActivity implements SubjectListFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subject_list);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Slide slide = new Slide();
-            slide.setSlideEdge(Gravity.BOTTOM);
-            slide.setDuration(1000);
 
-            getWindow().setEnterTransition(slide);
-            Fade fade = new Fade();
-            slide.setDuration(1000);
-            getWindow().setExitTransition(fade);
-
-        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         //ImageSyncAdapter.initializeSyncAdapter(this);
 
