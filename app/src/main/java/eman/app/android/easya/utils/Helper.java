@@ -22,4 +22,11 @@ public class Helper {
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
+
+    public static Bitmap getImageCompress(Bitmap image) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.JPEG, 0, bytes);
+        byte[] bitmapdata = bytes.toByteArray();
+        return BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+    }
 }

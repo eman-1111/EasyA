@@ -1,25 +1,21 @@
 package eman.app.android.easya.fragment;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -29,11 +25,10 @@ import android.widget.LinearLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import eman.app.android.easya.AddNewLesson;
-import eman.app.android.easya.AddSubjectTitel;
 import eman.app.android.easya.ImagesSearch;
 import eman.app.android.easya.R;
 import eman.app.android.easya.interfacee.SaveLesson;
+import eman.app.android.easya.utils.Helper;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -102,14 +97,12 @@ public class SummaryFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(LOG_TAG, "onResume");
         outlineImage.setImageBitmap(thumbnail);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        Log.e(LOG_TAG, "onPause");
 
     }
 
@@ -219,15 +212,16 @@ public class SummaryFragment extends Fragment {
                     thumbnail = null;
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
 
+                    Log.e(LOG_TAG, "camera: " +thumbnail.getByteCount());
+
+                    if(thumbnail.getByteCount() > 1000000){
+                        thumbnail = Helper.getImageCompress(thumbnail);
+                        Log.e(LOG_TAG, "cameraA: " +thumbnail.getByteCount());
+                    }
                     if (thumbnail != null) {
                         outlineImage.setImageBitmap(thumbnail);
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
-                        byte[] byteArrayImage = baos.toByteArray();
-                        String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+
 
                     }
                     break;
@@ -241,16 +235,19 @@ public class SummaryFragment extends Fragment {
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
+                            Log.e(LOG_TAG, "gallary: " +thumbnail.getByteCount());
+
+                            if(thumbnail.getByteCount() > 100000){
+                                thumbnail = Helper.getImageCompress(thumbnail);
+                                Log.e(LOG_TAG, "gallaryA: " +thumbnail.getByteCount());
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                     if (thumbnail != null) {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
                         outlineImage.setImageBitmap(thumbnail);
-                        byte[] byteArrayImage = baos.toByteArray();
-                        String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+
 
                     }
                 }
@@ -259,12 +256,9 @@ public class SummaryFragment extends Fragment {
                 if (resultCode == RESULT_OK) {
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                    Log.e(LOG_TAG, "imageSearch");
+                    Log.e(LOG_TAG, "Search: " +thumbnail.getByteCount());
 
                     if (thumbnail != null) {
-                        Log.e(LOG_TAG, "imageSearchNot null");
                         outlineImage.setImageBitmap(thumbnail);
                     }
                 }

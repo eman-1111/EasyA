@@ -1,7 +1,6 @@
 package eman.app.android.easya.fragment;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -16,9 +15,6 @@ import android.support.v7.app.AlertDialog;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -28,16 +24,15 @@ import android.widget.LinearLayout;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import eman.app.android.easya.AddLessonDetail;
 import eman.app.android.easya.ImagesSearch;
 import eman.app.android.easya.R;
-import eman.app.android.easya.interfacee.SaveLesson;
+import eman.app.android.easya.utils.Helper;
 
 import static android.app.Activity.RESULT_OK;
 
 public class ApplyFragment extends Fragment implements View.OnClickListener{
 
-    private static final String LOG_TAG = AddLessonDetail.class.getSimpleName();
+    private static final String LOG_TAG = ApplyFragment.class.getSimpleName();
 
     TextInputLayout inputLayoutAppTitle, inputLayoutApp;
     public static  EditText  lessonLifeAppTitle, lessonLifeApp;
@@ -131,7 +126,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onResume() {
         super.onResume();
-        Log.e(LOG_TAG, "onResume");
+
         imageApp.setImageBitmap(thumbnail);
         lessonLifeAppTitle.setText(lessonAppTitle);
         lessonLifeApp.setText(lessonApp);
@@ -140,7 +135,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onPause() {
         super.onPause();
-        Log.e(LOG_TAG, "onPause");
+
 
     }
 
@@ -246,15 +241,16 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
                     thumbnail = null;
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
 
+                    Log.e(LOG_TAG, "camera: " +thumbnail.getByteCount());
+
+                    if(thumbnail.getByteCount() > 1000000){
+                        thumbnail = Helper.getImageCompress(thumbnail);
+
+                    }
                     if (thumbnail != null) {
                         imageApp.setImageBitmap(thumbnail);
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
-                        byte[] byteArrayImage = baos.toByteArray();
-                        String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+
 
                     }
                     break;
@@ -268,16 +264,19 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
+                            Log.e(LOG_TAG, "gallary: " +thumbnail.getByteCount());
+
+                            if(thumbnail.getByteCount() > 100000){
+                                thumbnail = Helper.getImageCompress(thumbnail);
+
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                     }
                     if (thumbnail != null) {
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
                         imageApp.setImageBitmap(thumbnail);
-                        byte[] byteArrayImage = baos.toByteArray();
-                        String encodedImage = Base64.encodeToString(byteArrayImage, Base64.DEFAULT);
+
 
                     }
                 }
@@ -286,12 +285,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
                 if (resultCode == RESULT_OK) {
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    thumbnail.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
-                    Log.e(LOG_TAG, "imageSearch");
+                    Log.e(LOG_TAG, "Search: " +thumbnail.getByteCount());
 
                     if (thumbnail != null) {
-                        Log.e(LOG_TAG, "imageSearchNot null");
                         imageApp.setImageBitmap(thumbnail);
                     }
                 }
@@ -300,6 +296,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
         }
 
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {

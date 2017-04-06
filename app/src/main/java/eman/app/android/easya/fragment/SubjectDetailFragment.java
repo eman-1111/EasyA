@@ -23,7 +23,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import eman.app.android.easya.AddNewLesson;
-import eman.app.android.easya.AddSubjectTitel;
 import eman.app.android.easya.R;
 import eman.app.android.easya.data.CourseContract;
 import eman.app.android.easya.utils.Helper;

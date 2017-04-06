@@ -44,13 +44,6 @@
             android:parentActivityName=".CoursesList"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".AddSubjectTitel"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".AddLessonDetail"
-            android:parentActivityName=".AddSubjectTitel"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".SubjectDetail"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
