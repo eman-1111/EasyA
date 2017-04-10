@@ -2,6 +2,7 @@ package eman.app.android.easya.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,14 +36,14 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         public final ImageView teacherImage;
         public final TextView coursName;
         public final TextView teacherName;
-        public final RelativeLayout listItemCours;
+        public final CardView listItemCours;
 
         public CourseAdapterViewHolder(View view) {
             super(view);
             teacherImage = (ImageView) view.findViewById(R.id.teacher_photo_img);
             teacherName = (TextView) view.findViewById(R.id.teacher_name_txt);
             coursName = (TextView) view.findViewById(R.id.course_name_txt);
-            listItemCours = (RelativeLayout) view.findViewById(R.id.list_item_cours);
+            listItemCours = (CardView) view.findViewById(R.id.card_view);
             view.setOnClickListener(this);
             view.setOnLongClickListener(this);
         }
@@ -101,40 +102,38 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     @Override
     public void onBindViewHolder(final CourseAdapterViewHolder courseAdapterViewHolder, int position) {
-        int[] rainbow = mContext.getResources().getIntArray(R.array.rainbow);
-        int color = 0;
+//        int[] rainbow = mContext.getResources().getIntArray(R.array.rainbow);
+//        int color = 0;
+//
+//        mCursor.moveToPosition(position);
+//        if (position > 3) {
+//            color = position - 3;
+//        } else {
+//            color = position;
+//        }
 
-        mCursor.moveToPosition(position);
-        if (position > 10) {
-            color = position - 10;
-        } else {
-            color = position;
-        }
 
-        courseAdapterViewHolder.listItemCours.setBackgroundColor(rainbow[color]);
         int courseId = mCursor.getInt(CourseListFragment.COL_COURSE_ID);
         String teacherPhotoURL = mCursor.getString(CourseListFragment.COL_TEACHER_PHOTO_URL);
         int image = 0;
 
         if (position == 0 || position % 4 == 0) {
             image = R.drawable.panda;
+            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse1b));
         } else if (position == 1 || position % 4 == 1) {
             image = R.drawable.blue;
+            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse2b));
         } else if (position == 2 || position % 4 == 2) {
             image = R.drawable.cat;
+            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse4b));
         } else if (position == 3 || position % 4 == 3) {
+            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse3b));
             image = R.drawable.monstor;
-        } else if (position == 4 || position % 4 == 3) {
-            image = R.drawable.rappet;
-        } else {
+        }  else {
+            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse3b));
             image = R.drawable.rana;
         }
 
-//        Glide.with(mContext)
-//                .load(teacherPhotoURL)
-//                .error(image)
-//                .transform(new CircleTransform(mContext))
-//                .into(courseAdapterViewHolder.teacherImage);
 
         Picasso.with(mContext).load(teacherPhotoURL).error(image).
         into(courseAdapterViewHolder.teacherImage);

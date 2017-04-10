@@ -71,14 +71,7 @@ public class SubjectList extends AppCompatActivity implements SubjectListFragmen
             Log.e("subjectlist","phon");
             mTwoPane = false;
         }
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        assert fab != null;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startIntent();
-            }
-        });
+
 
 
     }
@@ -92,12 +85,15 @@ public class SubjectList extends AppCompatActivity implements SubjectListFragmen
 
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingActivity.class));
             return true;
         }
-
+        if (id == R.id.btn_add_menu) {
+            startIntent();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

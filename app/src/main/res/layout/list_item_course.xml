@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/list_item_hight"
     android:background="@drawable/shadow"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
@@ -11,18 +11,13 @@
     card_view:cardCornerRadius="2dp"
     android:elevation="2dp">
 
-    <RelativeLayout
-        android:id="@+id/list_item_cours"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/list_item_hight"
-        android:background="@drawable/touch_selector">
+
 
 
         <TextView
             android:id="@+id/course_name_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginBottom="@dimen/et_padding_add"
             android:layout_marginLeft="@dimen/et_padding_add"
             android:layout_marginRight="@dimen/et_padding_add"
@@ -38,7 +33,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
+            android:layout_gravity="bottom"
             android:layout_marginBottom="@dimen/et_padding_add"
             android:layout_marginLeft="@dimen/et_padding_add"
             android:layout_marginRight="@dimen/et_padding_add"
@@ -54,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_gravity="center"
+            android:layout_gravity="end|bottom"
             android:layout_marginBottom="@dimen/et_padding_add"
             android:layout_marginLeft="@dimen/et_padding_add"
             android:layout_marginRight="@dimen/et_padding_add"
@@ -74,5 +69,4 @@
                 android:scaleType="centerCrop" />
 
         </FrameLayout>
-    </RelativeLayout>
 </android.support.v7.widget.CardView>

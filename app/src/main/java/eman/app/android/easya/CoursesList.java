@@ -11,26 +11,38 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import eman.app.android.easya.data.CourseContract;
 
@@ -80,12 +92,19 @@ public class CoursesList extends AppCompatActivity
     private SharedPreferences.Editor mSharedPrefEditor;
 
     private static final String[] SCOPES2 = {ClassroomScopes.CLASSROOM_COURSES_READONLY,
-           ClassroomScopes.CLASSROOM_ROSTERS};
-
+            ClassroomScopes.CLASSROOM_ROSTERS};
 
 
     private GoogleApiClient client;
+
     MakeRequestTask mMakeRequestTask;
+
+    private NavigationView navigationView;
+    private DrawerLayout drawer;
+    private View navHeader;
+    private ImageView  imgProfile;
+    private TextView txtName;
+    private Toolbar toolbar;
 
     /**
      * Create the main activity.
@@ -100,9 +119,11 @@ public class CoursesList extends AppCompatActivity
 
 
         setContentView(R.layout.courses_list);
+        // load nav menu header data
+        loadNavHeader();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        // initializing navigation menu
+        setUpNavigationView();
 
 
         mErrorText = (TextView) findViewById(R.id.error_tv);
@@ -111,6 +132,8 @@ public class CoursesList extends AppCompatActivity
         mProgress.setMessage("Loading your courses ...");
 
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES2))
@@ -123,14 +146,7 @@ public class CoursesList extends AppCompatActivity
             e.printStackTrace();
         }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        assert fab != null;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startDialog(view);
-            }
-        });
+
         client.connect();
     }
 
@@ -166,7 +182,6 @@ public class CoursesList extends AppCompatActivity
             mMakeRequestTask = (MakeRequestTask) new MakeRequestTask(mCredential).execute();
         }
     }
-
 
 
     /**
@@ -376,8 +391,6 @@ public class CoursesList extends AppCompatActivity
     }
 
 
-
-
     /**
      * An asynchronous task that handles the Classroom API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
@@ -413,7 +426,8 @@ public class CoursesList extends AppCompatActivity
                 mLastError = e;
                 cancel(true);
                 return null;
-            }return null;
+            }
+            return null;
         }
 
         /**
@@ -550,7 +564,6 @@ public class CoursesList extends AppCompatActivity
                     courseValues);
 
 
-
             // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
             courseID = ContentUris.parseId(insertedUri);
         }
@@ -561,7 +574,7 @@ public class CoursesList extends AppCompatActivity
     }
 
 
-    protected void startDialog(final View view) {
+    protected void startDialog() {
 
 
         LayoutInflater li = LayoutInflater.from(this);
@@ -589,7 +602,7 @@ public class CoursesList extends AppCompatActivity
                                 int random = randomGenerator.nextInt(8964797);
                                 String courseId = "user" + random;
                                 if (courseNameET.getText().toString().trim().isEmpty()) {
-                                    Snackbar.make(view, "Please fill in the course name",
+                                    Snackbar.make(drawer, "Please fill in the course name",
                                             Snackbar.LENGTH_LONG).show();
 
                                 } else {
@@ -614,6 +627,118 @@ public class CoursesList extends AppCompatActivity
 
 
     }
+
+    private void loadNavHeader() {
+
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        // Navigation view header
+        navHeader = navigationView.getHeaderView(0);
+        txtName = (TextView) navHeader.findViewById(R.id.name);
+        imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
+
+//        // showing dot next to notifications label
+//        navigationView.getMenu().getItem(3).setActionView(R.layout.menu_dot);
+    }
+    private void setUpNavigationView() {
+        //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+
+            // This method will trigger on item Click of navigation menu
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                //Check to see which item was being clicked and perform appropriate action
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_about:
+                        Toast.makeText(CoursesList.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                        drawer.closeDrawers();
+                        return true;
+                    case R.id.nav_friends:
+                        Toast.makeText(CoursesList.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                        drawer.closeDrawers();
+                        return true;
+                    default:
+                }
+
+                //Checking if the item is in checked state or not, if not make it in checked state
+                if (menuItem.isChecked()) {
+                    menuItem.setChecked(false);
+                } else {
+                    menuItem.setChecked(true);
+                }
+                menuItem.setChecked(true);
+
+
+                return true;
+            }
+        });
+
+
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawer, toolbar,
+                R.string.drawer_open, R.string.drawer_open) {
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        //Setting the actionbarToggle to drawer layout
+        drawer.setDrawerListener(actionBarDrawerToggle);
+
+        //calling sync state is necessary or else your hamburger icon wont show up
+        actionBarDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawers();
+            return;
+        }
+
+        super.onBackPressed();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu_add, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.btn_add_menu) {
+            startDialog();
+            return true;
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
+
 }
 
 

@@ -17,6 +17,12 @@
     <string name="save" >Save</string>
     <string name="search" >Search</string>
 
+    <string name="about" >About</string>
+    <string name="friends" >Friends</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
     <string name="gallery">Gallery</string>
     <string name="photo">Take a photo</string>
     <string-array name="sort_type_name">
