@@ -656,6 +656,9 @@ public class CoursesList extends AppCompatActivity
 
                 //Check to see which item was being clicked and perform appropriate action
                 switch (menuItem.getItemId()) {
+                    case R.id.nav_home:
+                        drawer.closeDrawers();
+                        return true;
                     case R.id.nav_about:
                         Toast.makeText(CoursesList.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
                         drawer.closeDrawers();
