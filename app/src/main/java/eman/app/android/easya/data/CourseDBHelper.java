@@ -49,7 +49,7 @@ public class CourseDBHelper  extends SQLiteOpenHelper {
                 CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE + " BLOB , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG + " TEXT ," +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE + " TEXT , " +
-                CourseContract.SubjectEntry.COLUMN_FAVORITE + " INTEGER , " +
+                CourseContract.SubjectEntry.COLUMN_FAVORITE + " TEXT , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE + " BLOB , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL + " TEXT , " +
 

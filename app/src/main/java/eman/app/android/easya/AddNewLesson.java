@@ -353,7 +353,7 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
                     new String[]{oldLessonName});
 
         } else {
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, 0);
+            courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, "0");
             //  Log.e("Key Subject", userKey);
 
             this.getContentResolver().insert(

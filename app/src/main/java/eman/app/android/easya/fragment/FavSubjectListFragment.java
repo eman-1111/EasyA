@@ -3,38 +3,36 @@ package eman.app.android.easya.fragment;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
 import eman.app.android.easya.R;
-import eman.app.android.easya.adapter.SubjectAdapter;
+import eman.app.android.easya.adapter.SubjectFavAdapter;
 import eman.app.android.easya.data.CourseContract;
 
-
 /**
- * A placeholder fragment containing a simple view.
+ * Created by Eman on 4/11/2017.
  */
-public class SubjectListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+public class FavSubjectListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = SubjectListFragment.class.getSimpleName();
     public static final String SUBJECT_URI = "URIS";
     private Uri mUri;
     TextView emptyView;
 
-    public SubjectListFragment() {
+    public FavSubjectListFragment() {
     }
 
 
@@ -44,12 +42,12 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
 
     // RecyclerView mRecyclerView;
     RecyclerView mRecyclerView;
-    private SubjectAdapter mSubjectAdapter;
+    private SubjectFavAdapter mSubjectFavAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
 
 
     private static final String SELECTED_KEY = "selected_position";
-    private static final int COURSE_LOADER = 1;
+    private static final int COURSE_LOADER = 2;
 
     private static final String[] SUBJECT_COLUMNS = {
 
@@ -57,7 +55,8 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
             CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
             CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE
+            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
+            CourseContract.SubjectEntry.COLUMN_FAVORITE
     };
 
     public static final int COL_COURSE_ID = 0;
@@ -65,6 +64,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
     public static final int COL_LESSON_LINK = 2;
     public static final int COL_COURSE_NAME = 3;
     public static final int COL_LESSON_OUTLINE_IMAGE = 4;
+    public static final int COL_LESSON_FAV= 5;
 
 
     @Override
@@ -97,11 +97,11 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
 
         mRecyclerView.setHasFixedSize(true);
 
-        mSubjectAdapter = new SubjectAdapter(getActivity(), new SubjectAdapter.SubjectAdapterOnClickHolder() {
+        mSubjectFavAdapter = new SubjectFavAdapter(getActivity(), new SubjectFavAdapter.SubjectFavAdapterOnClickHolder() {
             @Override
-            public void onClick(String id, String lessonTitle, SubjectAdapter.SubjectAdapterViewHolder vh) {
+            public void onClick(String id, String lessonTitle, SubjectFavAdapter.SubjectFavAdapterViewHolder vh) {
                 Uri uri = CourseContract.SubjectEntry.buildCourseWithIDAndTitle(id, lessonTitle);
-                ((Callback) getActivity())
+                ((SubjectListFragment.Callback) getActivity())
                         .onItemSelected(uri);
                 mPosition = vh.getAdapterPosition();
             }
@@ -124,7 +124,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
                 return false;
             }
         });
-        mRecyclerView.setAdapter(mSubjectAdapter);
+        mRecyclerView.setAdapter(mSubjectFavAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
             // swapout in onLoadFinished.
@@ -158,7 +158,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         if (null != mUri) {
 
             String sortOrder;
-            if (SubjectAdapter.getSortBy(getActivity()).equals("date")) {
+            if (SubjectFavAdapter.getSortBy(getActivity()).equals("date")) {
                 sortOrder = null;
             } else {
                 sortOrder = CourseContract.SubjectEntry.COLUMN_FAVORITE + " DESC";
@@ -166,25 +166,23 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
 
             // Now create and return a CursorLoader that will take care of
             // creating a Cursor for the data being displayed.
-            return new CursorLoader(
-                    getActivity(),
-                    mUri,
+            return new CursorLoader(getActivity(), mUri,
                     SUBJECT_COLUMNS,
-                    null,
-                    null,
-                    sortOrder
-            );
+                    CourseContract.SubjectEntry.COLUMN_FAVORITE + " = ?",
+                    new String[]{"1"},
+                    null);
         }
         return null;
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mSubjectAdapter.swapCursor(data);
+        mSubjectFavAdapter.swapCursor(data);
 
         if (data != null && data.moveToFirst()) {
-            getActivity().setTitle(data.getString(SubjectListFragment.COL_COURSE_NAME));
+            getActivity().setTitle(data.getString(FavSubjectListFragment.COL_COURSE_NAME));
             emptyView.setText("");
+
         } else {
             emptyView.setText("The lesson you will add, will show up here, so add some");
         }
@@ -200,7 +198,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
-        mSubjectAdapter.swapCursor(null);
+        mSubjectFavAdapter.swapCursor(null);
 
     }
 

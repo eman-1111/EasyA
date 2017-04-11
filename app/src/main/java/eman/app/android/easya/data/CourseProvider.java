@@ -27,46 +27,65 @@ public class CourseProvider extends ContentProvider {
 
     private static final SQLiteQueryBuilder sCouseWithSubjectSettingQueryBuilder;
 
-    static{
+    static {
         sCouseWithSubjectSettingQueryBuilder = new SQLiteQueryBuilder();
 
 
         sCouseWithSubjectSettingQueryBuilder.setTables(
                 CourseContract.CourseEntry.TABLE_NAME + " INNER JOIN " +
                         CourseContract.SubjectEntry.TABLE_NAME +
-                        " ON " +  CourseContract.CourseEntry.TABLE_NAME +
-                        "." +  CourseContract.CourseEntry.COLUMN_COURSE_ID +
+                        " ON " + CourseContract.CourseEntry.TABLE_NAME +
+                        "." + CourseContract.CourseEntry.COLUMN_COURSE_ID +
                         " = " + CourseContract.SubjectEntry.TABLE_NAME +
-                        "." +  CourseContract.SubjectEntry.COLUMN_COURSE_ID);
+                        "." + CourseContract.SubjectEntry.COLUMN_COURSE_ID);
     }
 
     private static final String sCourseID =
-            CourseContract.SubjectEntry.TABLE_NAME+
+            CourseContract.SubjectEntry.TABLE_NAME +
                     "." + CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ? ";
 
     private static final String sSubjectWithTitle =
-              CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?  AND " +
+            CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?  AND " +
                     CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ";
 
+    private static final String sSubjectWithFav =
+            CourseContract.SubjectEntry.TABLE_NAME +
+                    "." + CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?  AND " +
+                    CourseContract.SubjectEntry.COLUMN_FAVORITE + " = ?";
 
-    private Cursor getCourseWithID(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getCourseWithID(Uri uri, String[] projection, String sortOrder,
+                                   String selection, String[] selectionArgs) {
+
         String course_Id = CourseContract.SubjectEntry.getSubjectIdFromUri(uri);
+        if (selection != null) {
+            String fav = "1";
+            return sCouseWithSubjectSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                    projection,
+                    sSubjectWithFav,
+                    new String[]{course_Id, fav},
+                    null,
+                    null,
+                    sortOrder
+            );
+        } else {
+            return sCouseWithSubjectSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                    projection,
+                    sCourseID,
+                    new String[]{course_Id},
+                    null,
+                    null,
+                    sortOrder
+            );
 
-        return sCouseWithSubjectSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                sCourseID,
-                new String[]{course_Id},
-                null,
-                null,
-                sortOrder
-        );
+        }
+
     }
-
 
 
     private Cursor getSubjectWithTitle(Uri uri, String[] projection, String sortOrder) {
         String course_Id = CourseContract.SubjectEntry.getSubjectIdFromUri(uri);
         String title = CourseContract.SubjectEntry.getSubjectTitleFromUri(uri);
+
 
         return sCouseWithSubjectSettingQueryBuilder.query(mOpenHelper.getReadableDatabase(),
                 projection,
@@ -76,6 +95,8 @@ public class CourseProvider extends ContentProvider {
                 null,
                 sortOrder
         );
+
+
     }
 
 
@@ -137,9 +158,8 @@ public class CourseProvider extends ContentProvider {
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             // "course/*
-            case SUBJECT_WITH_ID:
-            {
-                retCursor = getCourseWithID(uri, projection, sortOrder);
+            case SUBJECT_WITH_ID: {
+                retCursor = getCourseWithID(uri, projection, sortOrder, selection, selectionArgs);
                 break;
             }
 
@@ -157,8 +177,7 @@ public class CourseProvider extends ContentProvider {
                 break;
             }
             // "subject/*/*
-            case SUBJECT_WITH_TITLE:
-            {
+            case SUBJECT_WITH_TITLE: {
                 retCursor = getSubjectWithTitle(uri, projection, sortOrder);
                 break;
             }
@@ -186,7 +205,6 @@ public class CourseProvider extends ContentProvider {
     }
 
 
-
     /*
         Student: Add the ability to insert Locations to the implementation of this function.
      */
@@ -199,7 +217,7 @@ public class CourseProvider extends ContentProvider {
         switch (match) {
             case COURSE: {
                 long _id = db.insert(CourseContract.CourseEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = CourseContract.CourseEntry.buildCourseUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -207,7 +225,7 @@ public class CourseProvider extends ContentProvider {
             }
             case SUBJECT: {
                 long _id = db.insert(CourseContract.SubjectEntry.TABLE_NAME, null, values);
-                if ( _id > 0 )
+                if (_id > 0)
                     returnUri = CourseContract.SubjectEntry.buildSubjectUri(_id);
                 else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
@@ -227,7 +245,7 @@ public class CourseProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         int rowsDeleted;
         // this makes delete all rows return the number of rows deleted
-        if ( null == selection ) selection = "1";
+        if (null == selection) selection = "1";
         switch (match) {
             case COURSE:
                 rowsDeleted = db.delete(
@@ -246,7 +264,6 @@ public class CourseProvider extends ContentProvider {
         }
         return rowsDeleted;
     }
-
 
 
     @Override

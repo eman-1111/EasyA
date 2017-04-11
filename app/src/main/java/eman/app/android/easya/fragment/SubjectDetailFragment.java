@@ -160,7 +160,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             if (favorite == 0) {
                 favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_white_24dp));
                 ContentValues favorite = new ContentValues();
-                favorite.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, 1);
+                favorite.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, "1");
                 getActivity().getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
                         favorite,
                         CourseContract.SubjectEntry.TABLE_NAME +
@@ -169,7 +169,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             } else {
                 favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
                 ContentValues favorite = new ContentValues();
-                favorite.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, 0);
+                favorite.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, "0");
 
                 getActivity().getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
                         favorite,
@@ -251,7 +251,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
                 appImage.setImageBitmap(Helper.getImage(appImageB));
 
 
-            favorite = data.getInt(COL_FAVORITE);
+            favorite = Integer.parseInt(data.getString(COL_FAVORITE));
 
         }
     }
