@@ -102,17 +102,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     @Override
     public void onBindViewHolder(final CourseAdapterViewHolder courseAdapterViewHolder, int position) {
-//        int[] rainbow = mContext.getResources().getIntArray(R.array.rainbow);
-//        int color = 0;
-//
-//        mCursor.moveToPosition(position);
-//        if (position > 3) {
-//            color = position - 3;
-//        } else {
-//            color = position;
-//        }
-
-
+        mCursor.moveToPosition(position);
         int courseId = mCursor.getInt(CourseListFragment.COL_COURSE_ID);
         String teacherPhotoURL = mCursor.getString(CourseListFragment.COL_TEACHER_PHOTO_URL);
         int image = 0;
@@ -136,7 +126,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
 
         Picasso.with(mContext).load(teacherPhotoURL).error(image).
-        into(courseAdapterViewHolder.teacherImage);
+                into(courseAdapterViewHolder.teacherImage);
 
         String courseName = mCursor.getString(CourseListFragment.COL_COURSE_NAME);
         courseAdapterViewHolder.coursName.setText(courseName);

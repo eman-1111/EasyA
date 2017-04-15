@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -48,6 +49,7 @@ public class ImagesSearch extends AppCompatActivity {
     String searchValue;
     Bundle data;
     Bitmap imageB;
+    LinearLayout linlaHeaderProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,7 @@ public class ImagesSearch extends AppCompatActivity {
         Intent intent = getIntent();
         data = intent.getExtras();
         searchValue = intent.getStringExtra("SearchValue");
-
+        linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
         mImageAdapter = new ImageAdapter(this,R.layout.list_item_search, new ArrayList<Image>());
         GridView gridView = (GridView) findViewById(R.id.image_gridview);
         gridView.setAdapter(mImageAdapter);
@@ -157,7 +159,14 @@ public class ImagesSearch extends AppCompatActivity {
                 mImageAdapter.clear();
                 mImageAdapter.addAll(result);
                 mImageAdapter.notifyDataSetChanged();
+                linlaHeaderProgress.setVisibility(View.GONE);
             }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            // SHOW THE SPINNER WHILE LOADING FEEDS
+            linlaHeaderProgress.setVisibility(View.VISIBLE);
         }
 
         @Override

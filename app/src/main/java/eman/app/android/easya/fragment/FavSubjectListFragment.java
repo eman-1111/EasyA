@@ -180,7 +180,7 @@ public class FavSubjectListFragment extends Fragment implements LoaderManager.Lo
         mSubjectFavAdapter.swapCursor(data);
 
         if (data != null && data.moveToFirst()) {
-            getActivity().setTitle(data.getString(FavSubjectListFragment.COL_COURSE_NAME));
+          //  getActivity().setTitle(data.getString(FavSubjectListFragment.COL_COURSE_NAME));
             emptyView.setText("");
 
         } else {

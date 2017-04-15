@@ -102,7 +102,7 @@ public class CoursesList extends AppCompatActivity
     private NavigationView navigationView;
     private DrawerLayout drawer;
     private View navHeader;
-    private ImageView  imgProfile;
+    private ImageView imgProfile;
     private TextView txtName;
     private Toolbar toolbar;
 
@@ -551,7 +551,7 @@ public class CoursesList extends AppCompatActivity
 //            String userKey = getPreferences(Context.MODE_PRIVATE)
 //                    .getString(Constants.PREF_USER_ACCOUNT_KEY, null);
 
-
+            Log.e("data", courseName + courseId + teacherName);
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_ID, courseId);
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_NAME, courseName);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL, teacherEmail);
@@ -646,6 +646,7 @@ public class CoursesList extends AppCompatActivity
 //        // showing dot next to notifications label
 //        navigationView.getMenu().getItem(3).setActionView(R.layout.menu_dot);
     }
+
     private void setUpNavigationView() {
         //Setting Navigation View Item Selected Listener to handle the item click of the navigation menu
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

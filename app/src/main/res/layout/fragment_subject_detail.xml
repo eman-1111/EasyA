@@ -102,7 +102,8 @@
                     android:id="@+id/lesson_debug_content_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/md_keylines"
+                    android:paddingStart="@dimen/md_keylines"
+                    android:paddingEnd="@dimen/md_keylines"
                     tools:text="@string/detail_location" />
 
                 <TextView
