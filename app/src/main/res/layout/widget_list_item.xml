@@ -1,0 +1,70 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_list_item"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/widget_list_item_hight"
+    android:minHeight="?android:attr/listPreferredItemHeight">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="8dp"
+        android:background="@drawable/scrim_gradient">
+
+        <TextView
+            android:id="@+id/wedgit_course_name_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/et_padding_add"
+            android:layout_marginLeft="@dimen/et_padding_add"
+            android:layout_marginRight="@dimen/et_padding_add"
+            android:fontFamily="sans-serif-light"
+            android:gravity="right"
+            android:textColor="@color/white"
+            android:textSize="@dimen/course_titel_text_size"
+            tools:text="English" />
+
+        <TextView
+            android:id="@+id/wedgit_teacher_name_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="@dimen/et_padding_add"
+            android:layout_marginLeft="@dimen/et_padding_add"
+            android:layout_marginRight="@dimen/et_padding_add"
+            android:layout_marginTop="@dimen/et_padding_add"
+            android:fontFamily="sans-serif-light"
+            android:gravity="bottom"
+            android:textColor="@color/white"
+            android:textSize="@dimen/course_text_size"
+            tools:text="Eman" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="end|bottom"
+            android:layout_marginBottom="@dimen/et_padding_add"
+            android:layout_marginLeft="@dimen/et_padding_add"
+            android:layout_marginRight="@dimen/et_padding_add"
+            android:layout_marginTop="@dimen/et_padding_add"
+            android:gravity="bottom">
+
+            <ImageView
+                android:id="@+id/wedgit_teacher_photo_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
+                android:layout_marginRight="@dimen/abc_action_bar_content_inset_material"
+                android:adjustViewBounds="true"
+                android:maxHeight="48dp"
+                android:maxWidth="48dp"
+                android:scaleType="centerCrop" />
+
+        </FrameLayout>
+    </RelativeLayout>
+</FrameLayout>

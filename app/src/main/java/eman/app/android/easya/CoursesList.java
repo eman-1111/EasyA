@@ -73,6 +73,7 @@ import java.util.Random;
 
 import eman.app.android.easya.fragment.CourseListFragment;
 import eman.app.android.easya.utils.Constants;
+import eman.app.android.easya.utils.Helper;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -177,7 +178,7 @@ public class CoursesList extends AppCompatActivity
             chooseAccount();
         } else if (!isDeviceOnline()) {
             // startIntent();
-            mErrorText.setText("No network connection available.");
+            mErrorText.setText(getResources().getString(R.string.network_toast));
         } else {
             mMakeRequestTask = (MakeRequestTask) new MakeRequestTask(mCredential).execute();
         }
@@ -465,7 +466,7 @@ public class CoursesList extends AppCompatActivity
 
                     addCourseData(courseName, teacherName, teacherEmail,
                             teacherPhotoUrl, courseId);
-
+                    Helper.updateWidgets(CoursesList.this);
                 }
             }
 
@@ -503,7 +504,7 @@ public class CoursesList extends AppCompatActivity
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
                             CoursesList.REQUEST_AUTHORIZATION);
                 } else {
-                    mErrorText.setText("You need to have Google Classroom,so Easy A could Load your courses");
+                    mErrorText.setText(getResources().getString(R.string.no_google_classroom));
                 }
             }
         }
@@ -608,6 +609,7 @@ public class CoursesList extends AppCompatActivity
                                 } else {
                                     addCourseData(courseNameET.getText().toString(), teacherNameET.getText().toString(),
                                             null, null, courseId);
+                                    Helper.updateWidgets(CoursesList.this);
                                 }
 
                             }
@@ -742,6 +744,8 @@ public class CoursesList extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 }
 

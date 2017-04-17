@@ -1,5 +1,7 @@
 package eman.app.android.easya.utils;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -28,5 +30,12 @@ public class Helper {
         image.compress(Bitmap.CompressFormat.JPEG, 0, bytes);
         byte[] bitmapdata = bytes.toByteArray();
         return BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+    }
+
+    public static void updateWidgets(Context context) {
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(Constants.ACTION_DATA_UPDATED)
+                .setPackage(context.getPackageName());
+        context.sendBroadcast(dataUpdatedIntent);
     }
 }

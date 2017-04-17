@@ -1,7 +1,9 @@
 package eman.app.android.easya.fragment;
 
 
+        import android.content.Context;
         import android.content.DialogInterface;
+        import android.content.Intent;
         import android.database.Cursor;
         import android.net.Uri;
         import android.os.Bundle;
@@ -19,9 +21,12 @@ package eman.app.android.easya.fragment;
         import android.widget.TextView;
 
 
+        import eman.app.android.easya.CoursesList;
         import eman.app.android.easya.adapter.CourseAdapter;
         import eman.app.android.easya.R;
         import eman.app.android.easya.data.CourseContract;
+        import eman.app.android.easya.utils.Constants;
+        import eman.app.android.easya.utils.Helper;
 
 /**
  * Created by eman_ashour on 4/21/2016.
@@ -106,6 +111,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
                                         CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?",
                                         new String[]{courseId});
                                 removeItem(courseId);
+                                Helper.updateWidgets(getContext());
 
 
                             }
@@ -150,7 +156,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
         if (data != null && data.moveToFirst()) {
             emptyView.setText("");
         }else{
-            emptyView.setText("The Courses you will add, will show up here, so add some");
+            emptyView.setText(getResources().getString(R.string.no_course));
         }
 
 
@@ -172,4 +178,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
     private void removeItem(String itemId) {
 
     }
+
+
+
 }

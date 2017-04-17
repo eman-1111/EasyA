@@ -101,7 +101,9 @@
 
     <string name="default_web_client_id">1:540854310832:android:39e02c631bd51a4e</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="no_google_classroom">You need to have Google Classroom,so Easy A could Load your courses</string>
+    <string name="network_toast">No network connection available.</string>
+    <string name="no_course">The Courses you will add, will show up here, so add some</string>
 
 </resources>
