@@ -1,31 +1,31 @@
 {
   "project_info": {
-    "project_number": "540854310832",
-    "firebase_url": "https://project-5797678756428558432.firebaseio.com",
-    "project_id": "project-5797678756428558432",
-    "storage_bucket": "project-5797678756428558432.appspot.com"
+    "project_number": "701792300586",
+    "firebase_url": "https://easya-165009.firebaseio.com",
+    "project_id": "easya-165009",
+    "storage_bucket": "easya-165009.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:540854310832:android:39e02c631bd51a4e",
+        "mobilesdk_app_id": "1:701792300586:android:39e02c631bd51a4e",
         "android_client_info": {
           "package_name": "eman.app.android.easya"
         }
       },
       "oauth_client": [
         {
-          "client_id": "540854310832-ah2e9fqm46a451trlu8si1e22ojelv6s.apps.googleusercontent.com",
+          "client_id": "701792300586-pmus1vv6ah7okb0j0o0o76n6pp87i7s0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "eman.app.android.easya",
-            "certificate_hash": "8F5DE81E541B8B97D8E8562D165E67F4CD3E4946"
+            "certificate_hash": "b058b03bdcae9f34ffff800bea694d11497968e1"
           }
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAQDos899fpi7WqazBdUx3GmhifnaNwTiY"
+          "current_key": "AIzaSyBFg7H2HRJL9qdED8uolsuE5H_R4i_oOEI"
         }
       ],
       "services": {
@@ -33,7 +33,7 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
+          "status": 2,
           "other_platform_oauth_client": []
         },
         "ads_service": {
