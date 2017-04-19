@@ -28,7 +28,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            tools:context="eman.app.android.easya.CoursesList">
+            tools:context="link.ideas.easya.CoursesList">
 
             <include layout="@layout/content_courses_list" />
 

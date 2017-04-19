@@ -3,6 +3,6 @@
     android:id="@+id/fragment_detail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="eman.app.android.easya.fragment.SubjectDetailFragment"
+    tools:context="link.ideas.easya.fragment.SubjectDetailFragment"
     tools:ignore="MergeRootFrame"
     android:elevation="@dimen/appbar_elevation"/>
