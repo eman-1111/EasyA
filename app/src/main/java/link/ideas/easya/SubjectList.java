@@ -38,7 +38,6 @@ public class SubjectList extends BaseActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subject_list);
 
-
         if (savedInstanceState == null) {
 
             mUri = getIntent().getData();
@@ -46,9 +45,8 @@ public class SubjectList extends BaseActivity implements
             if (mUri == null) {
                 Log.e("SubjectList", "no uri");
             }
-
-
         }
+        setProfile(true);
         setUpAPIs();
         loadNavHeader();
         setUpNavigationView();

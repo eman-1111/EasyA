@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.squareup.picasso.Picasso;
 
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;

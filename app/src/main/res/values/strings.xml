@@ -21,10 +21,15 @@
     <string name="friends">Friends</string>
     <string name="home">Home</string>
     <string name="login">Login</string>
+    <string name="logout">Log Out</string>
+
     <string name="loading_courses">Loading your courses ...</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
     <string name="loading">Loading</string>
+
+    <string name="name">Name</string>
+    <string name="email">Email</string>
 
     <string name="gallery">Gallery</string>
     <string name="photo">Take a photo</string>

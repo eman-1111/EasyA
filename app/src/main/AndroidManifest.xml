@@ -57,7 +57,11 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".AddNewLesson" />
+        <activity android:name=".AddNewLesson"
+            android:parentActivityName=".SubjectList"/>
+
+        <activity android:name=".ProfileActivity"
+            android:parentActivityName=".CoursesList"/>
 
         <!-- Detail Widget -->
         <receiver

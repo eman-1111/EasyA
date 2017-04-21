@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -64,7 +65,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -72,6 +72,7 @@ import java.util.List;
 import java.util.Random;
 
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 
@@ -84,6 +85,9 @@ public class BaseActivity extends AppCompatActivity
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
+
+    public boolean isLogedIn,isNotProfile = false;
+
 
     private static final String TAG = "GoogleActivity";
 
@@ -104,8 +108,7 @@ public class BaseActivity extends AppCompatActivity
     private ImageView imgProfile;
     private TextView txtName;
     private Toolbar toolbar;
-
-
+    private SignInButton signInButton;
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
@@ -134,28 +137,37 @@ public class BaseActivity extends AppCompatActivity
                 .build();
 
         mAuth = FirebaseAuth.getInstance();
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
+                    isLogedIn = true;
+
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+
                 } else {
+                    isLogedIn = false;
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                try {
-                    updateUI(true);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(isNotProfile) {
+                    try {
+                        updateUI(isLogedIn);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
+
     }
 
+
+
     private void signIn() {
+        showProgressDialog();
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, REQUEST_ACCOUNT_PICKER);
     }
@@ -175,6 +187,7 @@ public class BaseActivity extends AppCompatActivity
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
+
     /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
@@ -243,49 +256,47 @@ public class BaseActivity extends AppCompatActivity
                 break;
         }
     }
-    private void signOut() {
+
+    public void signOut() {
         // Firebase sign out
         mAuth.signOut();
-
+        removeUserData();
         // Google sign out
         Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-                        updateUI(null);
+                        isLogedIn = false;
+
                     }
                 });
     }
+
+    private void removeUserData() {
+        SharedPreferences.Editor editor =
+                getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE).edit();
+
+        editor.putString(Constants.PREF_ACCOUNT_NAME, null);
+        editor.putString(Constants.PREF_ACCOUNT_USER_NAME, null);
+        editor.putString(Constants.PREF_ACCOUNT_PHOTO_URL, null);
+        editor.putString(Constants.PREF_ACCOUNT_USER_TOKEN, null);
+        editor.apply();
+    }
+
     private void revokeAccess() {
         // Firebase sign out
         mAuth.signOut();
-
+        removeUserData();
         // Google revoke access
         Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(@NonNull Status status) {
-                        updateUI(null);
+                        isLogedIn = false;
                     }
                 });
     }
 
-    private void updateUI(FirebaseUser user) {
-
-//        if (user != null) {
-//            mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
-//            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-//
-//            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-//            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
-//        } else {
-//            mStatusTextView.setText(R.string.signed_out);
-//            mDetailTextView.setText(null);
-//
-//            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
-//            findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
-//        }
-    }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -294,6 +305,7 @@ public class BaseActivity extends AppCompatActivity
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
+
     private void handleSignInResult(GoogleSignInResult result) throws IOException {
         Log.d("CourseList", "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -307,7 +319,7 @@ public class BaseActivity extends AppCompatActivity
                 String userName = acct.getDisplayName();
                 String photoUrl = String.valueOf(acct.getPhotoUrl());
                 String accountToken = acct.getIdToken();
-                Log.e("accountToken: ",accountToken +"  accountToken");
+                Log.e("accountToken: ", accountToken + "  accountToken");
 
                 SharedPreferences.Editor editor =
                         getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE).edit();
@@ -317,19 +329,17 @@ public class BaseActivity extends AppCompatActivity
                 editor.putString(Constants.PREF_ACCOUNT_PHOTO_URL, photoUrl);
                 editor.putString(Constants.PREF_ACCOUNT_USER_TOKEN, accountToken);
                 editor.apply();
-                updateUI(true);
-                getResultsFromApi();
                 firebaseAuthWithGoogle(acct);
             }
 
         } else {
-            // Signed out, show unauthenticated UI.
-            //updateUI(false, null, null, null);
+            isLogedIn = false;
+            updateUI(isLogedIn);
         }
     }
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
 
-        showProgressDialog();
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) throws IOException {
+
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -337,20 +347,34 @@ public class BaseActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
-
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
+                        isLogedIn = task.isSuccessful();
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(BaseActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            isLogedIn = false;
                         }
+                        try {
+                            updateUI(isLogedIn);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            getResultsFromApi();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
                         // [START_EXCLUDE]
                         hideProgressDialog();
                         // [END_EXCLUDE]
                     }
                 });
+
     }
 // [END auth_with_google]
 
@@ -358,28 +382,26 @@ public class BaseActivity extends AppCompatActivity
         if (signedIn) {
             SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
 
-            String accountName =prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
-            if (accountName != null ) {
-                String userName =prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
-                String photoUrl =prefs.getString(Constants.PREF_ACCOUNT_PHOTO_URL, null);
+            String accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+            if (accountName != null) {
+                String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
+                String photoUrl = prefs.getString(Constants.PREF_ACCOUNT_PHOTO_URL, null);
 
-                // findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+                signInButton.setVisibility(View.GONE);
                 txtName.setText(userName);
                 mCredential.setSelectedAccountName(accountName);
-                Picasso.with(this).load(photoUrl)
-                        .error(R.drawable.ic_account_circle_black_24dp).into(imgProfile);
+                Log.d(TAG, "signInWithCredential:updateUI " + userName + photoUrl);
+                Glide.with(this).load(photoUrl)
+                        .transform(new CircleTransform(this))
+                        .error(R.drawable.ic_account_circle_black_24dp)
+                        .into(imgProfile);
 
             }
-
         } else {
-            SharedPreferences.Editor editor =
-                    getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE).edit();
+            if (signInButton.getVisibility() == View.GONE) {
+                signInButton.setVisibility(View.VISIBLE);
+            }
 
-            editor.putString(Constants.PREF_ACCOUNT_NAME, null);
-            editor.putString(Constants.PREF_ACCOUNT_USER_NAME, null);
-            editor.putString(Constants.PREF_ACCOUNT_PHOTO_URL, null);
-            editor.putString(Constants.PREF_ACCOUNT_USER_TOKEN, null);
-            editor.apply();
         }
     }
 
@@ -705,7 +727,7 @@ public class BaseActivity extends AppCompatActivity
         txtName = (TextView) navHeader.findViewById(R.id.name);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
 
-        SignInButton signInButton = (SignInButton) navHeader.findViewById(R.id.sign_in_button);
+        signInButton = (SignInButton) navHeader.findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
 
 
@@ -714,15 +736,27 @@ public class BaseActivity extends AppCompatActivity
                 getApplicationContext(), Arrays.asList(SCOPES2))
                 .setBackOff(new ExponentialBackOff());
 
-        signInButton.setOnClickListener(new View.OnClickListener() {
+        imgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                signIn();
+                if (isLogedIn) {
+                    Intent profileIntent = new Intent(BaseActivity.this, ProfileActivity.class);
+                    startActivity(profileIntent);
+                }
             }
         });
 
-
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signIn();
+            }
+        });
+        try {
+            updateUI(isLogedIn);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setUpNavigationView() {
@@ -790,13 +824,17 @@ public class BaseActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawers();
-            return;
+       if(isNotProfile){
+            if (drawer.isDrawerOpen(GravityCompat.START)) {
+                drawer.closeDrawers();
+                return;
+            }
         }
 
         super.onBackPressed();
     }
-
+    public void setProfile(boolean isNotProfile) {
+        this.isNotProfile = isNotProfile;
+    }
 
 }

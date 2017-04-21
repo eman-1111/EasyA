@@ -8,11 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+
 
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
@@ -125,7 +126,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         }
 
 
-        Picasso.with(mContext).load(teacherPhotoURL).error(image).
+        Glide.with(mContext).load(teacherPhotoURL).error(image).
                 into(courseAdapterViewHolder.teacherImage);
 
         String courseName = mCursor.getString(CourseListFragment.COL_COURSE_NAME);

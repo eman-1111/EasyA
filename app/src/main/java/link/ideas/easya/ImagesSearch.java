@@ -26,8 +26,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,31 +62,29 @@ public class ImagesSearch extends AppCompatActivity {
         data = intent.getExtras();
         searchValue = intent.getStringExtra("SearchValue");
         linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
-        mImageAdapter = new ImageAdapter(this,R.layout.list_item_search, new ArrayList<Image>());
+        mImageAdapter = new ImageAdapter(this, R.layout.list_item_search, new ArrayList<Image>());
         GridView gridView = (GridView) findViewById(R.id.image_gridview);
         gridView.setAdapter(mImageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                startDialog( view,  mImageAdapter.getItem(position));
+                startDialog(view, mImageAdapter.getItem(position));
 
             }
         });
 
 
-
     }
-
 
 
     private void upDateSearch(String query) {
 
-        if(query != null ){
-            if(isDeviceOnline()){
+        if (query != null) {
+            if (isDeviceOnline()) {
                 FetchImage fetchImage = new FetchImage();
                 fetchImage.execute(query);
-            }else{
+            } else {
                 //TODO tell the user there is no internet connection
             }
 
@@ -105,7 +104,7 @@ public class ImagesSearch extends AppCompatActivity {
                 (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
-        if(searchValue != null){
+        if (searchValue != null) {
             upDateSearch(searchValue);
         }
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -114,7 +113,7 @@ public class ImagesSearch extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
 
                 // Perform search here!
-                Log.e("query","query: "+ query);
+                Log.e("query", "query: " + query);
                 upDateSearch(query);
 
 
@@ -131,10 +130,10 @@ public class ImagesSearch extends AppCompatActivity {
         });
 
 
-
         return true;
 
     }
+
     @Override
     protected void onNewIntent(Intent intent) {
         handleIntent(intent);
@@ -296,7 +295,6 @@ public class ImagesSearch extends AppCompatActivity {
                     images.add(image);
 
 
-
                 }
                 return images;
 
@@ -310,6 +308,7 @@ public class ImagesSearch extends AppCompatActivity {
 
         }
     }
+
     /**
      * Checks whether the device currently has a network connection.
      *
@@ -336,40 +335,31 @@ public class ImagesSearch extends AppCompatActivity {
 
         final ImageView imageIV = (ImageView) promptsView
                 .findViewById(R.id.icon_img);
-        Picasso.with(this).load(image.getImage()).error(R.drawable.blue)
-                .into(imageIV);
 
-        Picasso.with(this).load(image.getImage())
-                .into(new Target() {
+        Glide.with(this)
+                .load(image.getImage())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>(100, 100) {
                     @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        imageIV.setImageBitmap(bitmap);
-                        imageB = bitmap;
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
+                        Log.e("image", "in Bitmap");
+                        imageB = resource;
+                        imageIV.setImageBitmap(resource);
 
                     }
                 });
-
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
                 .setPositiveButton("Save",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 //TODO MAKE IT HD
-                                if(imageB == null){
-                                    Picasso.with(ImagesSearch.this).load(image.getImage()).into(target);
+                                Log.e("image", "Null");
+                                if (imageB == null) {
+                                    Log.e("image", "notNull");
                                     startImageIIntent(imageB);
-                                }else{
-                                    startImageIIntent(imageB);
+                                    dialog.cancel();
                                 }
 
 
@@ -377,8 +367,9 @@ public class ImagesSearch extends AppCompatActivity {
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
+//                                imageB = null;
                             }
                         });
 
@@ -391,24 +382,10 @@ public class ImagesSearch extends AppCompatActivity {
 
     }
 
-    private Target target = new Target() {
-        @Override
-        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-            imageB = bitmap;
-        }
-
-        @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-        }
-
-        @Override
-        public void onPrepareLoad(Drawable placeHolderDrawable) {
-        }
-    };
     public void startImageIIntent(Bitmap imageB) {
-        Intent intent=new Intent();
-        intent.putExtra("data",imageB);
-        setResult(Activity.RESULT_OK,intent);
+        Intent intent = new Intent();
+        intent.putExtra("data", imageB);
+        setResult(Activity.RESULT_OK, intent);
         finish();
 
     }

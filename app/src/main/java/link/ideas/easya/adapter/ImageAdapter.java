@@ -8,14 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
+
 
 import link.ideas.easya.Image;
 import link.ideas.easya.R;
@@ -55,8 +52,8 @@ public class ImageAdapter extends ArrayAdapter<Image> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-
-        Picasso.with(context).load(imageNor.getImage()).error(R.drawable.blue)
+Log.e("url", imageNor.getImage()+"");
+        Glide.with(context).load(imageNor.getImage()).placeholder(R.drawable.blue).dontAnimate()
                 .into(holder.imageView);
 
         return convertView;
