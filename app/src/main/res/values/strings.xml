@@ -33,6 +33,7 @@
 
     <string name="gallery">Gallery</string>
     <string name="photo">Take a photo</string>
+    <string name="search_online">Search Oline</string>
     <string-array name="sort_type_name">
         <item>Favorite</item>
         <item>Date</item>

@@ -49,7 +49,7 @@ public class ImagesSearch extends AppCompatActivity {
     ImageAdapter mImageAdapter;
     String searchValue;
     Bundle data;
-    Bitmap imageB;
+    static Bitmap imageB = null;
     LinearLayout linlaHeaderProgress;
 
     @Override
@@ -342,9 +342,9 @@ public class ImagesSearch extends AppCompatActivity {
                 .into(new SimpleTarget<Bitmap>(100, 100) {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                        Log.e("image", "in Bitmap");
+
                         imageB = resource;
-                        imageIV.setImageBitmap(resource);
+                        imageIV.setImageBitmap(imageB);
 
                     }
                 });
@@ -355,9 +355,7 @@ public class ImagesSearch extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 //TODO MAKE IT HD
-                                Log.e("image", "Null");
-                                if (imageB == null) {
-                                    Log.e("image", "notNull");
+                                if (imageB != null) {
                                     startImageIIntent(imageB);
                                     dialog.cancel();
                                 }
@@ -369,7 +367,7 @@ public class ImagesSearch extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
-//                                imageB = null;
+                                imageB = null;
                             }
                         });
 

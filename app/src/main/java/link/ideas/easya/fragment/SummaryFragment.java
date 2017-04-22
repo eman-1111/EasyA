@@ -213,7 +213,7 @@ public class SummaryFragment extends Fragment {
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
 
-                    Log.e(LOG_TAG, "camera: " +thumbnail.getByteCount());
+
 
                     if(thumbnail.getByteCount() > 1000000){
                         thumbnail = Helper.getImageCompress(thumbnail);

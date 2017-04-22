@@ -33,7 +33,7 @@
         <ProgressBar
             android:id="@+id/pbHeaderProgress"
             android:layout_width="wrap_content"
-            android:background="@color/primary_dark"
+            android:src="@color/primary_dark"
             android:layout_height="wrap_content" >
         </ProgressBar>
     </LinearLayout>

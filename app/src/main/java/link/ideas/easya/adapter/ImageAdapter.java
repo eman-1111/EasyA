@@ -52,7 +52,6 @@ public class ImageAdapter extends ArrayAdapter<Image> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-Log.e("url", imageNor.getImage()+"");
         Glide.with(context).load(imageNor.getImage()).placeholder(R.drawable.blue).dontAnimate()
                 .into(holder.imageView);
 

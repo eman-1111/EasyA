@@ -3,7 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding ="@dimen/activity_horizontal_margin">
+    android:paddingEnd ="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingTop ="@dimen/horizontal_padding"
+    android:paddingBottom ="@dimen/horizontal_padding">
 
     <LinearLayout
         android:id="@+id/linear_gallery"
@@ -68,14 +71,14 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_photo_camera_black_24dp" />
+            android:src="@drawable/ic_palette_black_24dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center_horizontal"
-            android:text="@string/photo"
+            android:text="@string/search_online"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
             android:textColor="@color/grey" />
 
