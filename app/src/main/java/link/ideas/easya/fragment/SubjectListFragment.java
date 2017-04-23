@@ -84,12 +84,8 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
             mUri = arguments.getParcelable(SubjectListFragment.SUBJECT_URI);
         }
 
-        // getActivity().setTitle(arguments.getStringExtra("CourseName"));
-        //getActivity().setTitle("");
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
-        // Get a reference to the RecyclerView, and attach this adapter to it.
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
-        //  mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
 
         // Set the layout manager

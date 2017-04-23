@@ -58,6 +58,8 @@ public class ImagesSearch extends AppCompatActivity {
         setContentView(R.layout.activity_image_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         Intent intent = getIntent();
         data = intent.getExtras();
         searchValue = intent.getStringExtra("SearchValue");
