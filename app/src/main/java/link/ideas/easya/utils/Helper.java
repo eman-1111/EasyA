@@ -24,7 +24,21 @@ public class Helper {
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
+    /**
+     * Encode user email to use it as a Firebase key (Firebase does not allow "." in the key name)
+     * Encoded email is also used as "userEmail", list and item "owner" value
+     */
+    public static String encodeEmail(String userEmail) {
+        return userEmail.replace(".", ",");
+    }
 
+    /**
+     * Email is being decoded just once to display real email in AutocompleteFriendAdapter
+     *
+     */
+    public static String decodeEmail(String userEmail) {
+        return userEmail.replace(",", ".");
+    }
     public static Bitmap getImageCompress(Bitmap image) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 0, bytes);

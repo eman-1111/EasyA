@@ -65,6 +65,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -72,6 +74,7 @@ import java.util.List;
 import java.util.Random;
 
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.models.User;
 import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
@@ -89,10 +92,13 @@ public class BaseActivity extends AppCompatActivity
     public boolean isLogedIn,isNotProfile = false;
 
 
+
     private static final String TAG = "GoogleActivity";
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mUsersDatabaseReference;
 
 
     private static final String[] SCOPES2 = {ClassroomScopes.CLASSROOM_COURSES_READONLY,
@@ -137,6 +143,10 @@ public class BaseActivity extends AppCompatActivity
                 .build();
 
         mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+        mUsersDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS);
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -338,7 +348,7 @@ public class BaseActivity extends AppCompatActivity
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) throws IOException {
+    private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) throws IOException {
 
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -351,6 +361,9 @@ public class BaseActivity extends AppCompatActivity
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         isLogedIn = task.isSuccessful();
+                        User mUser = new User(acct.getDisplayName(), acct.getPhotoUrl() + "");
+
+                        mUsersDatabaseReference.child(Helper.encodeEmail(acct.getEmail())).setValue(mUser);
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(BaseActivity.this, "Authentication failed.",
@@ -779,7 +792,8 @@ public class BaseActivity extends AppCompatActivity
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_friends:
-                        Toast.makeText(BaseActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                        Intent friendIntent = new Intent(BaseActivity.this, AddFriendActivity.class);
+                        startActivity(friendIntent);
                         drawer.closeDrawers();
                         return true;
                     default:

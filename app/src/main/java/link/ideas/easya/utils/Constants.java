@@ -13,5 +13,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_PHOTO_URL = "photoUrl";
     public static final String PREF_ACCOUNT_USER_TOKEN = "userToken";
 
+    public static final String FIREBASE_LOCATION_USERS = "users";
+
 
 }

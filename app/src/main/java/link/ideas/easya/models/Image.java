@@ -1,4 +1,4 @@
-package link.ideas.easya;
+package link.ideas.easya.models;
 
 /**
  * Created by eman_ashour on 6/9/2016.

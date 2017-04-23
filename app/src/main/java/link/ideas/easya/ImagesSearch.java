@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -43,6 +42,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import link.ideas.easya.adapter.ImageAdapter;
+import link.ideas.easya.models.Image;
 
 
 public class ImagesSearch extends AppCompatActivity {

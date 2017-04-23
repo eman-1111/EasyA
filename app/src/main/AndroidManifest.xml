@@ -42,6 +42,10 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
+            android:name=".AddFriendActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
             android:name=".ImagesSearch"
             android:label="@string/title_activity_image_search"
             android:launchMode="singleTask"

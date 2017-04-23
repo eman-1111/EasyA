@@ -1,8 +1,6 @@
 package link.ideas.easya.adapter;
 
-import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 
-import link.ideas.easya.Image;
+import link.ideas.easya.models.Image;
 import link.ideas.easya.R;
 
 
