@@ -23,7 +23,7 @@ public class CoursesList extends BaseActivity implements
 
 
         setContentView(R.layout.courses_list);
-        setProfile(true);
+        setDrawer(true);
         setUpAPIs();
         loadNavHeader();
         setUpNavigationView();

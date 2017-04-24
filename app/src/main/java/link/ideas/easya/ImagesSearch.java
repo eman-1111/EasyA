@@ -118,10 +118,6 @@ public class ImagesSearch extends AppCompatActivity {
                 Log.e("query", "query: " + query);
                 upDateSearch(query);
 
-
-                // Clear the text in search bar but (don't trigger a new search!)
-                //  searchView.setQuery("", false);
-
                 return true;
             }
 

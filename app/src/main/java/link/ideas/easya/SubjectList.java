@@ -46,7 +46,7 @@ public class SubjectList extends BaseActivity implements
                 Log.e("SubjectList", "no uri");
             }
         }
-        setProfile(true);
+        setDrawer(true);
         setUpAPIs();
         loadNavHeader();
         setUpNavigationView();
@@ -118,9 +118,6 @@ public class SubjectList extends BaseActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
-
-
-
         if (id == R.id.btn_add_menu) {
             startIntent();
             return true;

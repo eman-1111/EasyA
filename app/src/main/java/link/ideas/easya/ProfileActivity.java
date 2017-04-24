@@ -2,8 +2,10 @@ package link.ideas.easya;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -26,7 +28,7 @@ public class ProfileActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        setProfile(false);
+        setDrawer(false);
         setUpIds();
         setUpAPIs();
         setUserData();
@@ -71,4 +73,17 @@ public class ProfileActivity extends BaseActivity {
             });
         }
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.home) {
+            Intent homeIntent = new Intent(ProfileActivity.this, CoursesList.class);
+            startActivity(homeIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }

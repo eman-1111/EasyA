@@ -54,6 +54,7 @@ public class SubjectDetail extends AppCompatActivity {
                     .setData(CourseContract.SubjectEntry.buildSubjectWithID(lessonId));
             intent.putExtra("CourseName", lessonName);
             startActivity(intent);
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }

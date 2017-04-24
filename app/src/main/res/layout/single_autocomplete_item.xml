@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/input_field_height"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="2dp"
     android:background="@android:color/white"
     android:clickable="false"
@@ -15,5 +16,8 @@
         android:id="@+id/text_view_autocomplete_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        tools:text="@string/login"
         android:gravity="center_vertical" />
+
 </RelativeLayout>
+

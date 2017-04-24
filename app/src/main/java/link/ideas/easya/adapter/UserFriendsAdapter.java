@@ -2,15 +2,21 @@ package link.ideas.easya.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 import link.ideas.easya.R;
 import link.ideas.easya.models.User;
+import link.ideas.easya.utils.CircleTransform;
+import link.ideas.easya.utils.Helper;
 
 /**
  * Created by Eman on 4/23/2017.
@@ -22,15 +28,19 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
     final private Context mContext;
     final private UserFriendsAdapter.UserFriendsAdapterOnClickHolder mClickHolder;
     private List<User> userList;
+    private List<String> email;
 
     public class UserFriendsAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public final TextView lessonFriendName;
-
+        public final TextView friendEmail;
+        public final TextView friendName;
+        public final ImageView friendImage;
 
         public UserFriendsAdapterViewHolder(View view) {
             super(view);
-            lessonFriendName = (TextView) view.findViewById(R.id.tv_friend_name);
+            friendEmail = (TextView) view.findViewById(R.id.tv_friend_email);
+            friendName = (TextView) view.findViewById(R.id.tv_friend_name);
+            friendImage = (ImageView) view.findViewById(R.id.iv_friend_image);
             view.setOnClickListener(this);
         }
 
@@ -42,17 +52,17 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
 
     }
 
-    public UserFriendsAdapter(List<User> userList ,Context context, UserFriendsAdapter.UserFriendsAdapterOnClickHolder dh) {
+    public UserFriendsAdapter(List<User> userList, List<String> email ,Context context, UserFriendsAdapter.UserFriendsAdapterOnClickHolder dh) {
         mContext = context;
         mClickHolder = dh;
         this.userList = userList;
+        this.email = email;
 
     }
 
     public static interface UserFriendsAdapterOnClickHolder {
         void onClick(String id, String lessonName, UserFriendsAdapter.UserFriendsAdapterViewHolder vh);
     }
-
 
     @Override
     public UserFriendsAdapter.UserFriendsAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -74,8 +84,15 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
     @Override
     public void onBindViewHolder(UserFriendsAdapter.UserFriendsAdapterViewHolder holder, int position) {
         User user = userList.get(position);
+        String friendEmail = email.get(position);
 
-        holder.lessonFriendName.setText(user.getName());
+        holder.friendEmail.setText(Helper.decodeEmail(friendEmail));
+        holder.friendName.setText(user.getName());
+
+        Glide.with(mContext).load(user.getPhotoUrl())
+                .transform(new CircleTransform(mContext))
+                .error(R.drawable.ic_account_circle_black_24dp)
+                .into(holder.friendImage);
     }
 
 

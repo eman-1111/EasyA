@@ -14,6 +14,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -89,7 +90,7 @@ public class BaseActivity extends AppCompatActivity
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
 
-    public boolean isLogedIn,isNotProfile = false;
+    public boolean isLogedIn,isDrawerEnable = false;
 
 
 
@@ -115,7 +116,36 @@ public class BaseActivity extends AppCompatActivity
     private TextView txtName;
     private Toolbar toolbar;
     private SignInButton signInButton;
+    public String accountName;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    isLogedIn = true;
+
+                } else {
+                    isLogedIn = false;
+                }
+                if(isDrawerEnable) {
+                    try {
+                        updateUI(isLogedIn);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
+        accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+    }
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
@@ -141,36 +171,8 @@ public class BaseActivity extends AppCompatActivity
                 .enableAutoManage(this, BaseActivity.this)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
-
-        mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS);
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    isLogedIn = true;
-
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-
-                } else {
-                    isLogedIn = false;
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-                if(isNotProfile) {
-                    try {
-                        updateUI(isLogedIn);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
 
     }
 
@@ -290,6 +292,7 @@ public class BaseActivity extends AppCompatActivity
         editor.putString(Constants.PREF_ACCOUNT_USER_NAME, null);
         editor.putString(Constants.PREF_ACCOUNT_PHOTO_URL, null);
         editor.putString(Constants.PREF_ACCOUNT_USER_TOKEN, null);
+        accountName = null;
         editor.apply();
     }
 
@@ -338,6 +341,7 @@ public class BaseActivity extends AppCompatActivity
                 editor.putString(Constants.PREF_ACCOUNT_USER_NAME, userName);
                 editor.putString(Constants.PREF_ACCOUNT_PHOTO_URL, photoUrl);
                 editor.putString(Constants.PREF_ACCOUNT_USER_TOKEN, accountToken);
+                accountName = accountToken;
                 editor.apply();
                 firebaseAuthWithGoogle(acct);
             }
@@ -395,7 +399,7 @@ public class BaseActivity extends AppCompatActivity
         if (signedIn) {
             SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
 
-            String accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+             accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
                 String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
                 String photoUrl = prefs.getString(Constants.PREF_ACCOUNT_PHOTO_URL, null);
@@ -792,7 +796,7 @@ public class BaseActivity extends AppCompatActivity
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_friends:
-                        Intent friendIntent = new Intent(BaseActivity.this, AddFriendActivity.class);
+                        Intent friendIntent = new Intent(BaseActivity.this, FriendsList.class);
                         startActivity(friendIntent);
                         drawer.closeDrawers();
                         return true;
@@ -838,7 +842,7 @@ public class BaseActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-       if(isNotProfile){
+       if(isDrawerEnable){
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawers();
                 return;
@@ -847,8 +851,8 @@ public class BaseActivity extends AppCompatActivity
 
         super.onBackPressed();
     }
-    public void setProfile(boolean isNotProfile) {
-        this.isNotProfile = isNotProfile;
+    public void setDrawer(boolean isDrawerEnable) {
+        this.isDrawerEnable = isDrawerEnable;
     }
 
 }

@@ -25,13 +25,14 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".SubjectList"
-            android:parentActivityName=".CoursesList"
             android:launchMode="singleTask"
+            android:parentActivityName=".CoursesList"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SubjectDetail"
@@ -55,14 +56,18 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".AddNewLesson"
+        <activity
+            android:name=".AddNewLesson"
             android:launchMode="singleTask"
-            android:parentActivityName=".SubjectList"/>
+            android:parentActivityName=".SubjectList" />
+        <activity
+            android:name=".ProfileActivity"
+            android:launchMode="singleTask"
+            android:parentActivityName=".CoursesList" />
 
-        <activity android:name=".ProfileActivity"
-            android:parentActivityName=".CoursesList"
-            android:launchMode="singleTask" />
-
+        <activity android:name=".FriendsList"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ProfileActivity" />
         <!-- Detail Widget -->
         <receiver
             android:name=".widget.DetailWidgetProvider"
@@ -83,7 +88,6 @@
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-
         <provider
             android:name=".data.CourseProvider"
             android:authorities="@string/content_authority"
@@ -93,6 +97,7 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
 
     </application>
 

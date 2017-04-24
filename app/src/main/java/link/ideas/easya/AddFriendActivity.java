@@ -1,24 +1,29 @@
 package link.ideas.easya;
 
-import android.net.Uri;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Toast;
 
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import link.ideas.easya.adapter.UserFriendsAdapter;
+import link.ideas.easya.adapter.AutocompleteFriendAdapter;
 import link.ideas.easya.models.User;
 import link.ideas.easya.utils.Constants;
 
@@ -26,28 +31,37 @@ import link.ideas.easya.utils.Constants;
  * Created by Eman on 4/23/2017.
  */
 
-public class AddFriendActivity extends AppCompatActivity {
+public class AddFriendActivity extends BaseActivity {
 
-    RecyclerView mRecyclerViewFriends;
-    UserFriendsAdapter mUserFriendsAdapter;
-    List<User> userList;
 
-    ValueEventListener mChildEventListener;
+    ArrayList<User> userList;
+    ArrayList<String> userEmail;
+
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mUsersDatabaseReference;
+
+    private AutocompleteFriendAdapter mFriendsAutocompleteAdapter;
+    private String mInput;
+    private ListView mListViewAutocomplete;
+    LinearLayout progress;
+
+    EditText mEditTextAddFriendEmail;
+    private static final String LOG_TAG = AddFriendActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
-
+        setDrawer(false);
         initializeScreen();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        if (mFriendsAutocompleteAdapter != null) {
+            //todo clear
+        }
     }
 
     /**
@@ -57,61 +71,106 @@ public class AddFriendActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mEditTextAddFriendEmail = (EditText) findViewById(R.id.edit_text_add_friend_email);
+        mListViewAutocomplete = (ListView) findViewById(R.id.list_view_friends_autocomplete);
+        progress = (LinearLayout) findViewById(R.id.lin_Progress);
 
         userList = new ArrayList<User>();
-        mRecyclerViewFriends = (RecyclerView) findViewById(R.id.recyclerview_friend);
-
+        userEmail = new ArrayList<String>();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS);
 
-        mRecyclerViewFriends.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerViewFriends.setHasFixedSize(true);
-        mUserFriendsAdapter = new UserFriendsAdapter(userList, this, new UserFriendsAdapter.UserFriendsAdapterOnClickHolder() {
-            @Override
-            public void onClick(String id, String lessonName, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
-                Log.e("data", "fffff");
-            }
-        });
-        mRecyclerViewFriends.setAdapter(mUserFriendsAdapter);
-
+        addAutoComplete();
     }
 
-    private void attachDatabaseReadListener() {
-
-        // What I will do with this data iget from firebase
-        mChildEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e("data", dataSnapshot + "vvv");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
-
-        //what cild I am listening to
-        mUsersDatabaseReference.addValueEventListener(mChildEventListener);
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        attachDatabaseReadListener();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        detachDatabaseReadListener();
     }
 
-    private void detachDatabaseReadListener() {
-        if (mChildEventListener != null) {
-            mUsersDatabaseReference.removeEventListener(mChildEventListener);
-            mChildEventListener = null;
 
+    private void addAutoComplete() {
+
+        mEditTextAddFriendEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                /* Get the input after every textChanged event and transform it to lowercase */
+                mInput = mEditTextAddFriendEmail.getText().toString().toLowerCase();
+
+            /* Clean up the old adapter */
+                if (mFriendsAutocompleteAdapter != null) {
+                    userList.clear();
+                    userEmail.clear();
+                    mFriendsAutocompleteAdapter.notifyDataSetChanged();
+                }
+            /* Nullify the adapter data if the input length is less than 2 characters */
+                if (mInput.equals("") || mInput.length() < 2) {
+                    mListViewAutocomplete.setAdapter(null);
+
+            /* Define and set the adapter otherwise. */
+                } else {
+                    progress.setVisibility(View.VISIBLE);
+                    Query query = mUsersDatabaseReference.orderByKey().startAt(mInput).endAt(mInput + "~")
+                            .limitToFirst(5);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+
+                                User user = childDataSnapshot.getValue(User.class);
+                                userList.add(user);
+                                userEmail.add(childDataSnapshot.getKey());
+                            }
+                            if (accountName != null) {
+                                mFriendsAutocompleteAdapter = new AutocompleteFriendAdapter
+                                        (AddFriendActivity.this, R.layout.single_autocomplete_item,
+                                                userEmail,userList, accountName);
+                                mListViewAutocomplete.setAdapter(mFriendsAutocompleteAdapter);
+//                                if(userList.size()== 0){
+//                                Toast.makeText(AddFriendActivity.this,
+//                                        R.string.toast_user_is_not_found,
+//                                        Toast.LENGTH_LONG).show();}
+                                progress.setVisibility(View.GONE);
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e("DatabaseError", databaseError +"");
+
+                            progress.setVisibility(View.GONE);
+                        }
+                    });
+
+                }
+
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(this, FriendsList.class);
+            startActivity(intent);
+            finish();
         }
+        return super.onOptionsItemSelected(item);
     }
 }
