@@ -30,6 +30,8 @@ public class CourseDBHelper  extends SQLiteOpenHelper {
                 CourseContract.CourseEntry.COLUMN_COURSE_NAME + " TEXT NOT NULL, " +
                 CourseContract.CourseEntry.COLUMN_TEACHER_NAME + " TEXT NOT NULL, " +
                 CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL + " TEXT, " +
+                CourseContract.CourseEntry.COLUMN_TEACHER_COLOR + " TEXT, " +
+                CourseContract.CourseEntry.COLUMN_FIREBASE_ID + " TEXT, " +
                 CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL + " TEXT, " +
 
                 // it's created a UNIQUE constraint with REPLACE strategy
@@ -39,8 +41,6 @@ public class CourseDBHelper  extends SQLiteOpenHelper {
         final String SQL_CREATE_SUBJECT_TABLE = "CREATE TABLE " + CourseContract.SubjectEntry.TABLE_NAME + " (" +
 
                 CourseContract.SubjectEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-
-
                 CourseContract.SubjectEntry.COLUMN_COURSE_ID + " TEXT NOT NULl, " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " TEXT NOT NULL, " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE + " TEXT NOT NULL, " +
@@ -50,6 +50,7 @@ public class CourseDBHelper  extends SQLiteOpenHelper {
                 CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG + " TEXT ," +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE + " TEXT , " +
                 CourseContract.SubjectEntry.COLUMN_FAVORITE + " TEXT , " +
+                CourseContract.SubjectEntry.COLUMN_FIREBASE_ID + " TEXT , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE + " BLOB , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL + " TEXT , " +
 

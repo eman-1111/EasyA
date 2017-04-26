@@ -43,14 +43,14 @@ public class CourseContract {
         public static final String COLUMN_COURSE_ID = "course_id";
         public static final String COLUMN_COURSE_NAME = "course_name";
         public static final String COLUMN_TEACHER_NAME = "teacher_name";
-
-
         public static final String COLUMN_TEACHER_EMAIL= "teacher_email";
-
         public static final String COLUMN_TEACHER_PHOTO_URL = "teacher_photo";
+        public static final String COLUMN_TEACHER_COLOR = "teacher_color";
+        public static final String COLUMN_FIREBASE_ID = "firebase_course_id";
 
-
-
+        public static Uri buildCoursesUri() {
+            return CONTENT_URI.buildUpon().build();
+        }
         public static Uri buildCourseUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
@@ -92,6 +92,7 @@ public class CourseContract {
         public static final String COLUMN_LESSON_PRACTICAL= "lesson_practical";
         public static final String COLUMN_LESSON_PRACTICAL_IMAGE= "lesson_practical_image";
         public static final String COLUMN_FAVORITE = "favorite";
+        public static final String COLUMN_FIREBASE_ID = "firebase_lesson_id";
 
 
         public static Uri buildSubjectUri(long id) {

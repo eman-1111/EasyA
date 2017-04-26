@@ -12,18 +12,18 @@ import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.SubjectDetailFragment;
 
 
-public class SubjectDetail extends AppCompatActivity {
+public class SubjectDetail extends BaseActivity {
     String lessonName;
     String lessonId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject_detail);
+        setDrawer(false);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // Set title of Detail page
 
         if (savedInstanceState == null) {
 

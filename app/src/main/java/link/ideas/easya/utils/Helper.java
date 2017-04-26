@@ -1,11 +1,22 @@
 package link.ideas.easya.utils;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
+import com.google.firebase.database.ServerValue;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import link.ideas.easya.R;
 
 /**
  * Created by Eman on 4/4/2017.
@@ -24,6 +35,7 @@ public class Helper {
     public static Bitmap getImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
+
     /**
      * Encode user email to use it as a Firebase key (Firebase does not allow "." in the key name)
      * Encoded email is also used as "userEmail", list and item "owner" value
@@ -32,13 +44,84 @@ public class Helper {
         return userEmail.replace(".", ",");
     }
 
-    /**
-     * Email is being decoded just once to display real email in AutocompleteFriendAdapter
-     *
-     */
+    public static HashMap<String, Object> getTimestampLastChanged() {
+        /**
+         * Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap
+         */
+        HashMap<String, Object> timestampNowHash = new HashMap<>();
+        timestampNowHash.put(Constants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED, ServerValue.TIMESTAMP);
+
+        return timestampNowHash;
+    }
+
+//    public static HashMap<String, Object> getTimestampCreated() {
+//        /**
+//         * Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap
+//         */
+//        HashMap<String, Object> timestampNowHash = new HashMap<>();
+//        timestampNowHash.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+//
+//        return timestampNowHash;
+//    }
+
+    public static Map<String, Object> getTimestampCreated() {
+        HashMap<String, Object> timestampNowHash = new HashMap<>();
+        timestampNowHash.put(Constants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED, ServerValue.TIMESTAMP);
+
+        return timestampNowHash;
+    }
+
+    public static boolean startDialog(Context mContext, String title, String description) {
+
+
+        LayoutInflater li = LayoutInflater.from(mContext);
+        View promptsView = li.inflate(R.layout.warn_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+
+        alertDialogBuilder.setView(promptsView);
+
+        final TextView txtTitle = (TextView) promptsView
+                .findViewById(R.id.txt_title);
+
+        final TextView txtDescription = (TextView) promptsView
+                .findViewById(R.id.txt_description);
+
+        txtTitle.setText(title);
+        txtDescription.setText(description);
+        final boolean[] isOkay = {false};
+        // set dialog message
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                isOkay[0] = true;
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                isOkay[0] = false;
+                                dialog.cancel();
+                            }
+                        });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+
+
+        return isOkay[0];
+    }
+
     public static String decodeEmail(String userEmail) {
         return userEmail.replace(",", ".");
     }
+
     public static Bitmap getImageCompress(Bitmap image) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         image.compress(Bitmap.CompressFormat.JPEG, 0, bytes);

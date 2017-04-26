@@ -45,6 +45,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -68,10 +69,15 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import link.ideas.easya.data.CourseContract;
@@ -90,8 +96,7 @@ public class BaseActivity extends AppCompatActivity
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
 
-    public boolean isLogedIn,isDrawerEnable = false;
-
+    public boolean isLogedIn, isDrawerEnable = false;
 
 
     private static final String TAG = "GoogleActivity";
@@ -134,7 +139,7 @@ public class BaseActivity extends AppCompatActivity
                 } else {
                     isLogedIn = false;
                 }
-                if(isDrawerEnable) {
+                if (isDrawerEnable) {
                     try {
                         updateUI(isLogedIn);
                     } catch (IOException e) {
@@ -146,6 +151,7 @@ public class BaseActivity extends AppCompatActivity
         SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
         accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
     }
+
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
@@ -177,6 +183,12 @@ public class BaseActivity extends AppCompatActivity
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+    }
 
     private void signIn() {
         showProgressDialog();
@@ -266,6 +278,13 @@ public class BaseActivity extends AppCompatActivity
                     }
                 }
                 break;
+            case 11:
+                if (resultCode == RESULT_OK) {
+                    Uri selectedImageUri = data.getData();
+                    Toast.makeText(BaseActivity.this, "Time for an upgrade!" +selectedImageUri,
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
@@ -294,6 +313,7 @@ public class BaseActivity extends AppCompatActivity
         editor.putString(Constants.PREF_ACCOUNT_USER_TOKEN, null);
         accountName = null;
         editor.apply();
+        isLogedIn = false;
     }
 
     private void revokeAccess() {
@@ -341,7 +361,7 @@ public class BaseActivity extends AppCompatActivity
                 editor.putString(Constants.PREF_ACCOUNT_USER_NAME, userName);
                 editor.putString(Constants.PREF_ACCOUNT_PHOTO_URL, photoUrl);
                 editor.putString(Constants.PREF_ACCOUNT_USER_TOKEN, accountToken);
-                accountName = accountToken;
+
                 editor.apply();
                 firebaseAuthWithGoogle(acct);
             }
@@ -365,7 +385,7 @@ public class BaseActivity extends AppCompatActivity
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         isLogedIn = task.isSuccessful();
-                        User mUser = new User(acct.getDisplayName(), acct.getPhotoUrl() + "");
+                        User mUser = new User(acct.getDisplayName(), acct.getPhotoUrl() + "", Helper.getTimestampCreated());
 
                         mUsersDatabaseReference.child(Helper.encodeEmail(acct.getEmail())).setValue(mUser);
                         if (!task.isSuccessful()) {
@@ -386,9 +406,7 @@ public class BaseActivity extends AppCompatActivity
                             e.printStackTrace();
                         }
 
-                        // [START_EXCLUDE]
                         hideProgressDialog();
-                        // [END_EXCLUDE]
                     }
                 });
 
@@ -399,8 +417,9 @@ public class BaseActivity extends AppCompatActivity
         if (signedIn) {
             SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
 
-             accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+            accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
+                isLogedIn = true;
                 String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
                 String photoUrl = prefs.getString(Constants.PREF_ACCOUNT_PHOTO_URL, null);
 
@@ -418,6 +437,11 @@ public class BaseActivity extends AppCompatActivity
             if (signInButton.getVisibility() == View.GONE) {
                 signInButton.setVisibility(View.VISIBLE);
             }
+            txtName.setText(null);
+            Glide.with(this).load("")
+                    .transform(new CircleTransform(this))
+                    .error(R.drawable.ic_account_circle_black_24dp)
+                    .into(imgProfile);
 
         }
     }
@@ -428,7 +452,7 @@ public class BaseActivity extends AppCompatActivity
      *
      * @return true if the device has a network connection, false otherwise.
      */
-    private boolean isDeviceOnline() {
+    public boolean isDeviceOnline() {
         ConnectivityManager connMgr =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -656,6 +680,7 @@ public class BaseActivity extends AppCompatActivity
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL, teacherEmail);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL, teacherPhoto);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_NAME, teacherName);
+            courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_COLOR, "0");
 
             // Finally, insert Course data into the database.
             Uri insertedUri = this.getContentResolver().insert(
@@ -769,6 +794,7 @@ public class BaseActivity extends AppCompatActivity
                 signIn();
             }
         });
+
         try {
             updateUI(isLogedIn);
         } catch (IOException e) {
@@ -792,13 +818,22 @@ public class BaseActivity extends AppCompatActivity
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_about:
-                        Toast.makeText(BaseActivity.this, "Time for an upgrade!", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("image/jpeg");
+                        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                        startActivityForResult(Intent.createChooser(intent, "Complete action using"), 11);
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_friends:
-                        Intent friendIntent = new Intent(BaseActivity.this, FriendsList.class);
-                        startActivity(friendIntent);
-                        drawer.closeDrawers();
+                        if (isLogedIn) {
+                            Intent friendIntent = new Intent(BaseActivity.this, FriendsList.class);
+                            startActivity(friendIntent);
+                            drawer.closeDrawers();
+                        } else {
+                            drawer.closeDrawers();
+                            Helper.startDialog(BaseActivity.this, getResources().getString(R.string.login_title_warning)
+                                    , getResources().getString(R.string.login_des_warning));
+                        }
                         return true;
                     default:
                 }
@@ -842,7 +877,7 @@ public class BaseActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-       if(isDrawerEnable){
+        if (isDrawerEnable) {
             if (drawer.isDrawerOpen(GravityCompat.START)) {
                 drawer.closeDrawers();
                 return;
@@ -851,6 +886,7 @@ public class BaseActivity extends AppCompatActivity
 
         super.onBackPressed();
     }
+
     public void setDrawer(boolean isDrawerEnable) {
         this.isDrawerEnable = isDrawerEnable;
     }

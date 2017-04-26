@@ -34,7 +34,6 @@
         android:layout_below="@+id/title"
         android:maxLines="3"
         android:padding="8dp"
-        android:text="@string/detail_desc"
         android:textColor="#666"
         android:textSize="14dp" />
 

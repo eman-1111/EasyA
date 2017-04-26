@@ -1,6 +1,7 @@
 package link.ideas.easya;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -28,6 +30,10 @@ import android.view.View;
 import android.view.WindowManager;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +42,7 @@ import link.ideas.easya.fragment.LinkFragment;
 import link.ideas.easya.fragment.SummaryFragment;
 import link.ideas.easya.fragment.ApplyFragment;
 import link.ideas.easya.interfacee.SaveLesson;
+import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 import me.relex.circleindicator.CircleIndicator;
 
@@ -256,6 +263,8 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
                 Bitmap outlineImage = SummaryFragment.thumbnail;
                 Bitmap imageLink = LinkFragment.thumbnail;
                 Bitmap imageApp = ApplyFragment.thumbnail;
+
+
                 byte[] outlineImage_, imageLink_, imageApp_;
                 if (outlineImage != null) {
                     outlineImage_ = Helper.getBytes(outlineImage);
@@ -415,7 +424,17 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
-
+    public static File savebitmap(Bitmap bmp, String fileName) throws IOException {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
+        File f = new File(Environment.getExternalStorageDirectory()
+                + File.separator +Constants.APP_NAME +fileName +".jpg");
+        f.createNewFile();
+        FileOutputStream fo = new FileOutputStream(f);
+        fo.write(bytes.toByteArray());
+        fo.close();
+        return f;
+    }
 
 }
 

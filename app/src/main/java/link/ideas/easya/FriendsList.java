@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,7 +29,7 @@ public class FriendsList extends BaseActivity {
     RecyclerView mRecyclerViewFriends;
     LinearLayout progress;
     UserFriendsAdapter mUserFriendsAdapter;
-
+    TextView empty_list;
     ArrayList<User> userList;
     ArrayList<String> friendsEmails;
 
@@ -58,6 +59,7 @@ public class FriendsList extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        empty_list = (TextView) findViewById(R.id.error_tv);
 
         userList = new ArrayList<User>();
         friendsEmails = new ArrayList<String>();
@@ -69,19 +71,21 @@ public class FriendsList extends BaseActivity {
 
         mRecyclerViewFriends.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerViewFriends.setHasFixedSize(true);
-        mUserFriendsAdapter = new UserFriendsAdapter(userList,friendsEmails, this, new UserFriendsAdapter.UserFriendsAdapterOnClickHolder() {
+        mUserFriendsAdapter = new UserFriendsAdapter(userList, friendsEmails, this, new UserFriendsAdapter.UserFriendsAdapterOnClickHolder() {
             @Override
             public void onClick(String id, String lessonName, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
                 Log.e("data", "fffff");
             }
         });
         mRecyclerViewFriends.setAdapter(mUserFriendsAdapter);
-        attachDatabaseReadListener();
+        if (isDeviceOnline()) {
+            progress.setVisibility(View.VISIBLE);
+            attachDatabaseReadListener();
+        }
     }
 
     private void attachDatabaseReadListener() {
         Log.e("attachDatabaseRead", " vvv");
-
         // What I will do with this data iget from firebase
         mChildEventFriendsListener = new ValueEventListener() {
             @Override
@@ -90,9 +94,14 @@ public class FriendsList extends BaseActivity {
                     User user = childDataSnapshot.getValue(User.class);
                     userList.add(user);
                     friendsEmails.add(childDataSnapshot.getKey());
-                    progress.setVisibility(View.GONE);
                 }
                 mUserFriendsAdapter.notifyDataSetChanged();
+                if (userList.size() == 0) {
+                    empty_list.setVisibility(View.VISIBLE);
+                } else {
+                    empty_list.setVisibility(View.GONE);
+                }
+                progress.setVisibility(View.GONE);
             }
 
             @Override
@@ -105,7 +114,6 @@ public class FriendsList extends BaseActivity {
         //what cild I am listening to
         mUsersFriendsDatabaseReference.addValueEventListener(mChildEventFriendsListener);
     }
-
 
 
     @Override

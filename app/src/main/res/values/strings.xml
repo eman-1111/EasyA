@@ -58,11 +58,6 @@
     <string name="info_descr">Summarize the idea. what does it means, methods ,most important results and conclusions.</string>
 
 
-    <string name="detail_desc">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-        eiusmod tempor incididunt ut</string>
-    <string name="detail_location">"8 Rue Scribe, 75009 Paris, France"</string>
-    <string name="title_activity_image_search">ImageSearch</string>
-
     <!-- Base Error Strings-->
     <string name="log_error_updating_data">Error updating data: </string>
     <string name="log_error_the_read_failed">The read failed: </string>
@@ -89,6 +84,7 @@
         Check out : https://console.developers.google.com/project. Also make sure you have all the proper
     gradle dependencies</string>
 
+    <string name="you_have_no_friend">You do not have friends yet please add them</string>
 
     <!-- OAuth Format -->
     <string name="oauth2_format">oauth2:%s</string>
@@ -108,6 +104,8 @@
     <string name="toast_user_is_not_found">Your friend is not found!</string>
     <string name="toast_you_cant_add_yourself">You can\'t add yourself as a friend.</string>
 
+    <string name="login_des_warning">You need to sign in first to access your friends list</string>
+    <string name="login_title_warning">Not Signed In</string>
 
     <string name="no_google_classroom">You need to have Google Classroom,so Easy A could Load your courses</string>
     <string name="network_toast">No network connection available.</string>
