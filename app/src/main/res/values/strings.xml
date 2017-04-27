@@ -106,9 +106,12 @@
 
     <string name="login_des_warning">You need to sign in first to access your friends list</string>
     <string name="login_title_warning">Not Signed In</string>
+    <string name="login_share_warning">You need to sign in first to share your lesson</string>
+    <string name="shared_lesson_warning">Your lesson is already shared</string>
 
     <string name="no_google_classroom">You need to have Google Classroom,so Easy A could Load your courses</string>
     <string name="network_toast">No network connection available.</string>
     <string name="no_course">The Courses you will add, will show up here, so add some</string>
+    <string name="title_activity_subject_list_friends">SubjectListFriends</string>
 
 </resources>

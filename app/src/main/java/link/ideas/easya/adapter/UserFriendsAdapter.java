@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 import link.ideas.easya.R;
+import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.models.User;
 import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Helper;
@@ -47,7 +48,8 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
         @Override
         public void onClick(View v) {
             int adapterPostion = getAdapterPosition();
-
+            String friendEmail = email.get(adapterPostion);
+            mClickHolder.onClick(friendEmail, this);
         }
 
     }
@@ -61,7 +63,7 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
     }
 
     public static interface UserFriendsAdapterOnClickHolder {
-        void onClick(String id, String lessonName, UserFriendsAdapter.UserFriendsAdapterViewHolder vh);
+        void onClick(String friendEmail, UserFriendsAdapter.UserFriendsAdapterViewHolder vh);
     }
 
     @Override

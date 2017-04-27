@@ -10,7 +10,8 @@
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="22" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="22" />
 
     <application
@@ -65,8 +66,12 @@
             android:name=".ProfileActivity"
             android:launchMode="singleTask"
             android:parentActivityName=".CoursesList" />
-
-        <activity android:name=".FriendsList"
+        <activity
+            android:name=".FriendsList"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ProfileActivity" />
+        <activity
+            android:name=".CourseListFriends"
             android:launchMode="singleTask"
             android:parentActivityName=".ProfileActivity" />
         <!-- Detail Widget -->
@@ -99,7 +104,11 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-
+        <activity
+            android:name=".SubjectListFriends"
+            android:label="@string/title_activity_subject_list_friends"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".SubjectDetailFriend"></activity>
     </application>
 
 </manifest>

@@ -15,12 +15,17 @@ public class Constants {
     public static final String PREF_ACCOUNT_USER_NAME = "userName";
     public static final String PREF_ACCOUNT_PHOTO_URL = "photoUrl";
     public static final String PREF_ACCOUNT_USER_TOKEN = "userToken";
+    public static final String PREF_FRIEND_ACCOUNT = "friendAccount";
+    public static final String PREF_COURSE_PUSH_ID = "coursePushId";
+    public static final String PREF_LESSON_PUSH_ID = "lessonPushId";
+    public static final String PREF_LESSON_OBJECT = "lessonObject";
 
     public static final String FIREBASE_LOCATION_USERS = "users";
     public static final String FIREBASE_LOCATION_USER_FRIENDS = "userFriends";
     public static final String FIREBASE_LOCATION_USERS_COURSES = "userCourses";
     public static final String FIREBASE_LOCATION_USERS_LESSONS = "userLessons";
     public static final String FIREBASE_LOCATION_USERS_LESSONS_DETAIL = "userLessonsDetail";
+
 
     public static final String FIREBASE_DATABASE_USERS_IMAGE = "userStorgeImage";
 

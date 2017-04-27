@@ -13,9 +13,8 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,14 +26,16 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Map;
 
 import link.ideas.easya.AddNewLesson;
 import link.ideas.easya.R;
@@ -80,7 +81,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
     private DatabaseReference mLessonDetailDatabaseReference;
 
     private FirebaseStorage mFirebaseStorage;
-    private StorageReference mUserImagesReference;
+    private StorageReference mUserImagesReferenceSummary, mUserImagesReferenceLink, mUserImagesReferenceApp;
 
 
     private Uri mUri;
@@ -172,7 +173,16 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_white_24dp));
         }
         shareItem = menu.findItem(R.id.action_share);
+        if (mCursor != null) {
+            if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
+                shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
+            }
+        } else {
+            Log.e(LOG_TAG, "mCursor null");
+        }
+        Log.e(LOG_TAG, "onCreateOptionsMenu");
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -211,20 +221,22 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             }
 
         } else if (id == R.id.action_share) {
-            shareItem.setEnabled(false);
-            shareItem.setCheckable(false);
             String lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
             SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
             accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
                 if (lessonPushId == null) {
+                    shareItem.setEnabled(false);
+                    shareItem.setCheckable(false);
                     shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
                     createShareUserLesson();
                 } else {
-                    //todo tell the user that he saved this lesson
+                    Helper.startDialog(getActivity(), "",
+                            getResources().getString(R.string.shared_lesson_warning));
                 }
             } else {
-                //todo tell the user that he has to log in first
+                Helper.startDialog(getActivity(), getResources().getString(R.string.login_title_warning),
+                        getResources().getString(R.string.login_share_warning));
             }
         }
         return super.onOptionsItemSelected(item);
@@ -310,9 +322,8 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
             favorite = Integer.parseInt(data.getString(COL_FAVORITE));
 
-            if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
-                shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
-            }
+
+            Log.e(LOG_TAG, "loader");
         }
     }
 
@@ -356,13 +367,17 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
     private void setUpFireBase() {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseStorage = FirebaseStorage.getInstance();
 
         mCoursDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(Helper.encodeEmail(accountName));
-        mLessonDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS);
         mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
 
-        mFirebaseStorage = FirebaseStorage.getInstance();
-        mUserImagesReference = mFirebaseStorage.getReference().child(Constants.FIREBASE_DATABASE_USERS_IMAGE);
+        mUserImagesReferenceSummary = mFirebaseStorage.getReference()
+                .child(Helper.encodeEmail(accountName) + "/"+lessonName + "/summary.jpg");
+        mUserImagesReferenceLink = mFirebaseStorage.getReference()
+                .child(Helper.encodeEmail(accountName) + "/" +lessonName + "/link.jpg");
+        mUserImagesReferenceApp = mFirebaseStorage.getReference()
+                .child(Helper.encodeEmail(accountName) + "/"+lessonName + "/app.jpg");
     }
 
     private void addCourseToFirebase() {
@@ -372,8 +387,19 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         coursePushId = mCoursDatabaseReference.push().getKey();
         mCoursDatabaseReference.child(coursePushId).setValue(course);
-        addFirebaseCourseId(coursePushId);
-        addLessonToFirebase();
+        mCoursDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                addFirebaseCourseId(coursePushId);
+                addLessonToFirebase();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void addLessonToFirebase() {
@@ -387,12 +413,27 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
     private void addLessonLinkToFirebase() {
 
+        mLessonDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
+
         Lesson lesson = new Lesson(lessonName, lessonLink, linkUrl + "",
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
-        lessonPushId = mLessonDatabaseReference.child(coursePushId).push().getKey();
+        lessonPushId = mLessonDatabaseReference.push().getKey();
+        Log.e(LOG_TAG, "is" + coursePushId + "ff " + lessonPushId);
         mLessonDatabaseReference.child(lessonPushId).setValue(lesson);
-        addFirebaseLessonId(lessonPushId);
-        addLessonDetailToFirebase();
+        mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                addFirebaseLessonId(lessonPushId);
+                addLessonDetailToFirebase();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void addLessonDetailToFirebase() {
@@ -415,14 +456,15 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
 
         shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
+        shareItem.setEnabled(true);
+        shareItem.setCheckable(true);
     }
 
     private void addImageToFirebase(Bitmap bitmap) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
-        mUserImagesReference.child(lessonName + "/summary.jpg");
-        UploadTask uploadTask = mUserImagesReference.putBytes(data);
+        UploadTask uploadTask = mUserImagesReferenceSummary.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -447,8 +489,8 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
-        mUserImagesReference.child(lessonName + "/link.jpg");
-        UploadTask uploadTask = mUserImagesReference.putBytes(data);
+
+        UploadTask uploadTask = mUserImagesReferenceLink.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
@@ -469,8 +511,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
-        mUserImagesReference.child(lessonName + "/app.jpg");
-        UploadTask uploadTask = mUserImagesReference.putBytes(data);
+        UploadTask uploadTask = mUserImagesReferenceApp.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {

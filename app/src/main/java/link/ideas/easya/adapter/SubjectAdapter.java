@@ -25,7 +25,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
 
 
     final private Context mContext;
-    private Cursor mCursor ;
+    private Cursor mCursor;
     final private SubjectAdapterOnClickHolder mClickHolder;
     ColorGenerator generator = ColorGenerator.MATERIAL;
 
@@ -68,7 +68,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
             mCursor.moveToPosition(adapterPostion);
             int idCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_COURSE_ID);
             int titleCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE);
-            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex),mCursor.getString(titleCulomnIndex));
+            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex), mCursor.getString(titleCulomnIndex));
             return true;
         }
 
@@ -82,7 +82,8 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
 
     public static interface SubjectAdapterOnClickHolder {
         void onClick(String id, String lessonName, SubjectAdapterViewHolder vh);
-        boolean onLongClick(String id,String lessonName);
+
+        boolean onLongClick(String id, String lessonName);
     }
 
 
@@ -116,8 +117,9 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectA
         subjectAdapterViewHolder.practicalLink.setText(practical_title_Name);
 
         byte[] image = mCursor.getBlob(SubjectListFragment.COL_LESSON_OUTLINE_IMAGE);
-        if(image != null){
-        subjectAdapterViewHolder.lessonImage.setImageBitmap(Helper.getImage(image));}
+        if (image != null) {
+            subjectAdapterViewHolder.lessonImage.setImageBitmap(Helper.getImage(image));
+        }
 
 //        Picasso.with(mContext).load()
 //                .error(R.drawable.air_plan).into(subjectAdapterViewHolder.lessonImage);

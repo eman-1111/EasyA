@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 import link.ideas.easya.adapter.UserFriendsAdapter;
+import link.ideas.easya.models.Course;
 import link.ideas.easya.models.User;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
@@ -63,6 +64,7 @@ public class FriendsList extends BaseActivity {
 
         userList = new ArrayList<User>();
         friendsEmails = new ArrayList<String>();
+
         mRecyclerViewFriends = (RecyclerView) findViewById(R.id.recyclerview_friend);
         progress = (LinearLayout) findViewById(R.id.lin_Progress);
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -73,8 +75,10 @@ public class FriendsList extends BaseActivity {
         mRecyclerViewFriends.setHasFixedSize(true);
         mUserFriendsAdapter = new UserFriendsAdapter(userList, friendsEmails, this, new UserFriendsAdapter.UserFriendsAdapterOnClickHolder() {
             @Override
-            public void onClick(String id, String lessonName, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
-                Log.e("data", "fffff");
+            public void onClick(String friendEmail, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
+                Intent intent = new Intent(FriendsList.this, CourseListFriends.class);
+                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT ,friendEmail);
+                startActivity(intent);
             }
         });
         mRecyclerViewFriends.setAdapter(mUserFriendsAdapter);
@@ -85,7 +89,7 @@ public class FriendsList extends BaseActivity {
     }
 
     private void attachDatabaseReadListener() {
-        Log.e("attachDatabaseRead", " vvv");
+
         // What I will do with this data iget from firebase
         mChildEventFriendsListener = new ValueEventListener() {
             @Override
