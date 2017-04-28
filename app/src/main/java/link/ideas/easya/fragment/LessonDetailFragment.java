@@ -51,10 +51,10 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class SubjectDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LessonDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
-    private static final String LOG_TAG = SubjectDetailFragment.class.getSimpleName();
+    private static final String LOG_TAG = LessonDetailFragment.class.getSimpleName();
     public static final String DETAIL_URI = "URI";
 
     Menu menu;
@@ -130,7 +130,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
     public static final int COL_FIREBASE_LESSON_ID = 17;
 
 
-    public SubjectDetailFragment() {
+    public LessonDetailFragment() {
         setHasOptionsMenu(true);
     }
 
@@ -139,7 +139,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
                              Bundle savedInstanceState) {
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mUri = arguments.getParcelable(SubjectDetailFragment.DETAIL_URI);
+            mUri = arguments.getParcelable(LessonDetailFragment.DETAIL_URI);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_detail, container, false);
@@ -373,11 +373,11 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
 
         mUserImagesReferenceSummary = mFirebaseStorage.getReference()
-                .child(Helper.encodeEmail(accountName) + "/"+lessonName + "/summary.jpg");
+                .child(Helper.encodeEmail(accountName) + "/" + lessonName + "/summary.jpg");
         mUserImagesReferenceLink = mFirebaseStorage.getReference()
-                .child(Helper.encodeEmail(accountName) + "/" +lessonName + "/link.jpg");
+                .child(Helper.encodeEmail(accountName) + "/" + lessonName + "/link.jpg");
         mUserImagesReferenceApp = mFirebaseStorage.getReference()
-                .child(Helper.encodeEmail(accountName) + "/"+lessonName + "/app.jpg");
+                .child(Helper.encodeEmail(accountName) + "/" + lessonName + "/app.jpg");
     }
 
     private void addCourseToFirebase() {
@@ -403,8 +403,8 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     private void addLessonToFirebase() {
-        if (linkImageBit != null) {
-            addImageToFirebaseLink(linkImageBit);
+        if (outlineImageBit != null) {
+            addImageToFirebase(outlineImageBit);
         } else {
             addLessonLinkToFirebase();
         }
@@ -416,7 +416,7 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
         mLessonDatabaseReference = mFirebaseDatabase.getReference().
                 child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
 
-        Lesson lesson = new Lesson(lessonName, lessonLink, linkUrl + "",
+        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "",
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         lessonPushId = mLessonDatabaseReference.push().getKey();
         Log.e(LOG_TAG, "is" + coursePushId + "ff " + lessonPushId);
@@ -438,8 +438,8 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
 
     private void addLessonDetailToFirebase() {
 
-        if (outlineImageBit != null) {
-            addImageToFirebase(linkImageBit);
+        if (linkImageBit != null) {
+            addImageToFirebaseLink(linkImageBit);
         } else if (appImageBit != null) {
             addImageToFirebaseApp(appImageBit);
         } else {
@@ -450,8 +450,8 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
     }
 
     private void addLessonDetailsToFirebase() {
-        LessonDetail lessonDetail = new LessonDetail(lessonOutline, summaryUrl + "",
-                lessonPracticalTitle, lessonPractical, appUrl + "",
+        LessonDetail lessonDetail = new LessonDetail(lessonOutline, linkUrl + "",
+                lessonPracticalTitle, lessonPractical, appUrl + "",lessonDebug,
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
 
@@ -474,12 +474,10 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+
                 summaryUrl = taskSnapshot.getDownloadUrl();
-                if (appImageBit != null) {
-                    addImageToFirebaseApp(appImageBit);
-                } else {
-                    addLessonDetailsToFirebase();
-                }
+                addLessonLinkToFirebase();
+
             }
         });
     }
@@ -501,7 +499,11 @@ public class SubjectDetailFragment extends Fragment implements LoaderManager.Loa
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 linkUrl = taskSnapshot.getDownloadUrl();
-                addLessonLinkToFirebase();
+                if (appImageBit != null) {
+                    addImageToFirebaseApp(appImageBit);
+                } else {
+                    addLessonDetailsToFirebase();
+                }
             }
         });
     }

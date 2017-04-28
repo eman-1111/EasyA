@@ -2,17 +2,14 @@ package link.ideas.easya;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.transition.Fade;
 import android.view.MenuItem;
 import link.ideas.easya.data.CourseContract;
-import link.ideas.easya.fragment.SubjectDetailFragment;
+import link.ideas.easya.fragment.LessonDetailFragment;
 
 
-public class SubjectDetail extends BaseActivity {
+public class LessonDetail extends BaseActivity {
     String lessonName;
     String lessonId;
     @Override
@@ -30,12 +27,12 @@ public class SubjectDetail extends BaseActivity {
 
             Bundle arguments = new Bundle();
 
-            arguments.putParcelable(SubjectDetailFragment.DETAIL_URI, getIntent().getData());
+            arguments.putParcelable(LessonDetailFragment.DETAIL_URI, getIntent().getData());
 
-            Uri mUri = arguments.getParcelable(SubjectDetailFragment.DETAIL_URI);
+            Uri mUri = arguments.getParcelable(LessonDetailFragment.DETAIL_URI);
             lessonName = CourseContract.SubjectEntry.getSubjectTitleFromUri(mUri);
             lessonId = CourseContract.SubjectEntry.getSubjectIdFromUri(mUri);
-            SubjectDetailFragment fragment = new SubjectDetailFragment();
+            LessonDetailFragment fragment = new LessonDetailFragment();
             fragment.setArguments(arguments);
 
             getSupportFragmentManager().beginTransaction()
@@ -50,7 +47,7 @@ public class SubjectDetail extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(this, SubjectList.class)
+            Intent intent = new Intent(this, LessonList.class)
                     .setData(CourseContract.SubjectEntry.buildSubjectWithID(lessonId));
             intent.putExtra("CourseName", lessonName);
             startActivity(intent);

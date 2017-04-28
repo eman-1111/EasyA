@@ -1,63 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
     android:background="@drawable/touch_selector"
+    android:elevation="2dp"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
-    android:layout_margin="8dp"
-    card_view:cardCornerRadius="2dp"
-    android:elevation="2dp">
+    card_view:cardCornerRadius="2dp">
 
     <android.support.v7.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
         android:id="@+id/cv"
-        >
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <FrameLayout
-            android:id="@+id/image_fram"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/list_item_lesson_image"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:background="@drawable/air_plan"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:maxHeight="100dp"
-                android:maxWidth="100dp"
-                android:scaleType="centerCrop" />
+            <FrameLayout
+                android:id="@+id/image_fram"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="@dimen/activity_vertical_margin"
+                android:layout_gravity="center">
 
-        </FrameLayout>
+                <ImageView
+                    android:id="@+id/list_item_lesson_image"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/bachground2"
+                    android:maxHeight="100dp"
+                    android:maxWidth="100dp"
+                    android:scaleType="centerCrop" />
 
-        <TextView
-            android:id="@+id/list_item_lesson_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            android:layout_toRightOf="@+id/image_fram"
-            tools:text="LessonName"/>
+            </FrameLayout>
 
-        <TextView
-            android:id="@+id/list_item_real_Application_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding= "4dp"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-            android:textColor="@color/secondary_text"
-            tools:text="LessonName"
-            android:layout_below="@+id/list_item_lesson_title"
-            android:layout_toRightOf="@+id/image_fram" />
+            <TextView
+                android:id="@+id/list_item_lesson_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/image_fram"
+                android:padding="4dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                tools:text="LessonName" />
 
-    </RelativeLayout>
-</android.support.v7.widget.CardView>
+            <TextView
+                android:id="@+id/list_item_real_Application_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/list_item_lesson_title"
+                android:layout_toRightOf="@+id/image_fram"
+                android:padding="4dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/secondary_text"
+                tools:text="LessonName" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 </LinearLayout>

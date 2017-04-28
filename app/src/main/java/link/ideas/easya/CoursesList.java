@@ -25,7 +25,7 @@ public class CoursesList extends BaseActivity implements
         setContentView(R.layout.courses_list);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader();
+        loadNavHeader(getResources().getString(R.string.your_course) );
         setUpNavigationView();
 
 
@@ -33,7 +33,7 @@ public class CoursesList extends BaseActivity implements
     @Override
     public void onItemSelected(Uri contentUri, String courseName) {
 
-        Intent intent = new Intent(this, SubjectList.class)
+        Intent intent = new Intent(this, LessonList.class)
                 .setData(contentUri);
         intent.putExtra("CourseName", courseName);
         ActivityOptionsCompat activityOptions =

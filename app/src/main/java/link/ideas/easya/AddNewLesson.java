@@ -1,16 +1,11 @@
 package link.ideas.easya;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -243,7 +238,7 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(this, SubjectList.class)
+            Intent intent = new Intent(this, LessonList.class)
                     .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
             startActivity(intent);
             finish();
@@ -378,7 +373,7 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
 
         // Wait, that worked?  Yes!
         clearSavedData();
-        Intent intent = new Intent(this, SubjectList.class)
+        Intent intent = new Intent(this, LessonList.class)
                 .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
         startActivity(intent);
         finish();

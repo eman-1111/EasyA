@@ -1,11 +1,7 @@
 <resources>
     <string name="app_name">EasyA</string>
+    <string name="add_friends">Add Friends</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_courses_list">Classes</string>
-    <string name="title_activity_subject_list">SubjectList</string>
-    <string name="title_activity_add_subject_titel">AddSubjectTitel</string>
-    <string name="title_activity_add_lesson_detail">AddLessonDetail</string>
-    <string name="title_activity_subject_detail">SubjectDetail</string>
 
     <string name="action_share">Share</string>
     <string name="action_favorite">Favorite</string>
@@ -22,6 +18,15 @@
     <string name="home">Home</string>
     <string name="login">Login</string>
     <string name="logout">Log Out</string>
+    <string name="link">Link</string>
+    <string name="debug">Debug</string>
+
+    <string name="your_lesson">Your lesson</string>
+    <string name="your_course">Your courses</string>
+    <string name="your_friends_list">Friend`s list</string>
+
+    <string name="friend_lesson">`s lesson</string>
+    <string name="friend_course">`s courses</string>
 
     <string name="loading_courses">Loading your courses ...</string>
     <string name="drawer_open">Open navigation drawer</string>

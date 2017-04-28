@@ -72,30 +72,39 @@ public class Lesson implements Parcelable {
         this.timestampCreated = timestampCreated;
     }
 
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeInt(mData);
+        out.writeString(lessonImage);
+        out.writeString(lessonLink);
+        out.writeString(lessonName);
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
-    // write your object's data to the passed-in Parcel
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(mData);
-    }
+    public static final Parcelable.Creator<Lesson> CREATOR
+            = new Parcelable.Creator<Lesson>() {
 
-    // this is used to regenerate your object. All Parcelables must have a CREATOR that implements these two methods
-    public static final Parcelable.Creator<Lesson> CREATOR = new Parcelable.Creator<Lesson>() {
+
+        @Override
         public Lesson createFromParcel(Parcel in) {
             return new Lesson(in);
         }
 
+        @Override
         public Lesson[] newArray(int size) {
             return new Lesson[size];
         }
     };
 
-    // example constructor that takes a Parcel and gives you an object populated with it's values
     private Lesson(Parcel in) {
         mData = in.readInt();
+        lessonImage = in.readString();
+        lessonLink = in.readString();
+        lessonName = in.readString();
     }
 }

@@ -13,8 +13,8 @@ import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
 import link.ideas.easya.CoursesList;
+import link.ideas.easya.LessonList;
 import link.ideas.easya.R;
-import link.ideas.easya.SubjectList;
 import link.ideas.easya.utils.Constants;
 
 /**
@@ -36,7 +36,7 @@ public class DetailWidgetProvider extends AppWidgetProvider {
             setRemoteAdapter(context, views);
             boolean useDetailActivity = true;
             Intent clickIntentTemplate = useDetailActivity
-                    ? new Intent(context, SubjectList.class)
+                    ? new Intent(context, LessonList.class)
                     : new Intent(context, CoursesList.class);
 
             PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)

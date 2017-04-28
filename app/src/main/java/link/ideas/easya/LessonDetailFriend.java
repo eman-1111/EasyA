@@ -2,10 +2,10 @@ package link.ideas.easya;
 
 import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,7 +22,7 @@ import link.ideas.easya.models.Lesson;
 import link.ideas.easya.models.LessonDetail;
 import link.ideas.easya.utils.Constants;
 
-public class SubjectDetailFriend extends BaseActivity {
+public class LessonDetailFriend extends BaseActivity {
 
     TextView mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
             mLessonOutline, mLink, mDebug;
@@ -77,7 +77,7 @@ public class SubjectDetailFriend extends BaseActivity {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mLessonDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId).child(lessonPushId);
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL).child(coursePushId).child(lessonPushId);
 
         attachDatabaseReadListener();
     }
@@ -107,29 +107,59 @@ public class SubjectDetailFriend extends BaseActivity {
     private void setUpView() {
 //        mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
 //                mLessonOutline, mLink, mDebug;
+        String lessonName = lesson.getLessonName();
+        collapsingToolbar.setTitle(lessonName);
         mLessonLink.setText(lesson.getLessonLink());
-        mLessonDebug.setText(lessonDetail.getLessonSummery());
-        mLessonPracticalTitle.setText(lesson.getLessonLink());
-        mLessonPractical.setText(lesson.getLessonLink());
+        mLessonDebug.setText(lessonDetail.getLessonDebug());
+        mLessonPracticalTitle.setText(lessonDetail.getLessonAppTitle());
+        mLessonPractical.setText(lessonDetail.getLessonAppDescription());
         mLessonOutline.setText(lessonDetail.getLessonSummery());
 
         String outlineImageUrl = lesson.getLessonImage();
         if (outlineImageUrl != null) {
-            Glide.with(SubjectDetailFriend.this).load(outlineImageUrl)
-                    .error(R.drawable.ic_account_circle_black_24dp)
+            Glide.with(LessonDetailFriend.this).load(outlineImageUrl)
+                    .placeholder(R.drawable.placeholder)
                     .into(outlineImage);
         }
-        String linkImageUrl = lessonDetail.getSummeryImage();
+        String linkImageUrl = lessonDetail.getLinkImage();
         if (linkImageUrl != null) {
-            Glide.with(SubjectDetailFriend.this).load(linkImageUrl)
-                    .error(R.drawable.ic_account_circle_black_24dp)
+            Glide.with(LessonDetailFriend.this).load(linkImageUrl)
+                    .placeholder(R.drawable.placeholder)
                     .into(linkImage);
         }
         String appImageUrl = lessonDetail.getAppImage();
         if (appImageUrl != null) {
-            Glide.with(SubjectDetailFriend.this).load(appImageUrl)
-                    .error(R.drawable.ic_account_circle_black_24dp)
+            Glide.with(LessonDetailFriend.this).load(appImageUrl)
+                    .placeholder(R.drawable.placeholder)
                     .into(appImage);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+        if (id == R.id.home) {
+            Intent homeIntent = new Intent(LessonDetailFriend.this, LessonListFriends.class);
+            homeIntent.putExtra(Constants.PREF_COURSE_PUSH_ID ,coursePushId);
+            startActivity(homeIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        detachDatabaseReadListener();
+
+    }
+
+    private void detachDatabaseReadListener() {
+        if (mValueEventLessonDetailListener != null) {
+            mLessonDatabaseReference.removeEventListener(mValueEventLessonDetailListener);
+            mValueEventLessonDetailListener = null;
+
         }
     }
 }

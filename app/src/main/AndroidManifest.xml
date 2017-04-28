@@ -33,12 +33,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SubjectList"
+            android:name=".LessonList"
             android:launchMode="singleTask"
             android:parentActivityName=".CoursesList"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".SubjectDetail"
+            android:name=".LessonDetail"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -48,6 +48,7 @@
         <activity
             android:name=".AddFriendActivity"
             android:launchMode="singleTask"
+            android:label="@string/add_friends"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ImagesSearch"
@@ -61,7 +62,7 @@
         <activity
             android:name=".AddNewLesson"
             android:launchMode="singleTask"
-            android:parentActivityName=".SubjectList" />
+            android:parentActivityName=".LessonList" />
         <activity
             android:name=".ProfileActivity"
             android:launchMode="singleTask"
@@ -72,8 +73,16 @@
             android:parentActivityName=".ProfileActivity" />
         <activity
             android:name=".CourseListFriends"
+            android:launchMode="singleTask"/>
+
+        <activity
+            android:name=".LessonListFriends"
+            android:launchMode="singleTask" />
+
+        <activity android:name=".LessonDetailFriend"
             android:launchMode="singleTask"
-            android:parentActivityName=".ProfileActivity" />
+            android:parentActivityName=".LessonListFriends"/>
+
         <!-- Detail Widget -->
         <receiver
             android:name=".widget.DetailWidgetProvider"
@@ -104,11 +113,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".SubjectListFriends"
-            android:label="@string/title_activity_subject_list_friends"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".SubjectDetailFriend"></activity>
+
     </application>
 
 </manifest>

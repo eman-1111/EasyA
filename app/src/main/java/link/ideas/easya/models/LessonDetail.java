@@ -10,7 +10,8 @@ import java.util.Map;
 public class LessonDetail {
 
     private String lessonSummery;
-    private String summeryImage;
+    private String linkImage;
+    private String lessonDebug;
     private String lessonAppTitle;
     private String lessonAppDescription;
     private String appImage;
@@ -20,25 +21,22 @@ public class LessonDetail {
     public LessonDetail() {
     }
 
-    public LessonDetail(String lessonSummery, String summeryImage, String lessonAppTitle,
-                        String lessonAppDescription, String appImage,
+    public LessonDetail(String lessonSummery, String linkImage, String lessonAppTitle,
+                        String lessonAppDescription, String appImage,String lessonDebug,
                         Map<String, Object> timestampLastChanged, Map<String, Object> timestampCreated) {
 
         this.lessonSummery = lessonSummery;
-        this.summeryImage = summeryImage;
+        this.linkImage = linkImage;
         this.lessonAppTitle = lessonAppTitle;
         this.lessonAppDescription = lessonAppDescription;
         this.appImage = appImage;
+        this.lessonDebug = lessonDebug;
         this.timestampLastChanged = timestampLastChanged;
         this.timestampCreated = timestampCreated;
     }
 
     public String getLessonSummery() {
         return lessonSummery;
-    }
-
-    public String getSummeryImage() {
-        return summeryImage;
     }
 
     public String getLessonAppTitle() {
@@ -53,6 +51,14 @@ public class LessonDetail {
         return appImage;
     }
 
+    public String getLinkImage() {
+        return linkImage;
+    }
+
+    public String getLessonDebug() {
+        return lessonDebug;
+    }
+
     public Map<String, Object> getTimestampLastChanged() {
         return timestampLastChanged;
     }
@@ -65,10 +71,6 @@ public class LessonDetail {
         this.lessonSummery = lessonSummery;
     }
 
-    public void setSummeryImage(String summeryImage) {
-        this.summeryImage = summeryImage;
-    }
-
     public void setLessonAppTitle(String lessonAppTitle) {
         this.lessonAppTitle = lessonAppTitle;
     }
@@ -79,6 +81,14 @@ public class LessonDetail {
 
     public void setAppImage(String appImage) {
         this.appImage = appImage;
+    }
+
+    public void setLinkImage(String linkImage) {
+        this.linkImage = linkImage;
+    }
+
+    public void setLessonDebug(String lessonDebug) {
+        this.lessonDebug = lessonDebug;
     }
 
     public void setTimestampLastChanged(Map<String, Object> timestampLastChanged) {

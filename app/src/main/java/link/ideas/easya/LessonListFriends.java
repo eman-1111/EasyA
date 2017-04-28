@@ -2,15 +2,9 @@ package link.ideas.easya;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -23,13 +17,12 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-import link.ideas.easya.adapter.CourseFriendAdapter;
 import link.ideas.easya.adapter.LessonFriendsAdapter;
-import link.ideas.easya.models.Course;
 import link.ideas.easya.models.Lesson;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.Helper;
 
-public class SubjectListFriends extends BaseActivity {
+public class LessonListFriends extends BaseActivity {
 
     public static final String LOG_TAG = CourseListFriends.class.getSimpleName();
     TextView emptyView;
@@ -49,15 +42,16 @@ public class SubjectListFriends extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
+        coursePushId = intent.getStringExtra(Constants.PREF_COURSE_PUSH_ID);
+        String friendAccount = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT);
 
         setContentView(R.layout.activity_subject_list_friends);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader();
+        loadNavHeader(Helper.getFristName(friendAccount) +getResources().getString(R.string.friend_lesson)  );
         setUpNavigationView();
 
-        Intent intent = getIntent();
-        coursePushId = intent.getStringExtra(Constants.PREF_COURSE_PUSH_ID);
         initializeScreen();
 
     }
@@ -75,12 +69,10 @@ public class SubjectListFriends extends BaseActivity {
         mLessonFriendsAdapter = new LessonFriendsAdapter(friendsLesson, lessonPushIds, this, new LessonFriendsAdapter.CourseAdapterFriendsOnClickHolder() {
             @Override
             public void onClick(String lessonPushId, Lesson lesson,LessonFriendsAdapter.CourseAdapterFriendsViewHolder vh) {
-                Intent intent = new Intent(SubjectListFriends.this, SubjectDetailFriend.class);
+                Intent intent = new Intent(LessonListFriends.this, LessonDetailFriend.class);
                 intent.putExtra(Constants.PREF_COURSE_PUSH_ID ,coursePushId);
                 intent.putExtra(Constants.PREF_LESSON_PUSH_ID ,lessonPushId);
-                intent.putExtra(Constants.PREF_LESSON_OBJECT, (Parcelable) lesson);
-                Log.e("data1",coursePushId +" "+lessonPushId +" "+ lesson.getLessonName());
-
+                intent.putExtra(Constants.PREF_LESSON_OBJECT, lesson);
                 startActivity(intent);
             }
         });
@@ -123,11 +115,19 @@ public class SubjectListFriends extends BaseActivity {
         mLessonDatabaseReference.addValueEventListener(mValueEventLessonListener);
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    protected void onDestroy() {
+        super.onDestroy();
+        detachDatabaseReadListener();
 
-        return true;
+    }
+
+    private void detachDatabaseReadListener() {
+        if (mValueEventLessonListener != null) {
+            mLessonDatabaseReference.removeEventListener(mValueEventLessonListener);
+            mValueEventLessonListener = null;
+
+        }
     }
 
 }

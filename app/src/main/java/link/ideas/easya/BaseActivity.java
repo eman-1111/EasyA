@@ -747,12 +747,13 @@ public class BaseActivity extends AppCompatActivity
 
     }
 
-    public void loadNavHeader() {
+    public void loadNavHeader(String activityTitle) {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle(activityTitle);
         mErrorText = (TextView) findViewById(R.id.error_tv);
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

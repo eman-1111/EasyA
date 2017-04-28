@@ -11,7 +11,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,21 +19,21 @@ import android.widget.TextView;
 
 
 import link.ideas.easya.R;
-import link.ideas.easya.adapter.SubjectAdapter;
+import link.ideas.easya.adapter.LessonAdapter;
 import link.ideas.easya.data.CourseContract;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class SubjectListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LessonListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = SubjectListFragment.class.getSimpleName();
+    private static final String LOG_TAG = LessonListFragment.class.getSimpleName();
     public static final String SUBJECT_URI = "URIS";
     private Uri mUri;
     TextView emptyView;
 
-    public SubjectListFragment() {
+    public LessonListFragment() {
     }
 
 
@@ -44,7 +43,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
 
     // RecyclerView mRecyclerView;
     RecyclerView mRecyclerView;
-    private SubjectAdapter mSubjectAdapter;
+    private LessonAdapter mSubjectAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
 
 
@@ -81,7 +80,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mUri = arguments.getParcelable(SubjectListFragment.SUBJECT_URI);
+            mUri = arguments.getParcelable(LessonListFragment.SUBJECT_URI);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
@@ -93,9 +92,9 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
 
         mRecyclerView.setHasFixedSize(true);
 
-        mSubjectAdapter = new SubjectAdapter(getActivity(), new SubjectAdapter.SubjectAdapterOnClickHolder() {
+        mSubjectAdapter = new LessonAdapter(getActivity(), new LessonAdapter.SubjectAdapterOnClickHolder() {
             @Override
-            public void onClick(String id, String lessonTitle, SubjectAdapter.SubjectAdapterViewHolder vh) {
+            public void onClick(String id, String lessonTitle, LessonAdapter.SubjectAdapterViewHolder vh) {
                 Uri uri = CourseContract.SubjectEntry.buildCourseWithIDAndTitle(id, lessonTitle);
                 ((Callback) getActivity())
                         .onItemSelected(uri);
@@ -154,7 +153,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         if (null != mUri) {
 
             String sortOrder;
-            if (SubjectAdapter.getSortBy(getActivity()).equals("date")) {
+            if (LessonAdapter.getSortBy(getActivity()).equals("date")) {
                 sortOrder = null;
             } else {
                 sortOrder = CourseContract.SubjectEntry.COLUMN_FAVORITE + " DESC";
@@ -179,7 +178,7 @@ public class SubjectListFragment extends Fragment implements LoaderManager.Loade
         mSubjectAdapter.swapCursor(data);
 
         if (data != null && data.moveToFirst()) {
-            getActivity().setTitle(data.getString(SubjectListFragment.COL_COURSE_NAME));
+            getActivity().setTitle(data.getString(LessonListFragment.COL_COURSE_NAME));
             emptyView.setText("");
         } else {
             emptyView.setText("The lesson you will add, will show up here, so add some");

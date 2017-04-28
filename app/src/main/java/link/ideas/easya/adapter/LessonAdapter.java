@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,19 +15,18 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
-import link.ideas.easya.fragment.FavSubjectListFragment;
+import link.ideas.easya.fragment.LessonListFragment;
 import link.ideas.easya.utils.Helper;
 
 /**
- * Created by Eman on 4/11/2017.
+ * Created by eman_ashour on 4/23/2016.
  */
-
-public class SubjectFavAdapter extends RecyclerView.Adapter<SubjectFavAdapter.SubjectFavAdapterViewHolder> {
+public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAdapterViewHolder> {
 
 
     final private Context mContext;
-    private Cursor mCursor ;
-    final private SubjectFavAdapter.SubjectFavAdapterOnClickHolder mClickHolder;
+    private Cursor mCursor;
+    final private SubjectAdapterOnClickHolder mClickHolder;
     ColorGenerator generator = ColorGenerator.MATERIAL;
 
     public static String getSortBy(Context context) {
@@ -37,14 +35,14 @@ public class SubjectFavAdapter extends RecyclerView.Adapter<SubjectFavAdapter.Su
                 context.getString(R.string.pref_sort_default));
     }
 
-    public class SubjectFavAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class SubjectAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         public final ImageView lessonImage;
         public final TextView lessonName;
         public final TextView practicalLink;
 
 
-        public SubjectFavAdapterViewHolder(View view) {
+        public SubjectAdapterViewHolder(View view) {
             super(view);
             lessonImage = (ImageView) view.findViewById(R.id.list_item_lesson_image);
             lessonName = (TextView) view.findViewById(R.id.list_item_lesson_title);
@@ -70,26 +68,27 @@ public class SubjectFavAdapter extends RecyclerView.Adapter<SubjectFavAdapter.Su
             mCursor.moveToPosition(adapterPostion);
             int idCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_COURSE_ID);
             int titleCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE);
-            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex),mCursor.getString(titleCulomnIndex));
+            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex), mCursor.getString(titleCulomnIndex));
             return true;
         }
 
     }
 
-    public SubjectFavAdapter(Context context, SubjectFavAdapter.SubjectFavAdapterOnClickHolder dh) {
+    public LessonAdapter(Context context, SubjectAdapterOnClickHolder dh) {
         mContext = context;
         mClickHolder = dh;
 
     }
 
-    public static interface SubjectFavAdapterOnClickHolder {
-        void onClick(String id, String lessonName, SubjectFavAdapter.SubjectFavAdapterViewHolder vh);
-        boolean onLongClick(String id,String lessonName);
+    public static interface SubjectAdapterOnClickHolder {
+        void onClick(String id, String lessonName, SubjectAdapterViewHolder vh);
+
+        boolean onLongClick(String id, String lessonName);
     }
 
 
     @Override
-    public SubjectFavAdapter.SubjectFavAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SubjectAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         if (parent instanceof RecyclerView) {
 
@@ -98,7 +97,7 @@ public class SubjectFavAdapter extends RecyclerView.Adapter<SubjectFavAdapter.Su
                     inflate(R.layout.list_item_subject, parent, false);
 
             view.setFocusable(false);
-            return new SubjectFavAdapter.SubjectFavAdapterViewHolder(view);
+            return new SubjectAdapterViewHolder(view);
         } else {
             throw new RuntimeException("Not bind th RecyclerView");
         }
@@ -106,24 +105,24 @@ public class SubjectFavAdapter extends RecyclerView.Adapter<SubjectFavAdapter.Su
     }
 
     @Override
-    public void onBindViewHolder(SubjectFavAdapter.SubjectFavAdapterViewHolder SubjectFavAdapterViewHolder, int position) {
+    public void onBindViewHolder(SubjectAdapterViewHolder subjectAdapterViewHolder, int position) {
         mCursor.moveToPosition(position);
 
 
-        String lessonName = mCursor.getString(FavSubjectListFragment.CO_LESSON_TITLE);
-        SubjectFavAdapterViewHolder.lessonName.setText(lessonName);
+        String lessonName = mCursor.getString(LessonListFragment.CO_LESSON_TITLE);
+        subjectAdapterViewHolder.lessonName.setText(lessonName);
 
 
-        String practical_title_Name = mCursor.getString(FavSubjectListFragment.COL_LESSON_LINK);
-        SubjectFavAdapterViewHolder.practicalLink.setText(practical_title_Name);
+        String practical_title_Name = mCursor.getString(LessonListFragment.COL_LESSON_LINK);
+        subjectAdapterViewHolder.practicalLink.setText(practical_title_Name);
 
-        byte[] image = mCursor.getBlob(FavSubjectListFragment.COL_LESSON_OUTLINE_IMAGE);
-        if(image != null){
-            SubjectFavAdapterViewHolder.lessonImage.setImageBitmap(Helper.getImage(image));}
+        byte[] image = mCursor.getBlob(LessonListFragment.COL_LESSON_OUTLINE_IMAGE);
+        if (image != null) {
+            subjectAdapterViewHolder.lessonImage.setImageBitmap(Helper.getImage(image));
+        }
 
-        int fav = Integer.parseInt(mCursor.getString(FavSubjectListFragment.COL_LESSON_FAV));
-        Log.e("SubjectFavAdapter", "ff is: "+ fav);
-
+//        Picasso.with(mContext).load()
+//                .error(R.drawable.air_plan).into(subjectAdapterViewHolder.lessonImage);
 
     }
 

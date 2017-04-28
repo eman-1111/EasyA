@@ -66,6 +66,7 @@
 
                 <TextView
                     android:id="@+id/lesson_linkx_d_tv"
+                    android:text="@string/link"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/md_keylines"
@@ -87,6 +88,7 @@
                     android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/lesson_debugx_title_tv"
+                    android:text="@string/debug"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/md_keylines"

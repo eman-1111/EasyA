@@ -18,21 +18,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import link.ideas.easya.R;
-import link.ideas.easya.adapter.SubjectFavAdapter;
+import link.ideas.easya.adapter.LessonFavAdapter;
 import link.ideas.easya.data.CourseContract;
 
 /**
  * Created by Eman on 4/11/2017.
  */
 
-public class FavSubjectListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FavLessonListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = SubjectListFragment.class.getSimpleName();
+    private static final String LOG_TAG = LessonListFragment.class.getSimpleName();
     public static final String SUBJECT_URI = "URIS";
     private Uri mUri;
     TextView emptyView;
 
-    public FavSubjectListFragment() {
+    public FavLessonListFragment() {
     }
 
 
@@ -42,7 +42,7 @@ public class FavSubjectListFragment extends Fragment implements LoaderManager.Lo
 
     // RecyclerView mRecyclerView;
     RecyclerView mRecyclerView;
-    private SubjectFavAdapter mSubjectFavAdapter;
+    private LessonFavAdapter mSubjectFavAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
 
 
@@ -81,7 +81,7 @@ public class FavSubjectListFragment extends Fragment implements LoaderManager.Lo
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mUri = arguments.getParcelable(SubjectListFragment.SUBJECT_URI);
+            mUri = arguments.getParcelable(LessonListFragment.SUBJECT_URI);
         }
 
         // getActivity().setTitle(arguments.getStringExtra("CourseName"));
@@ -97,11 +97,11 @@ public class FavSubjectListFragment extends Fragment implements LoaderManager.Lo
 
         mRecyclerView.setHasFixedSize(true);
 
-        mSubjectFavAdapter = new SubjectFavAdapter(getActivity(), new SubjectFavAdapter.SubjectFavAdapterOnClickHolder() {
+        mSubjectFavAdapter = new LessonFavAdapter(getActivity(), new LessonFavAdapter.SubjectFavAdapterOnClickHolder() {
             @Override
-            public void onClick(String id, String lessonTitle, SubjectFavAdapter.SubjectFavAdapterViewHolder vh) {
+            public void onClick(String id, String lessonTitle, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
                 Uri uri = CourseContract.SubjectEntry.buildCourseWithIDAndTitle(id, lessonTitle);
-                ((SubjectListFragment.Callback) getActivity())
+                ((LessonListFragment.Callback) getActivity())
                         .onItemSelected(uri);
                 mPosition = vh.getAdapterPosition();
             }
@@ -158,7 +158,7 @@ public class FavSubjectListFragment extends Fragment implements LoaderManager.Lo
         if (null != mUri) {
 
             String sortOrder;
-            if (SubjectFavAdapter.getSortBy(getActivity()).equals("date")) {
+            if (LessonFavAdapter.getSortBy(getActivity()).equals("date")) {
                 sortOrder = null;
             } else {
                 sortOrder = CourseContract.SubjectEntry.COLUMN_FAVORITE + " DESC";
@@ -180,7 +180,7 @@ public class FavSubjectListFragment extends Fragment implements LoaderManager.Lo
         mSubjectFavAdapter.swapCursor(data);
 
         if (data != null && data.moveToFirst()) {
-          //  getActivity().setTitle(data.getString(FavSubjectListFragment.COL_COURSE_NAME));
+          //  getActivity().setTitle(data.getString(FavLessonListFragment.COL_COURSE_NAME));
             emptyView.setText("");
 
         } else {

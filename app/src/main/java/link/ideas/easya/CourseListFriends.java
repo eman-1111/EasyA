@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import link.ideas.easya.adapter.CourseFriendAdapter;
 import link.ideas.easya.models.Course;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.Helper;
 
 public class CourseListFriends extends BaseActivity {
 
@@ -43,15 +44,16 @@ public class CourseListFriends extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
+        friendAccount = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT);
+
 
         setContentView(R.layout.courses_list_friend);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader();
+        loadNavHeader(Helper.getFristName(friendAccount) + getResources().getString(R.string.friend_course)  );
         setUpNavigationView();
 
-        Intent intent = getIntent();
-        friendAccount = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT);
         initializeScreen();
 
     }
@@ -69,8 +71,9 @@ public class CourseListFriends extends BaseActivity {
         mCourseFriendAdapter = new CourseFriendAdapter(friendsCourse, coursePushIds, this, new CourseFriendAdapter.CourseAdapterFriendsOnClickHolder() {
             @Override
             public void onClick(String coursePushId, CourseFriendAdapter.CourseAdapterFriendsViewHolder vh) {
-                Intent intent = new Intent(CourseListFriends.this, SubjectListFriends.class);
-                intent.putExtra(Constants.PREF_COURSE_PUSH_ID ,coursePushId);
+                Intent intent = new Intent(CourseListFriends.this, LessonListFriends.class);
+                intent.putExtra(Constants.PREF_COURSE_PUSH_ID, coursePushId);
+                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT, friendAccount);
                 startActivity(intent);
             }
         });
@@ -113,6 +116,20 @@ public class CourseListFriends extends BaseActivity {
         mCourseDatabaseReference.addValueEventListener(mValueEventCourseListener);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        detachDatabaseReadListener();
+
+    }
+
+    private void detachDatabaseReadListener() {
+        if (mValueEventCourseListener != null) {
+            mCourseDatabaseReference.removeEventListener(mValueEventCourseListener);
+            mValueEventCourseListener = null;
+
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

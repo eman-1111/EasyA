@@ -3,31 +3,25 @@ package link.ideas.easya;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import link.ideas.easya.data.CourseContract;
-import link.ideas.easya.fragment.FavSubjectListFragment;
-import link.ideas.easya.fragment.SubjectListFragment;
+import link.ideas.easya.fragment.FavLessonListFragment;
+import link.ideas.easya.fragment.LessonListFragment;
 
 
-public class SubjectList extends BaseActivity implements
-        SubjectListFragment.Callback, FavSubjectListFragment.Callback {
+public class LessonList extends BaseActivity implements
+        LessonListFragment.Callback, FavLessonListFragment.Callback {
 
     static Uri mUri;
     private TabLayout tabLayout;
@@ -41,14 +35,14 @@ public class SubjectList extends BaseActivity implements
         if (savedInstanceState == null) {
 
             mUri = getIntent().getData();
-            Log.e("SubjectList", "d: "+ mUri);
+            Log.e("LessonList", "d: "+ mUri);
             if (mUri == null) {
-                Log.e("SubjectList", "no uri");
+                Log.e("LessonList", "no uri");
             }
         }
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader();
+        loadNavHeader(getResources().getString(R.string.your_lesson));
         setUpNavigationView();
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -66,12 +60,12 @@ public class SubjectList extends BaseActivity implements
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(SubjectListFragment.SUBJECT_URI, mUri);
+        arguments.putParcelable(LessonListFragment.SUBJECT_URI, mUri);
 
-        SubjectListFragment fragment = new SubjectListFragment();
+        LessonListFragment fragment = new LessonListFragment();
         fragment.setArguments(arguments);
 
-        FavSubjectListFragment fragmentFav = new FavSubjectListFragment();
+        FavLessonListFragment fragmentFav = new FavLessonListFragment();
         fragmentFav.setArguments(arguments);
         adapter.addFragment(fragment, "Subject");
         adapter.addFragment(fragmentFav, "Fav Subject");
@@ -128,7 +122,7 @@ public class SubjectList extends BaseActivity implements
 
     @Override
     public void onItemSelected(Uri contentUri) {
-        Intent intent = new Intent(this, SubjectDetail.class)
+        Intent intent = new Intent(this, LessonDetail.class)
                 .setData(contentUri);
         startActivity(intent);
 

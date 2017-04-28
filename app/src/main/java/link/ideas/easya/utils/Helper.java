@@ -36,6 +36,18 @@ public class Helper {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 
+
+    public static String getFristName(String email) {
+        int iend = email.indexOf(",");
+        String subString;
+        if (iend != -1) {
+            subString = email.substring(0, iend);
+        }else{
+            subString = email;
+        }return subString;
+    }
+
+
     /**
      * Encode user email to use it as a Firebase key (Firebase does not allow "." in the key name)
      * Encoded email is also used as "userEmail", list and item "owner" value
@@ -53,16 +65,6 @@ public class Helper {
 
         return timestampNowHash;
     }
-
-//    public static HashMap<String, Object> getTimestampCreated() {
-//        /**
-//         * Set raw version of date to the ServerValue.TIMESTAMP value and save into dateCreatedMap
-//         */
-//        HashMap<String, Object> timestampNowHash = new HashMap<>();
-//        timestampNowHash.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
-//
-//        return timestampNowHash;
-//    }
 
     public static Map<String, Object> getTimestampCreated() {
         HashMap<String, Object> timestampNowHash = new HashMap<>();

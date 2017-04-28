@@ -47,7 +47,7 @@ public class FriendsList extends BaseActivity {
         setContentView(R.layout.activity_friends_list);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader();
+        loadNavHeader(getResources().getString(R.string.your_friends_list));
         setUpNavigationView();
         initializeScreen();
     }
