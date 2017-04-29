@@ -15,6 +15,7 @@ public class Constants {
     public static final String PREF_ACCOUNT_USER_NAME = "userName";
     public static final String PREF_ACCOUNT_PHOTO_URL = "photoUrl";
     public static final String PREF_ACCOUNT_USER_TOKEN = "userToken";
+    public static final String PREF_FRIEND_ACCOUNT_NAME= "friendAccountName";
     public static final String PREF_FRIEND_ACCOUNT = "friendAccount";
     public static final String PREF_COURSE_PUSH_ID = "coursePushId";
     public static final String PREF_LESSON_PUSH_ID = "lessonPushId";

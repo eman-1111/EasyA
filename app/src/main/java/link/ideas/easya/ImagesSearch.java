@@ -55,6 +55,7 @@ public class ImagesSearch extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e("ImagesSearch", "onCreate:2 " );
         setContentView(R.layout.activity_image_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

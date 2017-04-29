@@ -52,7 +52,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ImagesSearch"
-            android:launchMode="singleTask"
             android:parentActivityName=".AddNewLesson"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

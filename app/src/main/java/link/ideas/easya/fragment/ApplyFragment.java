@@ -30,13 +30,13 @@ import link.ideas.easya.utils.Helper;
 
 import static android.app.Activity.RESULT_OK;
 
-public class ApplyFragment extends Fragment implements View.OnClickListener{
+public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     private static final String LOG_TAG = ApplyFragment.class.getSimpleName();
 
     TextInputLayout inputLayoutAppTitle, inputLayoutApp;
-    public static  EditText  lessonLifeAppTitle, lessonLifeApp;
-    ImageView  infoTitle, infoApp;
+    public static EditText lessonLifeAppTitle, lessonLifeApp;
+    ImageView infoTitle, infoApp;
     public static ImageView imageApp;
 
     public static Bitmap thumbnail = null;
@@ -71,6 +71,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
         setUpIds(view);
         return view;
     }
+
     private void setUpIds(View view) {
         inputLayoutAppTitle = (TextInputLayout) view.findViewById(R.id.input_layout_app_title);
         inputLayoutApp = (TextInputLayout) view.findViewById(R.id.input_layout_app);
@@ -106,7 +107,20 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
                 break;
 
             case R.id.app_image:
-                startDialog();
+                lessonAppTitle =lessonLifeAppTitle.getText().toString();
+                lessonApp = lessonLifeApp.getText().toString();
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        startDialog();
+                    } else {
+                        //  ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
+                        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+
+                    }
+                } else {
+                    startDialog();
+                }
                 break;
 
 
@@ -120,7 +134,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
         builder2.setPositiveButton("OK", null);
         builder2.show();
     }
-
 
 
     @Override
@@ -168,23 +181,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onClick(View view) {
 
-
-                if (Build.VERSION.SDK_INT >= 23) {
-                    if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(takePicture, 0);
-                        alertDialog.dismiss();
-                    } else {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-                        alertDialog.dismiss();
-
-                    }
-                } else {
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(takePicture, 0);
-                    alertDialog.dismiss();
-                }
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePicture, 0);
+                alertDialog.dismiss();
 
 
             }
@@ -193,25 +192,11 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
             @Override
             public void onClick(View view) {
 
-                if (Build.VERSION.SDK_INT >= 23) {
-                    if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(pickPhoto, 1);
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(pickPhoto, 1);
 
-                        alertDialog.dismiss();
-                    } else {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-                        alertDialog.dismiss();
-                    }
-                } else {
-                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto, 1);
-
-                    alertDialog.dismiss();
-                }
+                alertDialog.dismiss();
 
 
             }
@@ -242,9 +227,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
 
-                    Log.e(LOG_TAG, "camera: " +thumbnail.getByteCount());
+                    Log.e(LOG_TAG, "camera: " + thumbnail.getByteCount());
 
-                    if(thumbnail.getByteCount() > 1000000){
+                    if (thumbnail.getByteCount() > 100000) {
                         thumbnail = Helper.getImageCompress(thumbnail);
 
                     }
@@ -264,9 +249,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
-                            Log.e(LOG_TAG, "gallary: " +thumbnail.getByteCount());
+                            Log.e(LOG_TAG, "gallary: " + thumbnail.getByteCount());
 
-                            if(thumbnail.getByteCount() > 100000){
+                            if (thumbnail.getByteCount() > 100000) {
                                 thumbnail = Helper.getImageCompress(thumbnail);
 
                             }
@@ -285,46 +270,28 @@ public class ApplyFragment extends Fragment implements View.OnClickListener{
                 if (resultCode == RESULT_OK) {
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    Log.e(LOG_TAG, "Search: " +thumbnail.getByteCount());
+                    Log.e(LOG_TAG, "Search: " + thumbnail.getByteCount());
 
                     if (thumbnail != null) {
                         imageApp.setImageBitmap(thumbnail);
                     }
                 }
                 break;
-
         }
-
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         switch (requestCode) {
-            case 2: {
-                //add
+            case 101:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto, 1);
+                    startDialog();
                 } else {
-
+                    //not granted
                 }
-                return;
-            }
-
-            case 1: {
-                //add
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(takePicture, 0);
-                } else {
-
-                }
-                return;
-            }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }

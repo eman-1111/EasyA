@@ -50,7 +50,7 @@ public class ImageAdapter extends ArrayAdapter<Image> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Glide.with(context).load(imageNor.getImage()).placeholder(R.drawable.blue).dontAnimate()
+        Glide.with(context).load(imageNor.getImage()).placeholder(R.drawable.placeholder).dontAnimate()
                 .into(holder.imageView);
 
         return convertView;

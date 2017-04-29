@@ -38,7 +38,7 @@ public class Helper {
 
 
     public static String getFristName(String email) {
-        int iend = email.indexOf(",");
+        int iend = email.indexOf(" ");
         String subString;
         if (iend != -1) {
             subString = email.substring(0, iend);

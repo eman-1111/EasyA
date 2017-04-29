@@ -32,7 +32,7 @@ public class CourseListFriends extends BaseActivity {
     LinearLayout progress;
 
     private CourseFriendAdapter mCourseFriendAdapter;
-    String friendAccount;
+    String friendAccount, friendName;
     ArrayList<Course> friendsCourse;
     ArrayList<String> coursePushIds;
 
@@ -46,12 +46,12 @@ public class CourseListFriends extends BaseActivity {
 
         Intent intent = getIntent();
         friendAccount = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT);
-
+        friendName = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT_NAME);
 
         setContentView(R.layout.courses_list_friend);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader(Helper.getFristName(friendAccount) + getResources().getString(R.string.friend_course)  );
+        loadNavHeader(Helper.getFristName(friendName) + getResources().getString(R.string.friend_course)  );
         setUpNavigationView();
 
         initializeScreen();
@@ -73,7 +73,7 @@ public class CourseListFriends extends BaseActivity {
             public void onClick(String coursePushId, CourseFriendAdapter.CourseAdapterFriendsViewHolder vh) {
                 Intent intent = new Intent(CourseListFriends.this, LessonListFriends.class);
                 intent.putExtra(Constants.PREF_COURSE_PUSH_ID, coursePushId);
-                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT, friendAccount);
+                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT_NAME ,friendName);
                 startActivity(intent);
             }
         });

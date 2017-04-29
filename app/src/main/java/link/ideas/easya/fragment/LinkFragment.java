@@ -120,8 +120,18 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.link_image:
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        startDialog();
+                    } else {
+                        //  ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
+                        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
 
-                startDialog();
+                    }
+                } else {
+                    startDialog();
+                }
                 break;
 
 
@@ -140,7 +150,6 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-
         imageLink.setImageBitmap(thumbnail);
     }
 
@@ -181,22 +190,9 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
             public void onClick(View view) {
 
 
-                if (Build.VERSION.SDK_INT >= 23) {
-                    if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(takePicture, 0);
-                        alertDialog.dismiss();
-                    } else {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-                        alertDialog.dismiss();
-
-                    }
-                } else {
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(takePicture, 0);
-                    alertDialog.dismiss();
-                }
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePicture, 0);
+                alertDialog.dismiss();
 
 
             }
@@ -205,25 +201,11 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onClick(View view) {
 
-                if (Build.VERSION.SDK_INT >= 23) {
-                    if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(pickPhoto, 1);
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(pickPhoto, 1);
 
-                        alertDialog.dismiss();
-                    } else {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-                        alertDialog.dismiss();
-                    }
-                } else {
-                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto, 1);
-
-                    alertDialog.dismiss();
-                }
+                alertDialog.dismiss();
 
 
             }
@@ -254,15 +236,14 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
 
-                    Log.e(LOG_TAG, "camera: " +thumbnail.getByteCount());
+                    Log.e(LOG_TAG, "camera: " + thumbnail.getByteCount());
 
-                    if(thumbnail.getByteCount() > 1000000){
+                    if (thumbnail.getByteCount() > 100000) {
                         thumbnail = Helper.getImageCompress(thumbnail);
 
                     }
                     if (thumbnail != null) {
                         imageLink.setImageBitmap(thumbnail);
-
 
                     }
                     break;
@@ -276,9 +257,9 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
-                            Log.e(LOG_TAG, "gallary: " +thumbnail.getByteCount());
+                            Log.e(LOG_TAG, "gallary: " + thumbnail.getByteCount());
 
-                            if(thumbnail.getByteCount() > 100000){
+                            if (thumbnail.getByteCount() > 100000) {
                                 thumbnail = Helper.getImageCompress(thumbnail);
 
                             }
@@ -297,7 +278,7 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                 if (resultCode == RESULT_OK) {
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    Log.e(LOG_TAG, "Search: " +thumbnail.getByteCount());
+                    Log.e(LOG_TAG, "Search: " + thumbnail.getByteCount());
 
                     if (thumbnail != null) {
                         imageLink.setImageBitmap(thumbnail);
@@ -311,32 +292,16 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         switch (requestCode) {
-            case 2: {
-                //add
+            case 101:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto, 1);
+                    startDialog();
                 } else {
-
+                    //not granted
                 }
-                return;
-            }
-
-            case 1: {
-                //add
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(takePicture, 0);
-                } else {
-
-                }
-                return;
-            }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-
 }

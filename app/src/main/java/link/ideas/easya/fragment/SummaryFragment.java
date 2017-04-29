@@ -81,17 +81,26 @@ public class SummaryFragment extends Fragment {
         outlineImage = (ImageView) view.findViewById(R.id.outline_image);
 
 
-
         outlineImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startDialog();
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        startDialog();
+                    } else {
+                        Log.e(LOG_TAG, "(Else.VERSION.SDK_INT");
+                        //  ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
+                        requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+
+                    }
+                } else {
+                    startDialog();
+                }
             }
         });
 
     }
-
-
 
 
     @Override
@@ -135,25 +144,9 @@ public class SummaryFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-
-                if (Build.VERSION.SDK_INT >= 23) {
-                    if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                        startActivityForResult(takePicture, 0);
-                        alertDialog.dismiss();
-                    } else {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-                        alertDialog.dismiss();
-
-                    }
-                } else {
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-                    startActivityForResult(takePicture, 0);
-                    alertDialog.dismiss();
-                }
+                Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(takePicture, 0);
+                alertDialog.dismiss();
 
 
             }
@@ -162,27 +155,12 @@ public class SummaryFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (Build.VERSION.SDK_INT >= 23) {
-                    if (getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
 
-                        startActivityForResult(pickPhoto, 1);
+                startActivityForResult(pickPhoto, 1);
 
-                        alertDialog.dismiss();
-                    } else {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-                        alertDialog.dismiss();
-                    }
-                } else {
-                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                    startActivityForResult(pickPhoto, 1);
-
-                    alertDialog.dismiss();
-                }
+                alertDialog.dismiss();
 
 
             }
@@ -205,6 +183,7 @@ public class SummaryFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         Image image = null;
+        Log.e(LOG_TAG, "Search:a2 " + requestCode + " "+ resultCode);
         switch (requestCode) {
 
             case 0:
@@ -212,12 +191,9 @@ public class SummaryFragment extends Fragment {
                     thumbnail = null;
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-
-
-
-                    if(thumbnail.getByteCount() > 1000000){
+                    if (thumbnail.getByteCount() > 100000) {
                         thumbnail = Helper.getImageCompress(thumbnail);
-                        Log.e(LOG_TAG, "cameraA: " +thumbnail.getByteCount());
+                        Log.e(LOG_TAG, "cameraA: " + thumbnail.getByteCount());
                     }
                     if (thumbnail != null) {
                         outlineImage.setImageBitmap(thumbnail);
@@ -235,11 +211,11 @@ public class SummaryFragment extends Fragment {
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
-                            Log.e(LOG_TAG, "gallary: " +thumbnail.getByteCount());
+                            Log.e(LOG_TAG, "gallary: " + thumbnail.getByteCount());
 
-                            if(thumbnail.getByteCount() > 100000){
+                            if (thumbnail.getByteCount() > 100000) {
                                 thumbnail = Helper.getImageCompress(thumbnail);
-                                Log.e(LOG_TAG, "gallaryA: " +thumbnail.getByteCount());
+                                Log.e(LOG_TAG, "gallaryA: " + thumbnail.getByteCount());
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -247,55 +223,37 @@ public class SummaryFragment extends Fragment {
                     }
                     if (thumbnail != null) {
                         outlineImage.setImageBitmap(thumbnail);
-
-
                     }
                 }
                 break;
             case 2:
+
                 if (resultCode == RESULT_OK) {
+                    Log.e(LOG_TAG, "Search:2 " );
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    Log.e(LOG_TAG, "Search: " +thumbnail.getByteCount());
+                    Log.e(LOG_TAG, "Search: " );
 
                     if (thumbnail != null) {
                         outlineImage.setImageBitmap(thumbnail);
                     }
                 }
                 break;
-
         }
 
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         switch (requestCode) {
-            case 2: {
-                //add
+            case 101:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-                    startActivityForResult(pickPhoto, 1);
+                    startDialog();
                 } else {
-
+                    //todo tell user he need permission
                 }
-                return;
-            }
-
-            case 1: {
-                //add
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(takePicture, 0);
-                } else {
-
-                }
-                return;
-            }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 }

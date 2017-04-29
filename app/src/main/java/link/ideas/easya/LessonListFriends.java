@@ -44,12 +44,11 @@ public class LessonListFriends extends BaseActivity {
 
         Intent intent = getIntent();
         coursePushId = intent.getStringExtra(Constants.PREF_COURSE_PUSH_ID);
-        String friendAccount = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT);
-
+        String friendName = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT_NAME);
         setContentView(R.layout.activity_subject_list_friends);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader(Helper.getFristName(friendAccount) +getResources().getString(R.string.friend_lesson)  );
+        loadNavHeader(Helper.getFristName(friendName) +getResources().getString(R.string.friend_lesson)  );
         setUpNavigationView();
 
         initializeScreen();

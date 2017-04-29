@@ -48,13 +48,15 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
         @Override
         public void onClick(View v) {
             int adapterPostion = getAdapterPosition();
+            String name = userList.get(adapterPostion).getName();
             String friendEmail = email.get(adapterPostion);
-            mClickHolder.onClick(friendEmail, this);
+            mClickHolder.onClick(friendEmail, name,this);
         }
 
     }
 
-    public UserFriendsAdapter(List<User> userList, List<String> email ,Context context, UserFriendsAdapter.UserFriendsAdapterOnClickHolder dh) {
+    public UserFriendsAdapter(List<User> userList, List<String> email ,
+                              Context context, UserFriendsAdapter.UserFriendsAdapterOnClickHolder dh) {
         mContext = context;
         mClickHolder = dh;
         this.userList = userList;
@@ -63,7 +65,7 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
     }
 
     public static interface UserFriendsAdapterOnClickHolder {
-        void onClick(String friendEmail, UserFriendsAdapter.UserFriendsAdapterViewHolder vh);
+        void onClick(String friendEmail, String friendName, UserFriendsAdapter.UserFriendsAdapterViewHolder vh);
     }
 
     @Override
