@@ -80,8 +80,12 @@ public class LessonListFriends extends BaseActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mLessonDatabaseReference = mFirebaseDatabase.getReference().
                 child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
+        if (isDeviceOnline()) {
+            attachDatabaseReadListener();
+        }else {
+            deviceOffline();
+        }
 
-        attachDatabaseReadListener();
 
     }
 

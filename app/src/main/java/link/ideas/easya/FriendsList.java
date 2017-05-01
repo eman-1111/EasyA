@@ -3,6 +3,7 @@ package link.ideas.easya;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -84,8 +85,10 @@ public class FriendsList extends BaseActivity {
         });
         mRecyclerViewFriends.setAdapter(mUserFriendsAdapter);
         if (isDeviceOnline()) {
-            progress.setVisibility(View.VISIBLE);
             attachDatabaseReadListener();
+        }else {
+            Snackbar.make(mRecyclerViewFriends ,getResources().getString(R.string.network) ,
+                    Snackbar.LENGTH_LONG).show();
         }
     }
 

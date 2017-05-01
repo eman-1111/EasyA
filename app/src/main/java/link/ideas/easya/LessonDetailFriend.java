@@ -3,6 +3,8 @@ package link.ideas.easya;
 import android.content.Intent;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -75,11 +77,18 @@ public class LessonDetailFriend extends BaseActivity {
 
         progress = (LinearLayout) findViewById(R.id.lin_Progress);
 
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mLessonDatabaseReference = mFirebaseDatabase.getReference().
                 child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL).child(coursePushId).child(lessonPushId);
+        if (isDeviceOnline()) {
+            attachDatabaseReadListener();
+        }else {
+            Snackbar.make(coordinatorLayout ,getResources().getString(R.string.network) ,
+                    Snackbar.LENGTH_LONG).show();
+        }
 
-        attachDatabaseReadListener();
     }
 
     private void attachDatabaseReadListener() {
@@ -105,8 +114,6 @@ public class LessonDetailFriend extends BaseActivity {
         mLessonDatabaseReference.addValueEventListener(mValueEventLessonDetailListener);
     }
     private void setUpView() {
-//        mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
-//                mLessonOutline, mLink, mDebug;
         String lessonName = lesson.getLessonName();
         collapsingToolbar.setTitle(lessonName);
         mLessonLink.setText(lesson.getLessonLink());

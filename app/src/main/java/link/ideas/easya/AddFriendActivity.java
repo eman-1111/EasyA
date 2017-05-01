@@ -3,6 +3,7 @@ package link.ideas.easya;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -59,9 +60,7 @@ public class AddFriendActivity extends BaseActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mFriendsAutocompleteAdapter != null) {
-            //todo clear
-        }
+
     }
 
     /**
@@ -80,7 +79,14 @@ public class AddFriendActivity extends BaseActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS);
 
-        addAutoComplete();
+        if (isDeviceOnline()) {
+            addAutoComplete();
+        }else {
+            Snackbar.make(mListViewAutocomplete,getResources().getString(R.string.network) ,
+                    Snackbar.LENGTH_LONG).show();
+        }
+
+
     }
 
 
@@ -140,10 +146,7 @@ public class AddFriendActivity extends BaseActivity {
                                         (AddFriendActivity.this, R.layout.single_autocomplete_item,
                                                 userEmail,userList, accountName);
                                 mListViewAutocomplete.setAdapter(mFriendsAutocompleteAdapter);
-//                                if(userList.size()== 0){
-//                                Toast.makeText(AddFriendActivity.this,
-//                                        R.string.toast_user_is_not_found,
-//                                        Toast.LENGTH_LONG).show();}
+
                                 progress.setVisibility(View.GONE);
 
                             }

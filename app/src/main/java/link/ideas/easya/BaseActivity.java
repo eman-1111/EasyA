@@ -75,6 +75,7 @@ import java.util.List;
 import java.util.Random;
 
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.fragment.LessonDetailFragment;
 import link.ideas.easya.models.User;
 import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Constants;
@@ -93,8 +94,7 @@ public class BaseActivity extends AppCompatActivity
     public boolean isLogedIn, isDrawerEnable = false;
 
 
-    private static final String TAG = "GoogleActivity";
-
+    private static final String LOG_TAG = BaseActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
@@ -217,10 +217,7 @@ public class BaseActivity extends AppCompatActivity
         if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (!isDeviceOnline()) {
-            // startIntent();
-            mErrorText.setText(getResources().getString(R.string.network_toast));
-        } else {
-            mMakeRequestTask = (MakeRequestTask) new MakeRequestTask(mCredential).execute();
+            deviceOffline();
         }
     }
 
@@ -275,8 +272,6 @@ public class BaseActivity extends AppCompatActivity
             case 11:
                 if (resultCode == RESULT_OK) {
                     Uri selectedImageUri = data.getData();
-                    Toast.makeText(BaseActivity.this, "Time for an upgrade!" +selectedImageUri,
-                            Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -329,12 +324,12 @@ public class BaseActivity extends AppCompatActivity
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Log.d(LOG_TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
     private void handleSignInResult(GoogleSignInResult result) throws IOException {
-        Log.d("CourseList", "handleSignInResult:" + result.isSuccess());
+        Log.d(LOG_TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
@@ -346,7 +341,6 @@ public class BaseActivity extends AppCompatActivity
                 String userName = acct.getDisplayName();
                 String photoUrl = String.valueOf(acct.getPhotoUrl());
                 String accountToken = acct.getIdToken();
-                Log.e("accountToken: ", accountToken + "  accountToken");
 
                 SharedPreferences.Editor editor =
                         getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE).edit();
@@ -374,7 +368,6 @@ public class BaseActivity extends AppCompatActivity
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
@@ -383,7 +376,6 @@ public class BaseActivity extends AppCompatActivity
 
                         mUsersDatabaseReference.child(Helper.encodeEmail(acct.getEmail())).setValue(mUser);
                         if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(BaseActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             isLogedIn = false;
@@ -420,7 +412,6 @@ public class BaseActivity extends AppCompatActivity
                 signInButton.setVisibility(View.GONE);
                 txtName.setText(userName);
                 mCredential.setSelectedAccountName(accountName);
-                Log.d(TAG, "signInWithCredential:updateUI " + userName + photoUrl);
                 Glide.with(this).load(photoUrl)
                         .transform(new CircleTransform(this))
                         .error(R.drawable.ic_account_circle_black_24dp)
@@ -452,7 +443,10 @@ public class BaseActivity extends AppCompatActivity
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
-
+    public void deviceOffline() {
+        Snackbar.make(drawer,getResources().getString(R.string.network) ,
+                Snackbar.LENGTH_LONG).show();
+    }
     /**
      * Check that Google Play services APK is installed and up to date.
      *
@@ -567,7 +561,6 @@ public class BaseActivity extends AppCompatActivity
 
                     Classroom.UserProfiles user = mService.userProfiles();
 
-                    Log.e("teacherInfo", "userProfile: " + user + "fff");
                     String teacherEmail = response2.getProfile().getEmailAddress();
                     String teacherName = response2.getProfile().getName().getFullName();
                     String teacherPhotoUrl = response2.getProfile().getPhotoUrl();
@@ -581,10 +574,10 @@ public class BaseActivity extends AppCompatActivity
 
                     for (Student student : students) {
 
-                        Log.e("StudentName", student.toString() + "names");
+                        Log.e(LOG_TAG, "StudentName: " + student.toString() + "names");
                     }
 
-                    Log.e("teacherInfo", "teacherName: " + teacherName + "teacherEmail: " + teacherEmail +
+                    Log.d(LOG_TAG, "teacherInfo: " + "teacherName: " + teacherName + "teacherEmail: " + teacherEmail +
                             "teacherPhotoUrl: " + teacherPhotoUrl);
 
                     addCourseData(courseName, teacherName, teacherEmail,
@@ -610,7 +603,6 @@ public class BaseActivity extends AppCompatActivity
         protected void onPostExecute(List<String> output) {
             hideProgressDialog();
             if (output == null || output.size() == 0) {
-                mErrorText.setText("No results returned.");
             }
         }
 
@@ -627,7 +619,7 @@ public class BaseActivity extends AppCompatActivity
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
                             BaseActivity.REQUEST_AUTHORIZATION);
                 } else {
-                    mErrorText.setText(getResources().getString(R.string.no_google_classroom));
+                    Log.e(LOG_TAG, getResources().getString(R.string.no_google_classroom));
                 }
             }
         }
@@ -662,19 +654,17 @@ public class BaseActivity extends AppCompatActivity
             ContentValues courseValues = new ContentValues();
 
             if (teacherEmail == null) {
-                teacherEmail = "Not Found";
+                teacherEmail = getResources().getString(R.string.not_found);
             }
             if (teacherPhoto == null) {
-                teacherPhoto = "Not Found";
+                teacherPhoto = getResources().getString(R.string.not_found);
             }
 
-            Log.e("data", courseName + courseId + teacherName);
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_ID, courseId);
             courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_NAME, courseName);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL, teacherEmail);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL, teacherPhoto);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_NAME, teacherName);
-            courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_COLOR, "0");
 
             // Finally, insert Course data into the database.
             Uri insertedUri = this.getContentResolver().insert(
@@ -713,14 +703,14 @@ public class BaseActivity extends AppCompatActivity
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
-                .setPositiveButton("OK",
+                .setPositiveButton(getResources().getString(R.string.ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 Random randomGenerator = new Random();
                                 int random = randomGenerator.nextInt(8964797);
-                                String courseId = "user" + random;
+                                String courseId = getResources().getString(R.string.user) + random;
                                 if (courseNameET.getText().toString().trim().isEmpty()) {
-                                    Snackbar.make(drawer, "Please fill in the course name",
+                                    Snackbar.make(drawer, getResources().getString(R.string.course_name_error),
                                             Snackbar.LENGTH_LONG).show();
 
                                 } else {
@@ -731,7 +721,7 @@ public class BaseActivity extends AppCompatActivity
 
                             }
                         })
-                .setNegativeButton("Cancel",
+                .setNegativeButton(getResources().getString(R.string.cancel),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
@@ -763,6 +753,7 @@ public class BaseActivity extends AppCompatActivity
         navHeader = navigationView.getHeaderView(0);
         txtName = (TextView) navHeader.findViewById(R.id.name);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
+        imgProfile.setContentDescription(getString(R.string.a11y_profileImage));
 
         signInButton = (SignInButton) navHeader.findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);
@@ -770,6 +761,7 @@ public class BaseActivity extends AppCompatActivity
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
+
                 getApplicationContext(), Arrays.asList(SCOPES2))
                 .setBackOff(new ExponentialBackOff());
 
@@ -786,7 +778,11 @@ public class BaseActivity extends AppCompatActivity
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signIn();
+                if (isDeviceOnline()) {
+                    signIn();
+                } else {
+                    deviceOffline();
+                }
             }
         });
 
@@ -813,10 +809,6 @@ public class BaseActivity extends AppCompatActivity
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_about:
-                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                        intent.setType("image/jpeg");
-                        intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                        startActivityForResult(Intent.createChooser(intent, "Complete action using"), 11);
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_friends:
