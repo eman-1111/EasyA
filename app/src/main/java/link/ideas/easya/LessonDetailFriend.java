@@ -116,19 +116,19 @@ public class LessonDetailFriend extends BaseActivity {
         mLessonOutline.setText(lessonDetail.getLessonSummery());
 
         String outlineImageUrl = lesson.getLessonImage();
-        if (outlineImageUrl != null) {
+        if (outlineImageUrl.equals("")) {
             Glide.with(LessonDetailFriend.this).load(outlineImageUrl)
                     .placeholder(R.drawable.placeholder)
                     .into(outlineImage);
         }
         String linkImageUrl = lessonDetail.getLinkImage();
-        if (linkImageUrl != null) {
+        if (linkImageUrl.equals("")) {
             Glide.with(LessonDetailFriend.this).load(linkImageUrl)
                     .placeholder(R.drawable.placeholder)
                     .into(linkImage);
         }
         String appImageUrl = lessonDetail.getAppImage();
-        if (appImageUrl != null) {
+        if (appImageUrl.equals("")) {
             Glide.with(LessonDetailFriend.this).load(appImageUrl)
                     .placeholder(R.drawable.placeholder)
                     .into(appImage);

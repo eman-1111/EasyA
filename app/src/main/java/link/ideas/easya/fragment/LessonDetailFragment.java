@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 
 import link.ideas.easya.AddNewLesson;
+import link.ideas.easya.LessonList;
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.models.Course;
@@ -63,11 +65,11 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     TextView mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
             mLessonOutline, mLink, mDebug;
 
-    CollapsingToolbarLayout collapsingToolbar;
+
     ImageView outlineImage, linkImage, appImage;
     String accountName;
     String teacherEmail, teacherPhoto, courseName, teacherName, courserColor = "0", lessonName, lessonOutline, lessonLink,
-            lessonDebug, lessonPracticalTitle, lessonPractical;
+            lessonDebug, lessonPracticalTitle, lessonPractical, courseId;
 
     Bitmap outlineImageBit = null, linkImageBit = null, appImageBit = null;
     Uri appUrl, linkUrl, summaryUrl;
@@ -129,7 +131,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     public static final int COL_FIREBASE_COURSE_ID = 16;
     public static final int COL_FIREBASE_LESSON_ID = 17;
 
-
+    CollapsingToolbarLayout collapsingToolbar;
     public LessonDetailFragment() {
         setHasOptionsMenu(true);
     }
@@ -143,15 +145,14 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_detail, container, false);
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbars);
 
-
-        // Set Collapsing Toolbar layout to the screen
+        Toolbar toolbar = (Toolbar)rootView.findViewById(R.id.toolbar);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         collapsingToolbar =
                 (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
         setUpIds(rootView);
-
-
         return rootView;
     }
 
@@ -191,6 +192,13 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(getActivity(), LessonList.class)
+                    .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
+            intent.putExtra("CourseName", lessonName);
+            startActivity(intent);
+            getActivity().finish();
+        }
         if (id == R.id.action_edit) {
             Intent intent = new Intent(getActivity(), AddNewLesson.class);
             intent.putExtra("LessonURL", mUri.toString());
@@ -273,7 +281,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
         if (data != null && data.moveToFirst()) {
             mCursor = data;
-
+            courseId = data.getString(COL_COURSE_ID);
             lessonName = data.getString(COL_LESSON_TITLE);
             collapsingToolbar.setTitle(lessonName);
             lessonLink = data.getString(COL_LESSON_LINK);
@@ -345,7 +353,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
         linkImage = (ImageView) rootView.findViewById(R.id.link_iv);
         appImage = (ImageView) rootView.findViewById(R.id.app_iv);
-        outlineImage = (ImageView) rootView.findViewById(R.id.outlook_iv);
+       // outlineImage = (ImageView) rootView.findViewById(R.id.outlook_iv);
 
     }
 

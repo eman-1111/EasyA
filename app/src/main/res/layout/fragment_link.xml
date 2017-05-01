@@ -58,14 +58,6 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
             </android.support.design.widget.TextInputLayout>
 
-            <ImageView
-                android:id="@+id/link_image"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:background="@drawable/background4" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -106,6 +98,28 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
             </android.support.design.widget.TextInputLayout>
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/link_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    android:background="@drawable/background4"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:padding="@dimen/activity_horizontal_margin"
+                    android:text="@string/chose_image"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/white" />
+            </FrameLayout>
 
         </LinearLayout>
 

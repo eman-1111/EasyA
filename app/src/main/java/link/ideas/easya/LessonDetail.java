@@ -3,6 +3,7 @@ package link.ideas.easya;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import link.ideas.easya.data.CourseContract;
@@ -18,9 +19,6 @@ public class LessonDetail extends BaseActivity {
         setContentView(R.layout.activity_subject_detail);
         setDrawer(false);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (savedInstanceState == null) {
 
@@ -38,9 +36,8 @@ public class LessonDetail extends BaseActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_detail, fragment)
                     .commit();
+
         }
-
-
 
 
     }

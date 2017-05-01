@@ -95,9 +95,9 @@ public class LessonFriendsAdapter extends RecyclerView.Adapter<LessonFriendsAdap
         holder.practicalLink.setText(lessonLink);
 
         String linkImageUrl = lesson.getLessonImage();
-        if (linkImageUrl != null) {
+        if (linkImageUrl.equals("")) {
             Glide.with(mContext).load(linkImageUrl)
-                    .error(R.drawable.ic_account_circle_black_24dp)
+                    .error(R.drawable.placeholder)
                     .into(holder.lessonImage);
         }
     }
