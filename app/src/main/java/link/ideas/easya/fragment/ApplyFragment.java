@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import link.ideas.easya.ImagesSearch;
 import link.ideas.easya.R;
+import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 
 import static android.app.Activity.RESULT_OK;
@@ -46,14 +47,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     }
 
-
-    public static ApplyFragment newInstance() {
-        ApplyFragment fragment = new ApplyFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,9 +75,11 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         infoTitle = (ImageView) view.findViewById(R.id.title_info);
         infoApp = (ImageView) view.findViewById(R.id.app_info);
+        infoTitle.setContentDescription(getResources().getString(R.string.a11y_app_title_info));
+        infoApp.setContentDescription(getResources().getString(R.string.a11y_app_info));
 
         imageApp = (ImageView) view.findViewById(R.id.app_image);
-
+        imageApp.setContentDescription(getResources().getString(R.string.a11y_app_image));
 
         infoTitle.setOnClickListener(this);
         infoApp.setOnClickListener(this);
@@ -227,9 +222,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
 
-                    Log.e(LOG_TAG, "camera: " + thumbnail.getByteCount());
-
-                    if (thumbnail.getByteCount() > 100000) {
+                    if (thumbnail.getByteCount() > Constants.BYTE_COUNT) {
                         thumbnail = Helper.getImageCompress(thumbnail);
 
                     }
@@ -249,9 +242,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
-                            Log.e(LOG_TAG, "gallary: " + thumbnail.getByteCount());
 
-                            if (thumbnail.getByteCount() > 100000) {
+                            if (thumbnail.getByteCount() > Constants.BYTE_COUNT) {
                                 thumbnail = Helper.getImageCompress(thumbnail);
 
                             }
@@ -270,7 +262,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 if (resultCode == RESULT_OK) {
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    Log.e(LOG_TAG, "Search: " + thumbnail.getByteCount());
 
                     if (thumbnail != null) {
                         imageApp.setImageBitmap(thumbnail);
@@ -287,8 +278,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startDialog();
                 } else {
-                    //not granted
-                }
+                    Helper.startDialog(getActivity(), "",
+                            getResources().getString(R.string.get_image_permissions));                }
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);

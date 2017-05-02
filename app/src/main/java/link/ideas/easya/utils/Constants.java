@@ -10,6 +10,8 @@ public class Constants {
 
     public static final String APP_NAME = "EasyA";
 
+    public static final int BYTE_COUNT =  100000;
+
     public static final String PREF_USER_DATA = "userData";
     public static final String PREF_ACCOUNT_NAME = "accountName";
     public static final String PREF_ACCOUNT_USER_NAME = "userName";
@@ -20,6 +22,9 @@ public class Constants {
     public static final String PREF_COURSE_PUSH_ID = "coursePushId";
     public static final String PREF_LESSON_PUSH_ID = "lessonPushId";
     public static final String PREF_LESSON_OBJECT = "lessonObject";
+    public static final String PREF_COURSE_NAME = "CourseName";
+    public static final String PREF_LESSON_URL = "LessonURL";
+    public static final String PREF_COURSE_ID = "CourseId";
 
     public static final String FIREBASE_LOCATION_USERS = "users";
     public static final String FIREBASE_LOCATION_USER_FRIENDS = "userFriends";

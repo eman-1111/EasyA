@@ -27,7 +27,7 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
 
 
     final private Context mContext;
-    private Cursor mCursor ;
+    private Cursor mCursor;
     final private LessonFavAdapter.SubjectFavAdapterOnClickHolder mClickHolder;
     ColorGenerator generator = ColorGenerator.MATERIAL;
 
@@ -70,7 +70,7 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
             mCursor.moveToPosition(adapterPostion);
             int idCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_COURSE_ID);
             int titleCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE);
-            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex),mCursor.getString(titleCulomnIndex));
+            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex), mCursor.getString(titleCulomnIndex));
             return true;
         }
 
@@ -84,7 +84,8 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
 
     public static interface SubjectFavAdapterOnClickHolder {
         void onClick(String id, String lessonName, LessonFavAdapter.SubjectFavAdapterViewHolder vh);
-        boolean onLongClick(String id,String lessonName);
+
+        boolean onLongClick(String id, String lessonName);
     }
 
 
@@ -106,23 +107,25 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
     }
 
     @Override
-    public void onBindViewHolder(LessonFavAdapter.SubjectFavAdapterViewHolder SubjectFavAdapterViewHolder, int position) {
+    public void onBindViewHolder(LessonFavAdapter.SubjectFavAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
 
         String lessonName = mCursor.getString(FavLessonListFragment.CO_LESSON_TITLE);
-        SubjectFavAdapterViewHolder.lessonName.setText(lessonName);
+        holder.lessonName.setText(lessonName);
+        holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name,lessonName));
 
-
-        String practical_title_Name = mCursor.getString(FavLessonListFragment.COL_LESSON_LINK);
-        SubjectFavAdapterViewHolder.practicalLink.setText(practical_title_Name);
+        String link = mCursor.getString(FavLessonListFragment.COL_LESSON_LINK);
+        holder.practicalLink.setText(link);
+        holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link,link));
 
         byte[] image = mCursor.getBlob(FavLessonListFragment.COL_LESSON_OUTLINE_IMAGE);
-        if(image != null){
-            SubjectFavAdapterViewHolder.lessonImage.setImageBitmap(Helper.getImage(image));}
+        if (image != null) {
+            holder.lessonImage.setImageBitmap(Helper.getImage(image));
+        }
 
         int fav = Integer.parseInt(mCursor.getString(FavLessonListFragment.COL_LESSON_FAV));
-        Log.e("LessonFavAdapter", "ff is: "+ fav);
+        Log.e("LessonFavAdapter", "ff is: " + fav);
 
 
     }

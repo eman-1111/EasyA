@@ -61,6 +61,7 @@ public class FriendsList extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         empty_list = (TextView) findViewById(R.id.error_tv);
 
         userList = new ArrayList<User>();

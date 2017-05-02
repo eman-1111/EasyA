@@ -37,5 +37,14 @@
         android:layout_marginBottom="@dimen/activity_vertical_margin"
         android:minLines="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
-
+    <GridView
+        android:id="@+id/gridview_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="auto_fit"
+        android:gravity="center"
+        android:stretchMode="columnWidth"
+        android:drawSelectorOnTop="true"
+        android:focusable="true"
+        android:clickable="true" />
 </LinearLayout>

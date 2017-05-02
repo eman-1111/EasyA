@@ -111,7 +111,7 @@ public class LessonListFriends extends BaseActivity {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e("DatabaseError", databaseError + "");
+                Log.e(LOG_TAG, databaseError + "");
 
             }
         };

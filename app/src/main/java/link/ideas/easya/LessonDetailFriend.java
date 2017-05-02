@@ -41,6 +41,7 @@ public class LessonDetailFriend extends BaseActivity {
 
     LessonDetail lessonDetail;
     Lesson lesson;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,17 +50,18 @@ public class LessonDetailFriend extends BaseActivity {
 
         Intent intent = getIntent();
         coursePushId = intent.getStringExtra(Constants.PREF_COURSE_PUSH_ID);
-        lessonPushId  = intent.getStringExtra(Constants.PREF_LESSON_PUSH_ID);
-        lesson= (Lesson) intent.getParcelableExtra(Constants.PREF_LESSON_OBJECT);
-        Log.e("data",coursePushId +" "+lessonPushId +" "+ lesson.getLessonName());
+        lessonPushId = intent.getStringExtra(Constants.PREF_LESSON_PUSH_ID);
+        lesson = (Lesson) intent.getParcelableExtra(Constants.PREF_LESSON_OBJECT);
+        Log.e("data", coursePushId + " " + lessonPushId + " " + lesson.getLessonName());
         initializeScreen();
 
     }
 
     private void initializeScreen() {
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         collapsingToolbar =
                 (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 
@@ -75,6 +77,10 @@ public class LessonDetailFriend extends BaseActivity {
         appImage = (ImageView) findViewById(R.id.app_iv);
         outlineImage = (ImageView) findViewById(R.id.outlook_iv);
 
+        linkImage.setContentDescription(getResources().getString(R.string.a11y_link_image));
+        appImage.setContentDescription(getResources().getString(R.string.a11y_outline_image));
+        outlineImage.setContentDescription(getResources().getString(R.string.a11y_app_image));
+
         progress = (LinearLayout) findViewById(R.id.lin_Progress);
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
@@ -84,8 +90,8 @@ public class LessonDetailFriend extends BaseActivity {
                 child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL).child(coursePushId).child(lessonPushId);
         if (isDeviceOnline()) {
             attachDatabaseReadListener();
-        }else {
-            Snackbar.make(coordinatorLayout ,getResources().getString(R.string.network) ,
+        } else {
+            Snackbar.make(coordinatorLayout, getResources().getString(R.string.network),
                     Snackbar.LENGTH_LONG).show();
         }
 
@@ -113,6 +119,7 @@ public class LessonDetailFriend extends BaseActivity {
         };
         mLessonDatabaseReference.addValueEventListener(mValueEventLessonDetailListener);
     }
+
     private void setUpView() {
         String lessonName = lesson.getLessonName();
         collapsingToolbar.setTitle(lessonName);
@@ -123,21 +130,21 @@ public class LessonDetailFriend extends BaseActivity {
         mLessonOutline.setText(lessonDetail.getLessonSummery());
 
         String outlineImageUrl = lesson.getLessonImage();
-        if (outlineImageUrl.equals("")) {
+        if (!outlineImageUrl.equals("")) {
             Glide.with(LessonDetailFriend.this).load(outlineImageUrl)
-                    .placeholder(R.drawable.placeholder)
+                    .placeholder(R.drawable.placeholder).dontAnimate()
                     .into(outlineImage);
         }
         String linkImageUrl = lessonDetail.getLinkImage();
-        if (linkImageUrl.equals("")) {
+        if (!linkImageUrl.equals("null")) {
             Glide.with(LessonDetailFriend.this).load(linkImageUrl)
-                    .placeholder(R.drawable.placeholder)
+                    .placeholder(R.drawable.placeholder).dontAnimate()
                     .into(linkImage);
         }
         String appImageUrl = lessonDetail.getAppImage();
-        if (appImageUrl.equals("")) {
+        if (!appImageUrl.equals("null")) {
             Glide.with(LessonDetailFriend.this).load(appImageUrl)
-                    .placeholder(R.drawable.placeholder)
+                    .placeholder(R.drawable.placeholder).dontAnimate()
                     .into(appImage);
         }
     }
@@ -148,7 +155,7 @@ public class LessonDetailFriend extends BaseActivity {
         int id = item.getItemId();
         if (id == R.id.home) {
             Intent homeIntent = new Intent(LessonDetailFriend.this, LessonListFriends.class);
-            homeIntent.putExtra(Constants.PREF_COURSE_PUSH_ID ,coursePushId);
+            homeIntent.putExtra(Constants.PREF_COURSE_PUSH_ID, coursePushId);
             startActivity(homeIntent);
             return true;
         }

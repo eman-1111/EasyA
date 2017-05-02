@@ -28,7 +28,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -74,6 +77,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import link.ideas.easya.adapter.ColorAdapter;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.LessonDetailFragment;
 import link.ideas.easya.models.User;
@@ -443,10 +447,12 @@ public class BaseActivity extends AppCompatActivity
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
+
     public void deviceOffline() {
-        Snackbar.make(drawer,getResources().getString(R.string.network) ,
+        Snackbar.make(drawer, getResources().getString(R.string.network),
                 Snackbar.LENGTH_LONG).show();
     }
+
     /**
      * Check that Google Play services APK is installed and up to date.
      *
@@ -581,7 +587,7 @@ public class BaseActivity extends AppCompatActivity
                             "teacherPhotoUrl: " + teacherPhotoUrl);
 
                     addCourseData(courseName, teacherName, teacherEmail,
-                            teacherPhotoUrl, courseId);
+                            teacherPhotoUrl, courseId, 0);
                     Helper.updateWidgets(BaseActivity.this);
                 }
             }
@@ -635,7 +641,7 @@ public class BaseActivity extends AppCompatActivity
      * @param courseId     .
      */
     long addCourseData(String courseName, String teacherName, String teacherEmail,
-                       String teacherPhoto, String courseId) {
+                       String teacherPhoto, String courseId, int  selectedColorId) {
 
         long courseID;
 
@@ -665,6 +671,8 @@ public class BaseActivity extends AppCompatActivity
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL, teacherEmail);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL, teacherPhoto);
             courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_NAME, teacherName);
+            courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_COLOR, selectedColorId);
+
 
             // Finally, insert Course data into the database.
             Uri insertedUri = this.getContentResolver().insert(
@@ -690,16 +698,27 @@ public class BaseActivity extends AppCompatActivity
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 this);
-
-        // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
-
         final EditText courseNameET = (EditText) promptsView
                 .findViewById(R.id.course_name_et);
 
         final EditText teacherNameET = (EditText) promptsView
                 .findViewById(R.id.teacher_name_et);
+        final int[] selectedColorId = {0};
+        final GridView gridView = (GridView) promptsView.findViewById(R.id.gridview_color);
+        ColorAdapter mColorAdapter = new ColorAdapter(this);
+        gridView.setAdapter(mColorAdapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                ColorAdapter mColorAdapter = (ColorAdapter) gridView.getAdapter();
+                mColorAdapter.selectedImage = position;
+                mColorAdapter.notifyDataSetChanged();
+                selectedColorId[0] = position;
 
+
+            }
+        });
         // set dialog message
         alertDialogBuilder
                 .setCancelable(false)
@@ -715,7 +734,7 @@ public class BaseActivity extends AppCompatActivity
 
                                 } else {
                                     addCourseData(courseNameET.getText().toString(), teacherNameET.getText().toString(),
-                                            null, null, courseId);
+                                            null, null, courseId,  selectedColorId[0]);
                                     Helper.updateWidgets(BaseActivity.this);
                                 }
 

@@ -3,6 +3,7 @@ package link.ideas.easya.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,16 +90,21 @@ public class LessonFriendsAdapter extends RecyclerView.Adapter<LessonFriendsAdap
 
         String lessonName = lesson.getLessonName();
         holder.lessonName.setText(lessonName);
+        holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name,lessonName));
 
 
-        String lessonLink = lesson.getLessonLink();
-        holder.practicalLink.setText(lessonLink);
+        String link = lesson.getLessonLink();
+        holder.practicalLink.setText(link);
+        holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link,link));
 
-        String linkImageUrl = lesson.getLessonImage();
-        if (linkImageUrl.equals("")) {
-            Glide.with(mContext).load(linkImageUrl)
-                    .error(R.drawable.placeholder)
+
+        String imageUrl = lesson.getLessonImage();
+
+        if (!imageUrl.equals("")) {
+            Glide.with(mContext).load(imageUrl)
+                    .placeholder(R.drawable.placeholder).dontAnimate()
                     .into(holder.lessonImage);
+
         }
     }
 

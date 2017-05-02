@@ -11,6 +11,7 @@
     <string name="pref_sort_key" translatable="false">sort_by</string>
     <string name="pref_sort_default" translatable="false">date</string>
     <string name="save">Save</string>
+    <string name="add">Add</string>
     <string name="search">Search</string>
 
     <string name="about">About</string>
@@ -110,8 +111,32 @@
     <string name="title_activity_subject_list_friends">SubjectListFriends</string>
     <string name="not_found">Not Found</string>
     <string name="course_name_error">Please fill in the course name</string>
+    <string name="lesson_added">Your Lesson has been shared, all friends how add you can see it </string>
+    <string name="get_image_permissions">we need permissions to be able to get the image</string>
+    <string name="lesson_name_error">Enter Lesson Name</string>
+    <string name="summary_error">Enter lesson summary</string>
+
     <!-- A11y -->
     <string name="a11y_profileImage">User Profile Image </string>
+    <string name="a11y_link_image">Link Image</string>
+    <string name="a11y_app_image">Real life application image </string>
+    <string name="a11y_outline_image">Lesson Image </string>
+
+
+    <string name="a11y_link_info">link information button</string>
+    <string name="a11y_debug_info">debug information button</string>
+    <string name="a11y_app_info">Real life application information button</string>
+    <string name="a11y_app_title_info">Real life application title information button</string>
+    <string name="a11y_course_name">Course name is:   <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_teacher_name">Teacher name is:   <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_teacher_image">teacher image</string>
+
+    <string name="a11y_lesson_name">Lesson name is :   <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_link">link is :   <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_name_button">friend name is :   <xliff:g id="condition">%1$s</xliff:g></string>
+    <string name="a11y_email_button">friend email is :   <xliff:g id="condition">%1$s</xliff:g></string>
+
+
     <!--<string name="a11y_stock_symbol">Stock symbol is:  <xliff:g id="condition">%1$s</xliff:g></string>-->
     <!--viewHolder.bidPrice.setContentDescription(mContext.getString(R.string.a11y_stock_bid_price,bidBrice));-->
 

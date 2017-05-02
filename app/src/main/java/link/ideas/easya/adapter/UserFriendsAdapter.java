@@ -90,8 +90,13 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
         User user = userList.get(position);
         String friendEmail = email.get(position);
 
-        holder.friendEmail.setText(Helper.decodeEmail(friendEmail));
-        holder.friendName.setText(user.getName());
+        String email = Helper.decodeEmail(friendEmail);
+        holder.friendEmail.setText(email);
+        holder.friendEmail.setContentDescription(mContext.getString(R.string.a11y_email_button,email));
+
+        String name = user.getName();
+        holder.friendName.setText(name);
+        holder.friendName.setContentDescription(mContext.getString(R.string.a11y_name_button,name));
 
         Glide.with(mContext).load(user.getPhotoUrl())
                 .transform(new CircleTransform(mContext))

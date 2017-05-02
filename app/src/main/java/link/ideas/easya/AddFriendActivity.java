@@ -34,7 +34,6 @@ import link.ideas.easya.utils.Constants;
 
 public class AddFriendActivity extends BaseActivity {
 
-
     ArrayList<User> userList;
     ArrayList<String> userEmail;
 
@@ -70,6 +69,7 @@ public class AddFriendActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mEditTextAddFriendEmail = (EditText) findViewById(R.id.edit_text_add_friend_email);
         mListViewAutocomplete = (ListView) findViewById(R.id.list_view_friends_autocomplete);
         progress = (LinearLayout) findViewById(R.id.lin_Progress);
@@ -150,12 +150,16 @@ public class AddFriendActivity extends BaseActivity {
                                 progress.setVisibility(View.GONE);
 
                             }
+                            if(userList.size() == 0){
+                                Snackbar.make(mListViewAutocomplete,getResources().getString(R.string.toast_user_is_not_found) ,
+                                        Snackbar.LENGTH_LONG).show();
+                            }
 
                         }
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            Log.e("DatabaseError", databaseError +"");
+                            Log.e(LOG_TAG , databaseError +"");
 
                             progress.setVisibility(View.GONE);
                         }

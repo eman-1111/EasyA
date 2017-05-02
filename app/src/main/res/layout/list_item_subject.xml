@@ -33,7 +33,8 @@
                     android:layout_height="100dp"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
-                    android:background="@drawable/bachground2"
+                    android:background="@drawable/summary"
+                    android:contentDescription="@string/a11y_outline_image"
                     android:maxHeight="100dp"
                     android:maxWidth="100dp"
                     android:scaleType="centerCrop" />

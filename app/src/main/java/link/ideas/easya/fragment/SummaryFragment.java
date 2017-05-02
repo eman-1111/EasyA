@@ -28,6 +28,7 @@ import java.io.IOException;
 import link.ideas.easya.ImagesSearch;
 import link.ideas.easya.R;
 import link.ideas.easya.interfacee.SaveLesson;
+import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 
 import static android.app.Activity.RESULT_OK;
@@ -43,14 +44,6 @@ public class SummaryFragment extends Fragment {
 
     public SummaryFragment() {
         setHasOptionsMenu(true);
-    }
-
-    public SummaryFragment newInstance(SaveLesson mListener) {
-        SummaryFragment fragment = new SummaryFragment();
-        Bundle args = new Bundle();
-
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -78,9 +71,9 @@ public class SummaryFragment extends Fragment {
 
         lessonNameET = (EditText) view.findViewById(R.id.lesson_name_et);
         lessonOverViewET = (EditText) view.findViewById(R.id.lesson_outline_et);
+
         outlineImage = (ImageView) view.findViewById(R.id.outline_image);
-
-
+        outlineImage.setContentDescription(getResources().getString(R.string.a11y_outline_image));
         outlineImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,17 +176,15 @@ public class SummaryFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         Image image = null;
-        Log.e(LOG_TAG, "Search:a2 " + requestCode + " "+ resultCode);
         switch (requestCode) {
 
             case 0:
                 if (resultCode == RESULT_OK) {
                     thumbnail = null;
-                    // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    if (thumbnail.getByteCount() > 100000) {
+                    if (thumbnail.getByteCount() > Constants.BYTE_COUNT) {
                         thumbnail = Helper.getImageCompress(thumbnail);
-                        Log.e(LOG_TAG, "cameraA: " + thumbnail.getByteCount());
+
                     }
                     if (thumbnail != null) {
                         outlineImage.setImageBitmap(thumbnail);
@@ -204,18 +195,14 @@ public class SummaryFragment extends Fragment {
                 }
             case 1:
                 if (resultCode == RESULT_OK) {
-
-                    // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = null;
                     if (imageReturnedIntent != null) {
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
-                            Log.e(LOG_TAG, "gallary: " + thumbnail.getByteCount());
 
-                            if (thumbnail.getByteCount() > 100000) {
+                            if (thumbnail.getByteCount() > Constants.BYTE_COUNT) {
                                 thumbnail = Helper.getImageCompress(thumbnail);
-                                Log.e(LOG_TAG, "gallaryA: " + thumbnail.getByteCount());
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -229,10 +216,8 @@ public class SummaryFragment extends Fragment {
             case 2:
 
                 if (resultCode == RESULT_OK) {
-                    Log.e(LOG_TAG, "Search:2 " );
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    Log.e(LOG_TAG, "Search: " );
 
                     if (thumbnail != null) {
                         outlineImage.setImageBitmap(thumbnail);
@@ -249,7 +234,8 @@ public class SummaryFragment extends Fragment {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startDialog();
                 } else {
-                    //todo tell user he need permission
+                    Helper.startDialog(getActivity(), "",
+                            getResources().getString(R.string.get_image_permissions));
                 }
                 break;
             default:

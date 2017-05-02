@@ -15,6 +15,7 @@
         android:id="@+id/iv_friend_image"
         android:layout_width="@dimen/profile_width"
         android:layout_height="@dimen/profile_width"
+        android:contentDescription="@string/a11y_profileImage"
         android:scaleType="fitXY" />
     <LinearLayout
         android:layout_width="0dp"

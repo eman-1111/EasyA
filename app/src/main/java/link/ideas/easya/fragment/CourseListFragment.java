@@ -55,13 +55,16 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
             CourseContract.CourseEntry.COLUMN_COURSE_ID,
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
             CourseContract.CourseEntry.COLUMN_TEACHER_NAME,
-            CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL
+            CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL,
+            CourseContract.CourseEntry.COLUMN_TEACHER_COLOR
     };
 
     public static final int COL_COURSE_ID = 0;
     public static final int COL_COURSE_NAME = 1;
     public static final int COL_TEACHER_NAME = 2;
     public static final int COL_TEACHER_PHOTO_URL = 3;
+    public static final int COL_TEACHER_COLOR = 4;
+
 
     public CourseListFragment() {
     }

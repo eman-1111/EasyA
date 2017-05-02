@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            android:background="@drawable/bachground1"
+            android:background="@drawable/summary"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="@dimen/md_keylines"
             app:expandedTitleMarginStart="@dimen/md_keylines"

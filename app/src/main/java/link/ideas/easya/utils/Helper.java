@@ -42,9 +42,10 @@ public class Helper {
         String subString;
         if (iend != -1) {
             subString = email.substring(0, iend);
-        }else{
+        } else {
             subString = email;
-        }return subString;
+        }
+        return subString;
     }
 
 
@@ -68,9 +69,24 @@ public class Helper {
 
     public static Map<String, Object> getTimestampCreated() {
         HashMap<String, Object> timestampNowHash = new HashMap<>();
-        timestampNowHash.put(Constants.FIREBASE_PROPERTY_TIMESTAMP_LAST_CHANGED, ServerValue.TIMESTAMP);
+        timestampNowHash.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
         return timestampNowHash;
+    }
+
+    public static int getCourseColor(int courseItemColor) {
+        if (courseItemColor == 0) {
+            return R.drawable.couse1b;
+        } else if (courseItemColor == 1) {
+            return R.drawable.couse2b;
+        } else if (courseItemColor == 2) {
+            return R.drawable.couse3b;
+        } else if (courseItemColor == 3) {
+            return R.drawable.couse4b;
+        } else {
+            return R.drawable.couse1b;
+        }
+
     }
 
     public static boolean startDialog(Context mContext, String title, String description) {

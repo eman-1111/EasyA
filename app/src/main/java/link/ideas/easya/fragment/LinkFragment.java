@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import link.ideas.easya.ImagesSearch;
 import link.ideas.easya.R;
+import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 
 import static android.app.Activity.RESULT_OK;
@@ -51,23 +52,12 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.btn_save_menu) {
-            Log.e(LOG_TAG, "LinkfragSave");
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public static ApplyFragment newInstance(String param1, String param2) {
-        ApplyFragment fragment = new ApplyFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,10 +87,13 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
         infoLink = (ImageView) view.findViewById(R.id.link_info);
         infoDebug = (ImageView) view.findViewById(R.id.debug_info);
+        infoLink.setContentDescription(getResources().getString(R.string.a11y_link_info));
+        infoDebug.setContentDescription(getResources().getString(R.string.a11y_debug_info));
         infoLink.setOnClickListener(this);
         infoDebug.setOnClickListener(this);
 
         imageLink = (ImageView) view.findViewById(R.id.link_image);
+        imageLink.setContentDescription(getResources().getString(R.string.a11y_link_image));
         imageLink.setOnClickListener(this);
 
     }
@@ -125,7 +118,6 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                             == PackageManager.PERMISSION_GRANTED) {
                         startDialog();
                     } else {
-                        //  ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
                         ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
 
                     }
@@ -227,7 +219,7 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        Image image = null;
+
         switch (requestCode) {
 
             case 0:
@@ -236,11 +228,8 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                     // Uri selectedImage = imageReturnedIntent.getData();
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
 
-                    Log.e(LOG_TAG, "camera: " + thumbnail.getByteCount());
-
-                    if (thumbnail.getByteCount() > 100000) {
+                    if (thumbnail.getByteCount() > Constants.BYTE_COUNT) {
                         thumbnail = Helper.getImageCompress(thumbnail);
-
                     }
                     if (thumbnail != null) {
                         imageLink.setImageBitmap(thumbnail);
@@ -257,9 +246,8 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                         try {
                             thumbnail = MediaStore.Images.Media.getBitmap
                                     (getActivity().getApplicationContext().getContentResolver(), imageReturnedIntent.getData());
-                            Log.e(LOG_TAG, "gallary: " + thumbnail.getByteCount());
 
-                            if (thumbnail.getByteCount() > 100000) {
+                            if (thumbnail.getByteCount() > Constants.BYTE_COUNT) {
                                 thumbnail = Helper.getImageCompress(thumbnail);
 
                             }
@@ -278,8 +266,6 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                 if (resultCode == RESULT_OK) {
                     thumbnail = null;
                     thumbnail = (Bitmap) imageReturnedIntent.getExtras().get("data");
-                    Log.e(LOG_TAG, "Search: " + thumbnail.getByteCount());
-
                     if (thumbnail != null) {
                         imageLink.setImageBitmap(thumbnail);
                     }
@@ -297,7 +283,8 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startDialog();
                 } else {
-                    //not granted
+                    Helper.startDialog(getActivity(), "",
+                            getResources().getString(R.string.get_image_permissions));
                 }
                 break;
             default:

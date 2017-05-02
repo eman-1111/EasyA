@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide;
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.CourseListFragment;
+import link.ideas.easya.utils.Helper;
 
 
 /**
@@ -29,7 +31,6 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
     final private Context mContext;
     private Cursor mCursor;
     final private CourseAdapterOnClickHolder mClickHolder;
-    ColorGenerator generator = ColorGenerator.MATERIAL;
 
 
     public class CourseAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -102,7 +103,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
     }
 
     @Override
-    public void onBindViewHolder(final CourseAdapterViewHolder courseAdapterViewHolder, int position) {
+    public void onBindViewHolder(final CourseAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
         int courseId = mCursor.getInt(CourseListFragment.COL_COURSE_ID);
         String teacherPhotoURL = mCursor.getString(CourseListFragment.COL_TEACHER_PHOTO_URL);
@@ -110,30 +111,33 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
         if (position == 0 || position % 4 == 0) {
             image = R.drawable.panda;
-            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse1b));
         } else if (position == 1 || position % 4 == 1) {
             image = R.drawable.blue;
-            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse2b));
         } else if (position == 2 || position % 4 == 2) {
             image = R.drawable.cat;
-            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse4b));
         } else if (position == 3 || position % 4 == 3) {
-            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse3b));
             image = R.drawable.monstor;
         }  else {
-            courseAdapterViewHolder.listItemCours.setBackground(mContext.getResources().getDrawable(R.drawable.couse3b));
             image = R.drawable.rana;
         }
 
 
         Glide.with(mContext).load(teacherPhotoURL).error(image).
-                into(courseAdapterViewHolder.teacherImage);
+                into(holder.teacherImage);
 
         String courseName = mCursor.getString(CourseListFragment.COL_COURSE_NAME);
-        courseAdapterViewHolder.coursName.setText(courseName);
+        holder.coursName.setText(courseName);
+        holder.coursName.setContentDescription(mContext.getString(R.string.a11y_course_name,courseName));
 
         String teacherName = mCursor.getString(CourseListFragment.COL_TEACHER_NAME);
-        courseAdapterViewHolder.teacherName.setText(teacherName);
+        holder.teacherName.setText(teacherName);
+        holder.teacherName.setContentDescription(mContext.getString(R.string.a11y_teacher_name,teacherName));
+
+
+        int courseItemColor = mCursor.getInt(CourseListFragment.COL_TEACHER_COLOR);
+
+        holder.listItemCours.setBackground
+                (mContext.getResources().getDrawable(Helper.getCourseColor(courseItemColor)));
 
     }
 

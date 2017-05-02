@@ -1,0 +1,13 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/frame_color">
+
+    <ImageView
+        android:id="@+id/grid_item_image"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/color_item"
+        android:background="@drawable/bachground1"
+        android:layout_margin="@dimen/activity_less_margin"
+        android:scaleType="centerCrop" />
+</FrameLayout>

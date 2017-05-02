@@ -105,24 +105,23 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAda
     }
 
     @Override
-    public void onBindViewHolder(SubjectAdapterViewHolder subjectAdapterViewHolder, int position) {
+    public void onBindViewHolder(SubjectAdapterViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
 
         String lessonName = mCursor.getString(LessonListFragment.CO_LESSON_TITLE);
-        subjectAdapterViewHolder.lessonName.setText(lessonName);
+        holder.lessonName.setText(lessonName);
+        holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name,lessonName));
 
+        String link = mCursor.getString(LessonListFragment.COL_LESSON_LINK);
+        holder.practicalLink.setText(link);
+        holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link,link));
 
-        String practical_title_Name = mCursor.getString(LessonListFragment.COL_LESSON_LINK);
-        subjectAdapterViewHolder.practicalLink.setText(practical_title_Name);
 
         byte[] image = mCursor.getBlob(LessonListFragment.COL_LESSON_OUTLINE_IMAGE);
         if (image != null) {
-            subjectAdapterViewHolder.lessonImage.setImageBitmap(Helper.getImage(image));
+            holder.lessonImage.setImageBitmap(Helper.getImage(image));
         }
-
-//        Picasso.with(mContext).load()
-//                .error(R.drawable.air_plan).into(subjectAdapterViewHolder.lessonImage);
 
     }
 

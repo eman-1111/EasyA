@@ -12,6 +12,7 @@ import java.util.List;
 
 import link.ideas.easya.R;
 import link.ideas.easya.models.Course;
+import link.ideas.easya.utils.Helper;
 
 /**
  * Created by Eman on 4/27/2017.
@@ -89,9 +90,15 @@ public class CourseFriendAdapter extends RecyclerView.Adapter<CourseFriendAdapte
 
         String courseName = course.getCourseName();
         holder.coursName.setText(courseName);
+        holder.coursName.setContentDescription(mContext.getString(R.string.a11y_course_name,courseName));
 
         String teacherName = course.getTeacherName();
         holder.teacherName.setText(teacherName);
+        holder.teacherName.setContentDescription(mContext.getString(R.string.a11y_teacher_name,teacherName));
+
+        int courseItemColor = course.getColorId();
+        holder.listItemCours.setBackground
+                (mContext.getResources().getDrawable(Helper.getCourseColor(courseItemColor)));
     }
 
 

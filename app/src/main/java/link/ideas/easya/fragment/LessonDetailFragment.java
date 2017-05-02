@@ -1,13 +1,18 @@
 package link.ideas.easya.fragment;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -65,15 +70,16 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     TextView mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
             mLessonOutline, mLink, mDebug;
 
+    CoordinatorLayout coordinatorLayout;
 
     ImageView outlineImage, linkImage, appImage;
     String accountName;
-    String teacherEmail, teacherPhoto, courseName, teacherName, courserColor = "0", lessonName, lessonOutline, lessonLink,
+    String teacherEmail, teacherPhoto, courseName, teacherName, lessonName, lessonOutline, lessonLink,
             lessonDebug, lessonPracticalTitle, lessonPractical, courseId;
 
     Bitmap outlineImageBit = null, linkImageBit = null, appImageBit = null;
     Uri appUrl, linkUrl, summaryUrl;
-    int favorite = 0;
+    int courserColor = 0, favorite = 0;
     Cursor mCursor;
     String coursePushId, lessonPushId;
 
@@ -132,6 +138,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     public static final int COL_FIREBASE_LESSON_ID = 17;
 
     CollapsingToolbarLayout collapsingToolbar;
+
     public LessonDetailFragment() {
         setHasOptionsMenu(true);
     }
@@ -146,10 +153,11 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
         View rootView = inflater.inflate(R.layout.fragment_subject_detail, container, false);
 
-        Toolbar toolbar = (Toolbar)rootView.findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         collapsingToolbar =
                 (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
         setUpIds(rootView);
@@ -178,10 +186,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
                 shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
             }
-        } else {
-            Log.e(LOG_TAG, "mCursor null");
         }
-        Log.e(LOG_TAG, "onCreateOptionsMenu");
     }
 
 
@@ -195,14 +200,14 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         if (item.getItemId() == android.R.id.home) {
             Intent intent = new Intent(getActivity(), LessonList.class)
                     .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
-            intent.putExtra("CourseName", lessonName);
+            intent.putExtra(Constants.PREF_COURSE_NAME, lessonName);
             startActivity(intent);
             getActivity().finish();
         }
         if (id == R.id.action_edit) {
             Intent intent = new Intent(getActivity(), AddNewLesson.class);
-            intent.putExtra("LessonURL", mUri.toString());
-            intent.putExtra("CourseId", CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
+            intent.putExtra(Constants.PREF_LESSON_URL, mUri.toString());
+            intent.putExtra(Constants.PREF_COURSE_ID, CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
             startActivity(intent);
         } else if (id == R.id.action_favorite) {
 
@@ -229,25 +234,35 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             }
 
         } else if (id == R.id.action_share) {
-            String lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
-            SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
-            accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
-            if (accountName != null) {
-                if (lessonPushId == null) {
-                    shareItem.setEnabled(false);
-                    shareItem.setCheckable(false);
-                    shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
-                    createShareUserLesson();
-                } else {
-                    Helper.startDialog(getActivity(), "",
-                            getResources().getString(R.string.shared_lesson_warning));
-                }
+            if (isDeviceOnline()) {
+                startSharing();
             } else {
-                Helper.startDialog(getActivity(), getResources().getString(R.string.login_title_warning),
-                        getResources().getString(R.string.login_share_warning));
+                Snackbar.make(coordinatorLayout, getResources().getString(R.string.network),
+                        Snackbar.LENGTH_LONG).show();
             }
+
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startSharing() {
+        String lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
+        SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
+        accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+        if (accountName != null) {
+            if (lessonPushId == null) {
+                shareItem.setEnabled(false);
+                shareItem.setCheckable(false);
+                shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
+                createShareUserLesson();
+            } else {
+                Helper.startDialog(getActivity(), "",
+                        getResources().getString(R.string.shared_lesson_warning));
+            }
+        } else {
+            Helper.startDialog(getActivity(), getResources().getString(R.string.login_title_warning),
+                    getResources().getString(R.string.login_share_warning));
+        }
     }
 
     @Override
@@ -308,7 +323,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             teacherEmail = data.getString(COL_TEACHER_EMAIL);
             teacherPhoto = data.getString(COL_TEACHER_PHOTO);
             courseName = data.getString(COL_COURSE_NAME);
-            courserColor = data.getString(COL_TEACHER_COLOR);
+            courserColor = data.getInt(COL_TEACHER_COLOR);
             teacherName = data.getString(COL_TEACHER_NAME);
 
             byte[] outlineImageB = data.getBlob(COL_LESSON_OUTLINE_IMAGE);
@@ -330,8 +345,6 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
             favorite = Integer.parseInt(data.getString(COL_FAVORITE));
 
-
-            Log.e(LOG_TAG, "loader");
         }
     }
 
@@ -353,8 +366,13 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
         linkImage = (ImageView) rootView.findViewById(R.id.link_iv);
         appImage = (ImageView) rootView.findViewById(R.id.app_iv);
-       // outlineImage = (ImageView) rootView.findViewById(R.id.outlook_iv);
+        outlineImage = (ImageView) rootView.findViewById(R.id.outlook_iv);
 
+        coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinator_layout);
+
+        linkImage.setContentDescription(getResources().getString(R.string.a11y_link_image));
+        appImage.setContentDescription(getResources().getString(R.string.a11y_outline_image));
+        outlineImage.setContentDescription(getResources().getString(R.string.a11y_app_image));
     }
 
 
@@ -390,9 +408,9 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
     private void addCourseToFirebase() {
 
-        Course course = new Course(courseName, teacherName, teacherEmail, teacherPhoto,
-                Integer.parseInt(courserColor),
+        Course course = new Course(courseName, teacherName, teacherEmail, teacherPhoto, courserColor,
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
+
         coursePushId = mCoursDatabaseReference.push().getKey();
         mCoursDatabaseReference.child(coursePushId).setValue(course);
         mCoursDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -427,7 +445,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "",
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         lessonPushId = mLessonDatabaseReference.push().getKey();
-        Log.e(LOG_TAG, "is" + coursePushId + "ff " + lessonPushId);
+
         mLessonDatabaseReference.child(lessonPushId).setValue(lesson);
         mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -459,13 +477,15 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
     private void addLessonDetailsToFirebase() {
         LessonDetail lessonDetail = new LessonDetail(lessonOutline, linkUrl + "",
-                lessonPracticalTitle, lessonPractical, appUrl + "",lessonDebug,
+                lessonPracticalTitle, lessonPractical, appUrl + "", lessonDebug,
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
 
         shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
         shareItem.setEnabled(true);
         shareItem.setCheckable(true);
+        Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_added),
+                Snackbar.LENGTH_LONG).show();
     }
 
     private void addImageToFirebase(Bitmap bitmap) {
@@ -476,12 +496,10 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
 
                 summaryUrl = taskSnapshot.getDownloadUrl();
                 addLessonLinkToFirebase();
@@ -500,12 +518,10 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 linkUrl = taskSnapshot.getDownloadUrl();
                 if (appImageBit != null) {
                     addImageToFirebaseApp(appImageBit);
@@ -525,12 +541,10 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                 appUrl = taskSnapshot.getDownloadUrl();
                 addLessonDetailsToFirebase();
             }
@@ -560,5 +574,11 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
     }
 
+    public boolean isDeviceOnline() {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
 
 }

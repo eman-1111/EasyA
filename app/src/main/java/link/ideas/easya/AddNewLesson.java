@@ -44,7 +44,7 @@ import me.relex.circleindicator.CircleIndicator;
 
 import static link.ideas.easya.fragment.CourseListFragment.LOG_TAG;
 
-public class AddNewLesson extends AppCompatActivity implements SaveLesson, LoaderManager.LoaderCallbacks<Cursor> {
+public class AddNewLesson extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
     ViewPager viewPager;
@@ -100,11 +100,10 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
         indicator = (CircleIndicator) findViewById(R.id.indicator);
 
         Intent intent = getIntent();
-        courseId = intent.getStringExtra("CourseId");
-        if (intent.getStringExtra("LessonURL") != null) {
+        courseId = intent.getStringExtra(Constants.PREF_COURSE_ID);
+        if (intent.getStringExtra(Constants.PREF_LESSON_URL) != null) {
             edit = true;
-            Log.e(LOG_TAG, "edit true");
-            mUri = Uri.parse(intent.getStringExtra("LessonURL"));
+            mUri = Uri.parse(intent.getStringExtra(Constants.PREF_LESSON_URL));
             getSupportLoaderManager().initLoader(DETAIL_LOADER, null, this);
 
         }
@@ -112,7 +111,6 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         setupViewPager(viewPager);
         viewPager.setOffscreenPageLimit(2);
         indicator.setViewPager(viewPager);
@@ -130,10 +128,6 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
 
     }
 
-    @Override
-    public void saveLesson(String id) {
-
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -245,49 +239,51 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
             finish();
         } else if (item.getItemId() == R.id.btn_save_menu) {
 
-            if (validateName() && validateOutline()) {
-                String title = SummaryFragment.lessonNameET.getText().toString();
-                String summary = SummaryFragment.lessonOverViewET.getText().toString();
+            startSaveLesson();
 
-                String link = LinkFragment.lessonLink.getText().toString();
-                String debug = LinkFragment.lessonDebug.getText().toString();
-
-                String appTitle = ApplyFragment.lessonLifeAppTitle.getText().toString();
-                String appSummary = ApplyFragment.lessonLifeApp.getText().toString();
-
-
-                Bitmap outlineImage = SummaryFragment.thumbnail;
-                Bitmap imageLink = LinkFragment.thumbnail;
-                Bitmap imageApp = ApplyFragment.thumbnail;
-
-
-                byte[] outlineImage_, imageLink_, imageApp_;
-                if (outlineImage != null) {
-                    outlineImage_ = Helper.getBytes(outlineImage);
-                } else {
-                    outlineImage_ = null;
-                }
-                if (imageLink != null) {
-                    imageLink_ = Helper.getBytes(imageLink);
-                } else {
-                    imageLink_ = null;
-                }
-                if (imageApp != null) {
-                    imageApp_ = Helper.getBytes(imageApp);
-                } else {
-                    imageApp_ = null;
-                }
-
-                addLessonData(courseId, title, summary, outlineImage_,
-                        link, imageLink_, appTitle,
-                        appSummary, imageApp_, debug);
-            }
-
-
-            Log.e("AddLesson", "Clicked");
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startSaveLesson() {
+        if (validateName() && validateOutline()) {
+            String title = SummaryFragment.lessonNameET.getText().toString();
+            String summary = SummaryFragment.lessonOverViewET.getText().toString();
+
+            String link = LinkFragment.lessonLink.getText().toString();
+            String debug = LinkFragment.lessonDebug.getText().toString();
+
+            String appTitle = ApplyFragment.lessonLifeAppTitle.getText().toString();
+            String appSummary = ApplyFragment.lessonLifeApp.getText().toString();
+
+
+            Bitmap outlineImage = SummaryFragment.thumbnail;
+            Bitmap imageLink = LinkFragment.thumbnail;
+            Bitmap imageApp = ApplyFragment.thumbnail;
+
+
+            byte[] outlineImage_, imageLink_, imageApp_;
+            if (outlineImage != null) {
+                outlineImage_ = Helper.getBytes(outlineImage);
+            } else {
+                outlineImage_ = null;
+            }
+            if (imageLink != null) {
+                imageLink_ = Helper.getBytes(imageLink);
+            } else {
+                imageLink_ = null;
+            }
+            if (imageApp != null) {
+                imageApp_ = Helper.getBytes(imageApp);
+            } else {
+                imageApp_ = null;
+            }
+
+            addLessonData(courseId, title, summary, outlineImage_,
+                    link, imageLink_, appTitle,
+                    appSummary, imageApp_, debug);
+        }
     }
 
     public class MyTextWatcher implements TextWatcher {
@@ -349,7 +345,7 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
         if (edit) {
 
           //  int lessonId =
-            Log.e(LOG_TAG, "mURI: "+ mUri);
+           // Log.e(LOG_TAG, "mURI: "+ mUri);
             this.getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
                     courseValues,
                     CourseContract.SubjectEntry.TABLE_NAME +
@@ -365,14 +361,6 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
                     courseValues);
         }
 
-        // Get the string that the user entered into the EditText
-        // Go to the "listName" child node of the root node.
-        // This will create the node for you if it doesn't already exist.
-        // Then using the setValue menu it will set value the node to userEnteredName.
-
-        // Wait, that worked?  Yes!
-
-        // Wait, that worked?  Yes!
         clearSavedData();
         Intent intent = new Intent(this, LessonList.class)
                 .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
@@ -393,8 +381,9 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
 
     private boolean validateName() {
         if (SummaryFragment.lessonNameET.getText().toString().trim().isEmpty()) {
-            SummaryFragment.inputLayoutName.setError("Enter Lesson Name");
+            SummaryFragment.inputLayoutName.setError(getResources().getString(R.string.lesson_name_error));
             requestFocus(SummaryFragment.lessonNameET);
+            viewPager.setCurrentItem(0);
             return false;
         } else {
             SummaryFragment.inputLayoutName.setErrorEnabled(false);
@@ -405,8 +394,9 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
 
     private boolean validateOutline() {
         if (SummaryFragment.lessonOverViewET.getText().toString().trim().isEmpty()) {
-            SummaryFragment.inputLayoutOutline.setError("Enter lesson outline");
+            SummaryFragment.inputLayoutOutline.setError(getResources().getString(R.string.summary_error));
             requestFocus(SummaryFragment.lessonOverViewET);
+            viewPager.setCurrentItem(0);
             return false;
         } else {
             SummaryFragment.inputLayoutOutline.setErrorEnabled(false);
@@ -420,17 +410,7 @@ public class AddNewLesson extends AppCompatActivity implements SaveLesson, Loade
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
     }
-    public static File savebitmap(Bitmap bmp, String fileName) throws IOException {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 60, bytes);
-        File f = new File(Environment.getExternalStorageDirectory()
-                + File.separator +Constants.APP_NAME +fileName +".jpg");
-        f.createNewFile();
-        FileOutputStream fo = new FileOutputStream(f);
-        fo.write(bytes.toByteArray());
-        fo.close();
-        return f;
-    }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

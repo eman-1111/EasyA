@@ -30,7 +30,7 @@ public class CourseDBHelper  extends SQLiteOpenHelper {
                 CourseContract.CourseEntry.COLUMN_COURSE_NAME + " TEXT NOT NULL, " +
                 CourseContract.CourseEntry.COLUMN_TEACHER_NAME + " TEXT NOT NULL, " +
                 CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL + " TEXT, " +
-                CourseContract.CourseEntry.COLUMN_TEACHER_COLOR + " TEXT, " +
+                CourseContract.CourseEntry.COLUMN_TEACHER_COLOR + " INTEGER, " +
                 CourseContract.CourseEntry.COLUMN_FIREBASE_ID + " TEXT, " +
                 CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL + " TEXT, " +
 
