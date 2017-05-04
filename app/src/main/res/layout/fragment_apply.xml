@@ -26,13 +26,12 @@
                 android:paddingTop="@dimen/activity_horizontal_margin">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
-                    android:text="Application title"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="@dimen/article_titles" />
+                    android:text="@string/application_title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textColor="?attr/colorAccent" />
 
                 <ImageView
                     android:id="@+id/title_info"
@@ -50,10 +49,11 @@
                     android:id="@+id/lesson_app_title_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:minLines="2"
                     android:layout_marginBottom="@dimen/activity_vertical_margin"
                     android:hint="@string/hint_title"
-                    android:singleLine="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/text_secondary_dark" />
             </android.support.design.widget.TextInputLayout>
 
             <LinearLayout
@@ -62,13 +62,12 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
-                    android:text="Description"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:textColor="?attr/colorAccent"
-                    android:textSize="@dimen/article_titles" />
+                    android:text="@string/description"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    android:textColor="?attr/colorAccent"/>
 
                 <ImageView
                     android:id="@+id/app_info"
@@ -88,8 +87,9 @@
                     android:layout_height="wrap_content"
                     android:gravity="top"
                     android:hint="@string/hint_descr"
-                    android:minLines="4"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:minLines="5"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/text_secondary_dark" />
             </android.support.design.widget.TextInputLayout>
 
             <FrameLayout
@@ -99,7 +99,7 @@
                 <ImageView
                     android:id="@+id/app_image"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="@dimen/add_lesson_image_height"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:background="@drawable/bachground2"

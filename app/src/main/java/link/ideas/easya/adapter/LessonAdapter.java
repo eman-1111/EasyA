@@ -3,7 +3,9 @@ package link.ideas.easya.adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,16 +113,19 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAda
 
         String lessonName = mCursor.getString(LessonListFragment.CO_LESSON_TITLE);
         holder.lessonName.setText(lessonName);
-        holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name,lessonName));
+        holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name, lessonName));
 
         String link = mCursor.getString(LessonListFragment.COL_LESSON_LINK);
         holder.practicalLink.setText(link);
-        holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link,link));
+        holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link, link));
 
 
         byte[] image = mCursor.getBlob(LessonListFragment.COL_LESSON_OUTLINE_IMAGE);
         if (image != null) {
             holder.lessonImage.setImageBitmap(Helper.getImage(image));
+        }
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewCompat.setTransitionName(holder.lessonImage, "iconView" + position);
         }
 
     }

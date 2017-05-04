@@ -64,7 +64,7 @@ public class ImagesSearch extends AppCompatActivity {
         Intent intent = getIntent();
         data = intent.getExtras();
         searchValue = intent.getStringExtra("SearchValue");
-        linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
+        linlaHeaderProgress = (LinearLayout) findViewById(R.id.lin_Progress);
         mImageAdapter = new ImageAdapter(this, R.layout.list_item_search, new ArrayList<Image>());
         GridView gridView = (GridView) findViewById(R.id.image_gridview);
         gridView.setAdapter(mImageAdapter);

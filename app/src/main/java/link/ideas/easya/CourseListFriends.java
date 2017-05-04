@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -40,6 +41,7 @@ public class CourseListFriends extends BaseActivity {
     ValueEventListener mValueEventCourseListener;
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mCourseDatabaseReference;
+    boolean isLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,7 @@ public class CourseListFriends extends BaseActivity {
         setContentView(R.layout.courses_list_friend);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader(Helper.getFristName(friendName) + getResources().getString(R.string.friend_course)  );
+        loadNavHeader(Helper.getFristName(friendName) + getResources().getString(R.string.friend_course));
         setUpNavigationView();
 
         initializeScreen();
@@ -74,7 +76,7 @@ public class CourseListFriends extends BaseActivity {
             public void onClick(String coursePushId, CourseFriendAdapter.CourseAdapterFriendsViewHolder vh) {
                 Intent intent = new Intent(CourseListFriends.this, LessonListFriends.class);
                 intent.putExtra(Constants.PREF_COURSE_PUSH_ID, coursePushId);
-                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT_NAME ,friendName);
+                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT_NAME, friendName);
                 startActivity(intent);
             }
         });
@@ -85,7 +87,7 @@ public class CourseListFriends extends BaseActivity {
                 child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(friendAccount);
         if (isDeviceOnline()) {
             attachDatabaseReadListener();
-        }else {
+        } else {
             deviceOffline();
         }
 
@@ -110,6 +112,8 @@ public class CourseListFriends extends BaseActivity {
                     emptyView.setVisibility(View.GONE);
                 }
                 progress.setVisibility(View.GONE);
+                isLoaded = true;
+                startIntroAnimation();
             }
 
             @Override
@@ -142,4 +146,21 @@ public class CourseListFriends extends BaseActivity {
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isLoaded)
+            startIntroAnimation();
+    }
+
+    private void startIntroAnimation() {
+        mRecyclerView.setTranslationY(getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerView.setAlpha(0f);
+        mRecyclerView.animate()
+                .translationY(0)
+                .setDuration(500)
+                .alpha(1f)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .start();
+    }
 }

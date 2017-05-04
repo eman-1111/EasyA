@@ -1,13 +1,19 @@
 package link.ideas.easya.utils;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.TextView;
 
 import com.google.firebase.database.ServerValue;
@@ -89,13 +95,13 @@ public class Helper {
 
     }
 
-    public static boolean startDialog(Context mContext, String title, String description) {
+    public static boolean startDialog(final Context mContext, String title, String description) {
 
 
         LayoutInflater li = LayoutInflater.from(mContext);
         View promptsView = li.inflate(R.layout.warn_dialog, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext, R.style.DialogTheme );
 
         alertDialogBuilder.setView(promptsView);
 
@@ -105,36 +111,29 @@ public class Helper {
         final TextView txtDescription = (TextView) promptsView
                 .findViewById(R.id.txt_description);
 
+        final TextView txtOK = (TextView) promptsView
+                .findViewById(R.id.txt_ok);
+
         txtTitle.setText(title);
         txtDescription.setText(description);
         final boolean[] isOkay = {false};
         // set dialog message
-        alertDialogBuilder
-                .setCancelable(false)
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
 
-                                isOkay[0] = true;
-                            }
-                        })
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                isOkay[0] = false;
-                                dialog.cancel();
-                            }
-                        });
 
         // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
+        final  AlertDialog alertDialog = alertDialogBuilder.create();
+        txtOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isOkay[0] = true;
+                alertDialog.cancel();
+            }
+        });
 
-        // show it
         alertDialog.show();
-
-
         return isOkay[0];
     }
+
 
     public static String decodeEmail(String userEmail) {
         return userEmail.replace(",", ".");
@@ -146,6 +145,7 @@ public class Helper {
         byte[] bitmapdata = bytes.toByteArray();
         return BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
     }
+
 
     public static void updateWidgets(Context context) {
         // Setting the package ensures that only components in our app will receive the broadcast

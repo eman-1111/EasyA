@@ -25,7 +25,7 @@
             android:name=".CoursesList"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,19 +36,19 @@
             android:name=".LessonList"
             android:launchMode="singleTask"
             android:parentActivityName=".CoursesList"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Translucent.Lesson" />
         <activity
             android:name=".LessonDetail"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.Translucent.Detail" />
         <activity
             android:name=".SettingActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddFriendActivity"
-            android:launchMode="singleTask"
             android:label="@string/add_friends"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ImagesSearch"
@@ -72,15 +72,19 @@
             android:parentActivityName=".ProfileActivity" />
         <activity
             android:name=".CourseListFriends"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.Home"/>
 
         <activity
             android:name=".LessonListFriends"
-            android:launchMode="singleTask" />
-
-        <activity android:name=".LessonDetailFriend"
             android:launchMode="singleTask"
-            android:parentActivityName=".LessonListFriends"/>
+            android:theme="@style/AppTheme.Translucent.Lesson" />
+
+        <activity
+            android:name=".LessonDetailFriend"
+            android:launchMode="singleTask"
+            android:parentActivityName=".LessonListFriends"
+            android:theme="@style/AppTheme.Translucent.Detail" />
 
         <!-- Detail Widget -->
         <receiver

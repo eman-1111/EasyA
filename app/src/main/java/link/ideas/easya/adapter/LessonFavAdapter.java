@@ -3,7 +3,9 @@ package link.ideas.easya.adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -125,7 +127,9 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
         }
 
         int fav = Integer.parseInt(mCursor.getString(FavLessonListFragment.COL_LESSON_FAV));
-        Log.e("LessonFavAdapter", "ff is: " + fav);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewCompat.setTransitionName(holder.lessonImage, "iconViewFav" + position);
+        }
 
 
     }

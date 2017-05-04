@@ -4,17 +4,23 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import link.ideas.easya.adapter.LessonAdapter;
+import link.ideas.easya.adapter.LessonFavAdapter;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.FavLessonListFragment;
 import link.ideas.easya.fragment.LessonListFragment;
@@ -35,10 +41,7 @@ public class LessonList extends BaseActivity implements
         if (savedInstanceState == null) {
 
             mUri = getIntent().getData();
-            Log.e("LessonList", "d: "+ mUri);
-            if (mUri == null) {
-                Log.e("LessonList", "no uri");
-            }
+
         }
         setDrawer(true);
         setUpAPIs();
@@ -50,9 +53,6 @@ public class LessonList extends BaseActivity implements
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
-
-
-
 
     }
 
@@ -67,8 +67,8 @@ public class LessonList extends BaseActivity implements
 
         FavLessonListFragment fragmentFav = new FavLessonListFragment();
         fragmentFav.setArguments(arguments);
-        adapter.addFragment(fragment, "Subject");
-        adapter.addFragment(fragmentFav, "Fav Subject");
+        adapter.addFragment(fragment, getResources().getString(R.string.lesson_tap));
+        adapter.addFragment(fragmentFav, getResources().getString(R.string.favorite_lesson_tap));
         viewPager.setAdapter(adapter);
     }
 
@@ -121,13 +121,28 @@ public class LessonList extends BaseActivity implements
 
 
     @Override
-    public void onItemSelected(Uri contentUri) {
+    public void onItemSelected(Uri contentUri, LessonAdapter.SubjectAdapterViewHolder vh) {
         Intent intent = new Intent(this, LessonDetail.class)
                 .setData(contentUri);
+        ActivityOptionsCompat activityOptions =
+                ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+                        new Pair<View, String>(vh.lessonImage, getString(R.string.shared_element)));
+        ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
         startActivity(intent);
 
     }
 
+    @Override
+    public void onItemSelected(Uri idUri, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
+        Intent intent = new Intent(this, LessonDetail.class)
+                .setData(idUri);
+        ActivityOptionsCompat activityOptions =
+                ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+                        new Pair<View, String>(vh.lessonImage, getString(R.string.shared_element)));
+        ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
+        startActivity(intent);
+
+    }
     public void startIntent() {
         //Intent intent = new Intent(this, AddSubjectTitel.class);
         Intent intent = new Intent(this, AddNewLesson.class);

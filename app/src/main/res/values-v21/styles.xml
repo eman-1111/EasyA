@@ -6,7 +6,7 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
-
+        <item name="android:windowContentTransitions">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:navigationBarColor">@color/background_super_dark</item>
         <item name="android:statusBarColor">@color/background_super_dark</item>
@@ -15,15 +15,46 @@
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>
         <item name="android:windowSharedElementsUseOverlay">false</item>
-
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowDisablePreview">true</item>
-
         <item name="windowNoTitle">true</item>
 
     </style>
 
+    <style name="AppTheme.Home">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowEnterTransition">@transition/home_enter</item>
+    </style>
 
+    <style name="AppTheme.Translucent">
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <style name="AppTheme.Translucent.Lesson">
+        <item name="android:statusBarColor">@color/background_super_dark</item>
+        <item name="android:navigationBarColor">@color/background_super_dark</item>
+        <item name="android:windowEnterTransition">@transition/lesson_enter</item>
+        <item name="android:windowReturnTransition">@transition/lesson_return</item>
+        <item name="android:windowSharedElementsUseOverlay">true</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>
+
+    <style name="AppTheme.Detail">
+        <!--<item name="android:statusBarColor">@color/background_super_dark</item>-->
+        <!--<item name="android:navigationBarColor">@color/background_super_dark</item>-->
+        <!--<item name="android:windowEnterTransition">@transition/lesson_enter</item>-->
+        <!--<item name="android:windowReturnTransition">@transition/lesson_return</item>-->
+        <item name="android:windowSharedElementsUseOverlay">true</item>
+        <item name="android:windowContentTransitions">true</item>
+    </style>
 
 </resources>

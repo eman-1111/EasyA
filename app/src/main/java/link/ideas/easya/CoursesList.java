@@ -7,7 +7,10 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
 import link.ideas.easya.fragment.CourseListFragment;
+import link.ideas.easya.utils.Constants;
 
 //https://github.com/googlesamples/google-services/blob/master/android/signin/app/src/main/java/com/google/samples/quickstart/signin/SignInActivity.java#L68-L70
 //https://firebase.google.com/docs/auth/android/google-signin
@@ -16,7 +19,7 @@ import link.ideas.easya.fragment.CourseListFragment;
 
 public class CoursesList extends BaseActivity implements
         CourseListFragment.Callback  {
-
+    MenuItem addCourse;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,7 @@ public class CoursesList extends BaseActivity implements
 
         Intent intent = new Intent(this, LessonList.class)
                 .setData(contentUri);
-        intent.putExtra("CourseName", courseName);
+        intent.putExtra(Constants.PREF_COURSE_NAME, courseName);
         ActivityOptionsCompat activityOptions =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(this);
         ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
@@ -47,7 +50,7 @@ public class CoursesList extends BaseActivity implements
     public boolean onCreateOptionsMenu(Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_add, menu);
-
+         addCourse = menu.findItem(R.id.btn_add_menu);
         return true;
     }
 

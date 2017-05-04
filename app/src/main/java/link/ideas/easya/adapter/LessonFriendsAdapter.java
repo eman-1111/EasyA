@@ -2,6 +2,8 @@ package link.ideas.easya.adapter;
 
 
 import android.content.Context;
+import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -102,9 +104,12 @@ public class LessonFriendsAdapter extends RecyclerView.Adapter<LessonFriendsAdap
 
         if (!imageUrl.equals("")) {
             Glide.with(mContext).load(imageUrl)
-                    .placeholder(R.drawable.placeholder).dontAnimate()
+                    .placeholder(R.drawable.summary).dontAnimate()
                     .into(holder.lessonImage);
 
+        }
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ViewCompat.setTransitionName(holder.lessonImage, "iconView" + position);
         }
     }
 

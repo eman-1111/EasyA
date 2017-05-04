@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -39,7 +40,7 @@ public class FriendsList extends BaseActivity {
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mUsersFriendsDatabaseReference;
 
-
+    boolean isLoaded;
     private static final String LOG_TAG = FriendsList.class.getSimpleName();
 
     @Override
@@ -111,6 +112,8 @@ public class FriendsList extends BaseActivity {
                     empty_list.setVisibility(View.GONE);
                 }
                 progress.setVisibility(View.GONE);
+                startIntroAnimation();
+                isLoaded = true;
             }
 
             @Override
@@ -147,5 +150,22 @@ public class FriendsList extends BaseActivity {
     public void onAddFriendPressed(View view) {
         Intent intent = new Intent(FriendsList.this, AddFriendActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isLoaded)
+            startIntroAnimation();
+    }
+    private void startIntroAnimation() {
+        mRecyclerViewFriends.setTranslationY( getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerViewFriends.setAlpha(0f);
+        mRecyclerViewFriends.animate()
+                .translationY(0)
+                .setDuration(500)
+                .alpha(1f)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .start();
     }
 }

@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="@dimen/activity_less_margin"
     android:background="@drawable/touch_selector"
-    android:elevation="2dp"
+    android:elevation="@dimen/card_elevation"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
-    card_view:cardCornerRadius="2dp">
+    card_view:cardCornerRadius="@dimen/card_elevation">
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="@dimen/list_item_lesson">
 
         <RelativeLayout
             android:layout_width="wrap_content"
@@ -24,42 +24,45 @@
                 android:id="@+id/image_fram"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="@dimen/activity_vertical_margin"
-                android:layout_gravity="center">
+                android:layout_gravity="center"
+                android:paddingEnd="@dimen/activity_vertical_margin">
 
                 <ImageView
                     android:id="@+id/list_item_lesson_image"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:layout_width="@dimen/list_item_lesson"
+                    android:layout_height="@dimen/list_item_lesson"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:background="@drawable/summary"
                     android:contentDescription="@string/a11y_outline_image"
-                    android:maxHeight="100dp"
-                    android:maxWidth="100dp"
+                    android:maxHeight="@dimen/list_item_lesson"
+                    android:maxWidth="@dimen/list_item_lesson"
                     android:scaleType="centerCrop" />
 
             </FrameLayout>
 
             <TextView
                 android:id="@+id/list_item_lesson_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/image_fram"
-                android:padding="4dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                tools:text="LessonName" />
+                android:layout_toEndOf="@+id/image_fram"
+                android:paddingTop="@dimen/text_padding_add"
+                android:paddingEnd="@dimen/text_padding_add"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@color/text_primary_dark"
+                tools:text="@string/lesson_name" />
 
             <TextView
                 android:id="@+id/list_item_real_Application_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/list_item_lesson_title"
-                android:layout_toRightOf="@+id/image_fram"
-                android:padding="4dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                android:textColor="@color/secondary_text"
-                tools:text="LessonName" />
+                android:layout_toEndOf="@+id/image_fram"
+                android:paddingEnd="@dimen/text_padding_add"
+                android:padding="@dimen/text_padding_add"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/text_secondary_dark"
+                tools:text="@string/lesson_name" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>

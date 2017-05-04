@@ -1,8 +1,11 @@
 package link.ideas.easya.fragment;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -11,13 +14,20 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ListView;
 import android.widget.TextView;
 
 
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import link.ideas.easya.R;
 import link.ideas.easya.adapter.LessonAdapter;
 import link.ideas.easya.data.CourseContract;
@@ -38,7 +48,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
 
 
     public interface Callback {
-        public void onItemSelected(Uri idUri);
+        public void onItemSelected(Uri idUri, LessonAdapter.SubjectAdapterViewHolder vh);
     }
 
     // RecyclerView mRecyclerView;
@@ -84,7 +94,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_lesson);
         emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
 
         // Set the layout manager
@@ -97,7 +107,8 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
             public void onClick(String id, String lessonTitle, LessonAdapter.SubjectAdapterViewHolder vh) {
                 Uri uri = CourseContract.SubjectEntry.buildCourseWithIDAndTitle(id, lessonTitle);
                 ((Callback) getActivity())
-                        .onItemSelected(uri);
+                        .onItemSelected(uri, vh);
+
                 mPosition = vh.getAdapterPosition();
             }
 
@@ -119,6 +130,8 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
                 return false;
             }
         });
+        SlideInBottomAnimationAdapter alphaAdapter = new SlideInBottomAnimationAdapter(mSubjectAdapter);
+        alphaAdapter.setFirstOnly(false);
         mRecyclerView.setAdapter(mSubjectAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
@@ -143,6 +156,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(COURSE_LOADER, null, this);
+
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -180,6 +194,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
         if (data != null && data.moveToFirst()) {
             getActivity().setTitle(data.getString(LessonListFragment.COL_COURSE_NAME));
             emptyView.setText("");
+
         } else {
             emptyView.setText("The lesson you will add, will show up here, so add some");
         }
@@ -189,7 +204,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
             mRecyclerView.smoothScrollToPosition(mPosition);
 
         }
-
+        startIntroAnimation();
     }
 
     @Override
@@ -201,6 +216,31 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
 
     private void removeItem(String itemId) {
 
+    }
+
+
+
+    private void startIntroAnimation() {
+        mRecyclerView.setTranslationY( getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerView.setAlpha(0f);
+        mRecyclerView.animate()
+                .translationY(0)
+                .setDuration(500)
+                .alpha(1f)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .start();
+    }
+
+    private void scheduleStartPostponedTransition(final View sharedElement) {
+        sharedElement.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+                        startPostponedEnterTransition();
+                        return true;
+                    }
+                });
     }
 }
 

@@ -17,6 +17,7 @@ package link.ideas.easya.fragment;
         import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
+        import android.view.animation.AccelerateDecelerateInterpolator;
         import android.widget.ListView;
         import android.widget.TextView;
 
@@ -35,7 +36,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
 
     public static final String LOG_TAG = CourseListFragment.class.getSimpleName();
     TextView emptyView;
-
+    boolean isLoaded;
     public interface Callback {
         /**
          * DetailFragmentCallback for when an item has been selected.
@@ -103,8 +104,8 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
             @Override
             public boolean onLongClick(final String courseId) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-                builder2.setMessage("Are you sure you want to delete this Course ");
-                builder2.setPositiveButton("Delete",
+                builder2.setMessage(getResources().getString(R.string.delete_course));
+                builder2.setPositiveButton(getResources().getString(R.string.delete),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 getContext().getContentResolver().delete(CourseContract.CourseEntry.CONTENT_URI,
@@ -116,10 +117,9 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
                                 removeItem(courseId);
                                 Helper.updateWidgets(getContext());
 
-
                             }
                         });
-                builder2.setNegativeButton("Cancel", null);
+                builder2.setNegativeButton(getResources().getString(R.string.cancel), null);
                 builder2.show();
                 return false;
             }
@@ -169,7 +169,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
             mRecyclerView.smoothScrollToPosition(mPosition);
 
         }
-
+        startIntroAnimation();
     }
 
     @Override
@@ -182,6 +182,22 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isLoaded)
+            startIntroAnimation();
+    }
 
+    private void startIntroAnimation() {
+        mRecyclerView.setTranslationY( getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerView.setAlpha(0f);
+        mRecyclerView.animate()
+                .translationY(0)
+                .setDuration(500)
+                .alpha(1f)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .start();
+    }
 
 }

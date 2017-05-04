@@ -13,19 +13,18 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center|top"
+        android:gravity="center"
         android:orientation="vertical">
 
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center|top"
+            android:gravity="center"
             android:src="@drawable/ic_burst_mode_black_24dp" />
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="@string/gallery"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -52,7 +51,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="@string/photo"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
@@ -65,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="center|top"
+        android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
@@ -76,7 +74,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="@string/search_online"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"

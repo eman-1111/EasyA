@@ -28,14 +28,13 @@
                 android:id="@+id/lesson_linkx_d_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/md_keylines"
+                android:layout_marginTop="@dimen/activity_less_margin"
+                android:paddingBottom="@dimen/activity_less_margin"
                 android:paddingLeft="@dimen/text_padding_add"
                 android:paddingRight="@dimen/text_padding_add"
-                android:text="Lesson Name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?attr/colorAccent"
-                android:textSize="@dimen/article_titles" />
+                android:text="@string/lesson_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="?attr/colorAccent" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_name"
@@ -46,24 +45,23 @@
                     android:id="@+id/lesson_name_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/et_padding_add"
-                    android:layout_marginRight="@dimen/et_padding_add"
-                    android:hint="Lesson Name"
+                    android:hint="@string/lesson_name"
                     android:paddingBottom="@dimen/text_extra_padding_bottom"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/text_secondary_dark" />
             </android.support.design.widget.TextInputLayout>
 
             <TextView
+                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:paddingBottom="@dimen/md_keylines"
-                android:paddingLeft="@dimen/text_padding_add"
-                android:paddingRight="@dimen/text_padding_add"
-                android:text="Summary"
-                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:textColor="?attr/colorAccent"
-                android:textSize="@dimen/article_titles" />
+                android:layout_marginTop="@dimen/activity_less_margin"
+                android:paddingBottom="@dimen/activity_less_margin"
+                android:paddingEnd="@dimen/text_padding_add"
+                android:paddingStart="@dimen/text_padding_add"
+                android:text="@string/summary"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="?attr/colorAccent" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/input_layout_outline"
@@ -74,12 +72,11 @@
                     android:id="@+id/lesson_outline_et"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="@dimen/et_padding_add"
-                    android:layout_marginRight="@dimen/et_padding_add"
                     android:gravity="top"
-                    android:hint="What did you learn from the lesson ?"
+                    android:hint="@string/summarize"
                     android:minLines="5"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/text_secondary_dark" />
             </android.support.design.widget.TextInputLayout>
 
             <FrameLayout
@@ -89,10 +86,10 @@
                 <ImageView
                     android:id="@+id/outline_image"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="@dimen/add_lesson_image_height"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
-                    android:background="@drawable/bachground3"
+                    android:background="@drawable/summary"
                     android:scaleType="centerCrop" />
 
                 <TextView

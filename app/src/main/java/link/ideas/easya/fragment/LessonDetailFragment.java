@@ -139,6 +139,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
     CollapsingToolbarLayout collapsingToolbar;
 
+
     public LessonDetailFragment() {
         setHasOptionsMenu(true);
     }
@@ -149,6 +150,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         Bundle arguments = getArguments();
         if (arguments != null) {
             mUri = arguments.getParcelable(LessonDetailFragment.DETAIL_URI);
+
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_detail, container, false);
@@ -189,7 +191,6 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         }
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -197,14 +198,10 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(getActivity(), LessonList.class)
-                    .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
-            intent.putExtra(Constants.PREF_COURSE_NAME, lessonName);
-            startActivity(intent);
-            getActivity().finish();
-        }
         if (id == R.id.action_edit) {
+           getActivity().onBackPressed();
+            return true;
+        }else if (id == R.id.action_edit) {
             Intent intent = new Intent(getActivity(), AddNewLesson.class);
             intent.putExtra(Constants.PREF_LESSON_URL, mUri.toString());
             intent.putExtra(Constants.PREF_COURSE_ID, CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
@@ -244,7 +241,6 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         }
         return super.onOptionsItemSelected(item);
     }
-
     private void startSharing() {
         String lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
         SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
@@ -344,6 +340,8 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
 
             favorite = Integer.parseInt(data.getString(COL_FAVORITE));
+
+            AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         }
     }

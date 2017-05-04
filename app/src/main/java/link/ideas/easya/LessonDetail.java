@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.LessonDetailFragment;
@@ -13,6 +14,8 @@ import link.ideas.easya.fragment.LessonDetailFragment;
 public class LessonDetail extends BaseActivity {
     String lessonName;
     String lessonId;
+
+    private static final String LOG_TAG = LessonDetail.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +29,7 @@ public class LessonDetail extends BaseActivity {
             Bundle arguments = new Bundle();
 
             arguments.putParcelable(LessonDetailFragment.DETAIL_URI, getIntent().getData());
+
 
             Uri mUri = arguments.getParcelable(LessonDetailFragment.DETAIL_URI);
             lessonName = CourseContract.SubjectEntry.getSubjectTitleFromUri(mUri);

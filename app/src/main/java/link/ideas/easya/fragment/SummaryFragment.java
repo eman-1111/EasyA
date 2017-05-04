@@ -227,6 +227,7 @@ public class SummaryFragment extends Fragment {
         }
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {

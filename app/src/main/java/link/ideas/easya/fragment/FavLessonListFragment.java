@@ -1,6 +1,8 @@
 package link.ideas.easya.fragment;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,9 +13,12 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,7 +42,7 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
 
 
     public interface Callback {
-        public void onItemSelected(Uri idUri);
+        public void onItemSelected(Uri idUri,  LessonFavAdapter.SubjectFavAdapterViewHolder vh);
     }
 
     // RecyclerView mRecyclerView;
@@ -88,7 +93,7 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
         //getActivity().setTitle("");
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
         // Get a reference to the RecyclerView, and attach this adapter to it.
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_lesson);
         //  mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
 
@@ -101,8 +106,8 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
             @Override
             public void onClick(String id, String lessonTitle, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
                 Uri uri = CourseContract.SubjectEntry.buildCourseWithIDAndTitle(id, lessonTitle);
-                ((LessonListFragment.Callback) getActivity())
-                        .onItemSelected(uri);
+                ((FavLessonListFragment.Callback) getActivity())
+                        .onItemSelected(uri, vh);
                 mPosition = vh.getAdapterPosition();
             }
 
@@ -148,7 +153,9 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         getLoaderManager().initLoader(COURSE_LOADER, null, this);
+
         super.onActivityCreated(savedInstanceState);
+
     }
 
     @Override

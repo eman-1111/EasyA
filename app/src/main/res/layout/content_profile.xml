@@ -41,7 +41,7 @@
                 android:maxLines="1"
                 android:text="@string/email"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="#727272"/>
+                android:textColor="@color/text_tertiary_dark"/>
 
             <TextView
                 android:id="@+id/tv_user_email"
@@ -54,7 +54,7 @@
                 android:layout_toEndOf="@id/ivContactItem3"
                 android:layout_toRightOf="@id/ivContactItem3"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#212121" />
+                android:textColor="@color/text_primary_dark" />
 
 
         </RelativeLayout>
@@ -86,7 +86,7 @@
                 android:maxLines="1"
                 android:text="@string/name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textColor="#727272"/>
+                android:textColor="@color/text_tertiary_dark"/>
 
             <TextView
                 android:id="@+id/tv_user_name"
@@ -99,7 +99,7 @@
                 android:layout_toEndOf="@id/ivContactItem4"
                 android:layout_toRightOf="@id/ivContactItem4"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#212121" />
+                android:textColor="@color/text_primary_dark" />
 
 
         </RelativeLayout>
@@ -125,7 +125,7 @@
                 android:maxLines="1"
                 android:text="@string/logout"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textColor="#212121" />
+                android:textColor="@color/text_primary_dark" />
 
 
         </RelativeLayout>

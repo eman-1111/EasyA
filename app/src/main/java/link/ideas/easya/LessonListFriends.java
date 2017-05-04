@@ -2,10 +2,14 @@ package link.ideas.easya;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,7 +41,7 @@ public class LessonListFriends extends BaseActivity {
     ValueEventListener mValueEventLessonListener;
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mLessonDatabaseReference;
-
+    boolean isLoaded;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +64,7 @@ public class LessonListFriends extends BaseActivity {
         lessonPushIds = new ArrayList<String>();
 
         progress = (LinearLayout) findViewById(R.id.lin_Progress);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_lesson);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mRecyclerView.setHasFixedSize(true);
@@ -72,7 +76,12 @@ public class LessonListFriends extends BaseActivity {
                 intent.putExtra(Constants.PREF_COURSE_PUSH_ID ,coursePushId);
                 intent.putExtra(Constants.PREF_LESSON_PUSH_ID ,lessonPushId);
                 intent.putExtra(Constants.PREF_LESSON_OBJECT, lesson);
+                ActivityOptionsCompat activityOptions =
+                        ActivityOptionsCompat.makeSceneTransitionAnimation(LessonListFriends.this,
+                                new Pair<View, String>(vh.lessonImage, getString(R.string.shared_element)));
+                ActivityCompat.startActivity(LessonListFriends.this, intent, activityOptions.toBundle());
                 startActivity(intent);
+
             }
         });
         mRecyclerView.setAdapter(mLessonFriendsAdapter);
@@ -107,6 +116,8 @@ public class LessonListFriends extends BaseActivity {
                     emptyView.setVisibility(View.GONE);
                 }
                 progress.setVisibility(View.GONE);
+                startIntroAnimation();
+                isLoaded = true;
             }
 
             @Override
@@ -133,4 +144,21 @@ public class LessonListFriends extends BaseActivity {
         }
     }
 
+    private void startIntroAnimation() {
+        mRecyclerView.setTranslationY( getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerView.setAlpha(0f);
+        mRecyclerView.animate()
+                .translationY(0)
+                .setDuration(500)
+                .alpha(1f)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .start();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isLoaded)
+            startIntroAnimation();
+    }
 }
