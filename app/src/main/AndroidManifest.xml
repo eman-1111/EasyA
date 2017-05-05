@@ -83,6 +83,10 @@
             android:parentActivityName=".LessonListFriends"
             android:theme="@style/AppTheme.Translucent.Detail" />
 
+        <activity
+            android:name=".HelpActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme" />
         <!-- Detail Widget -->
         <receiver
             android:name=".widget.DetailWidgetProvider"

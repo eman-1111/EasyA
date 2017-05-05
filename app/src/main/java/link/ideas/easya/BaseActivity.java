@@ -832,6 +832,8 @@ public class BaseActivity extends AppCompatActivity
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_about:
+                        Intent helpIntent = new Intent(BaseActivity.this, HelpActivity.class);
+                        startActivity(helpIntent);
                         drawer.closeDrawers();
                         return true;
                     case R.id.nav_friends:
