@@ -49,9 +49,9 @@
                     android:id="@+id/lesson_app_title_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minLines="2"
                     android:layout_marginBottom="@dimen/activity_vertical_margin"
                     android:hint="@string/hint_title"
+                    android:minLines="2"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/text_secondary_dark" />
             </android.support.design.widget.TextInputLayout>
@@ -67,7 +67,7 @@
                     android:layout_weight="7"
                     android:text="@string/description"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textColor="?attr/colorAccent"/>
+                    android:textColor="?attr/colorAccent" />
 
                 <ImageView
                     android:id="@+id/app_info"
@@ -103,14 +103,14 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:background="@drawable/bachground2"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="fitXY" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom|end"
-                    android:text="@string/chose_image"
                     android:padding="@dimen/activity_horizontal_margin"
+                    android:text="@string/chose_image"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/white" />
             </FrameLayout>

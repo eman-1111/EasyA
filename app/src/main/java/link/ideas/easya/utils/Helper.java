@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.google.firebase.database.ServerValue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,25 +104,19 @@ public class Helper {
         View promptsView = li.inflate(R.layout.warn_dialog, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext, R.style.DialogTheme );
-
         alertDialogBuilder.setView(promptsView);
 
         final TextView txtTitle = (TextView) promptsView
                 .findViewById(R.id.txt_title);
-
         final TextView txtDescription = (TextView) promptsView
                 .findViewById(R.id.txt_description);
-
         final TextView txtOK = (TextView) promptsView
                 .findViewById(R.id.txt_ok);
 
         txtTitle.setText(title);
         txtDescription.setText(description);
         final boolean[] isOkay = {false};
-        // set dialog message
 
-
-        // create alert dialog
         final  AlertDialog alertDialog = alertDialogBuilder.create();
         txtOK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,11 +135,26 @@ public class Helper {
         return userEmail.replace(",", ".");
     }
 
-    public static Bitmap getImageCompress(Bitmap image) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 0, bytes);
-        byte[] bitmapdata = bytes.toByteArray();
-        return BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+    public static Bitmap getImageCompress(Bitmap original) {
+        Log.e("Original   dimensions", original.getByteCount()+" "+original.getHeight()+" "+original.getWidth());
+
+        final int maxSize = 750;
+        int outWidth;
+        int outHeight;
+        int inWidth = original.getWidth();
+        int inHeight = original.getHeight();
+        if(inWidth > inHeight){
+            outWidth = maxSize;
+            outHeight = (inHeight * maxSize) / inWidth;
+        } else {
+            outHeight = maxSize;
+            outWidth = (inWidth * maxSize) / inHeight;
+        }
+
+        Bitmap decoded = Bitmap.createScaledBitmap(original, outWidth, outHeight, false);
+
+        Log.e("Compressed dimensions", decoded.getByteCount()+" "+decoded.getHeight()+" "+decoded.getWidth());
+        return decoded;
     }
 
 

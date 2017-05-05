@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -80,11 +81,14 @@ public class SummaryFragment extends Fragment {
                 if (Build.VERSION.SDK_INT >= 23) {
                     if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
                             == PackageManager.PERMISSION_GRANTED) {
+                        Log.e(LOG_TAG, "PERMISSION_GRANTED");
                         startDialog();
                     } else {
-                        Log.e(LOG_TAG, "(Else.VERSION.SDK_INT");
+                        Log.e(LOG_TAG, "Not PERMISSION_GRANTED(Else.VERSION.SDK_INT");
                         //  ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-                        requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+                        requestPermissions(new String[]{Manifest.permission.CAMERA,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
 
                     }
                 } else {
@@ -126,33 +130,29 @@ public class SummaryFragment extends Fragment {
 
         final LinearLayout gallery = (LinearLayout) promptsView
                 .findViewById(R.id.linear_gallery);
-
         final LinearLayout photo = (LinearLayout) promptsView
                 .findViewById(R.id.linear_take_photo);
-
         final LinearLayout searchPhoto = (LinearLayout) promptsView
                 .findViewById(R.id.linear_search_photo);
+
+        final TextView txtCancel = (TextView) promptsView
+                .findViewById(R.id.txt_cancel);
 
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePicture, 0);
                 alertDialog.dismiss();
-
 
             }
         });
         gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
                 startActivityForResult(pickPhoto, 1);
-
                 alertDialog.dismiss();
 
 
@@ -166,6 +166,14 @@ public class SummaryFragment extends Fragment {
                 alertDialog.dismiss();
             }
         });
+
+        txtCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.cancel();
+            }
+        });
+
         alertDialog = alertDialogBuilder.create();
         alertDialog.show();
 
@@ -232,9 +240,14 @@ public class SummaryFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case 101:
+                Log.e(LOG_TAG, "onRequestPermissionsResult 1");
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.e(LOG_TAG, "onRequestPermissionsResult 2");
+
                     startDialog();
                 } else {
+                    Log.e(LOG_TAG, "onRequestPermissionsResult 3");
+
                     Helper.startDialog(getActivity(), "",
                             getResources().getString(R.string.get_image_permissions));
                 }

@@ -726,21 +726,6 @@ public class BaseActivity extends AppCompatActivity
 
             }
         });
-        // set dialog message
-        alertDialogBuilder
-                .setPositiveButton(getResources().getString(R.string.ok),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-
-
-                            }
-                        })
-                .setNegativeButton(getResources().getString(R.string.cancel),
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.cancel();
-                            }
-                        });
 
         // create alert dialog
         final AlertDialog alertDialog = alertDialogBuilder.create();
@@ -766,7 +751,7 @@ public class BaseActivity extends AppCompatActivity
         txtCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                alertDialog.cancel();;
+                alertDialog.cancel();
             }
         });
         // show it

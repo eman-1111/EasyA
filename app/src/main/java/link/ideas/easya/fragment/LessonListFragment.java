@@ -26,8 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
-import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
+
 import link.ideas.easya.R;
 import link.ideas.easya.adapter.LessonAdapter;
 import link.ideas.easya.data.CourseContract;
@@ -130,8 +129,6 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
                 return false;
             }
         });
-        SlideInBottomAnimationAdapter alphaAdapter = new SlideInBottomAnimationAdapter(mSubjectAdapter);
-        alphaAdapter.setFirstOnly(false);
         mRecyclerView.setAdapter(mSubjectAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the

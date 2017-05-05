@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -109,8 +110,9 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                             == PackageManager.PERMISSION_GRANTED) {
                         startDialog();
                     } else {
-                        //  ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
-                        ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 101);
+                        requestPermissions(new String[]{Manifest.permission.CAMERA,
+                                Manifest.permission.READ_EXTERNAL_STORAGE,
+                                Manifest.permission.WRITE_EXTERNAL_STORAGE}, 103);
 
                     }
                 } else {
@@ -165,35 +167,29 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
         final LinearLayout gallery = (LinearLayout) promptsView
                 .findViewById(R.id.linear_gallery);
-
         final LinearLayout photo = (LinearLayout) promptsView
                 .findViewById(R.id.linear_take_photo);
-
         final LinearLayout searchPhoto = (LinearLayout) promptsView
                 .findViewById(R.id.linear_search_photo);
+
+        final TextView txtCancel = (TextView) promptsView
+                .findViewById(R.id.txt_cancel);
 
         photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent takePicture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(takePicture, 0);
                 alertDialog.dismiss();
-
-
             }
         });
         gallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(pickPhoto, 1);
-
                 alertDialog.dismiss();
-
-
             }
         });
 
@@ -204,6 +200,14 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                 alertDialog.dismiss();
             }
         });
+
+        txtCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.cancel();
+            }
+        });
+
         alertDialog = alertDialogBuilder.create();
         alertDialog.show();
 
@@ -274,7 +278,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case 101:
+            case 103:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     startDialog();
                 } else {
