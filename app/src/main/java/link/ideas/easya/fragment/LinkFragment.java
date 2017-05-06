@@ -106,11 +106,12 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.link_info:
                 info = this.getString(R.string.info_link);
-                showDialog(info);
+
+                Helper.startDialog(getActivity(), "",info);
                 break;
             case R.id.debug_info:
                 info = this.getString(R.string.info_debug);
-                showDialog(info);
+                Helper.startDialog(getActivity(), "",info);
                 break;
 
             case R.id.link_image:
@@ -134,12 +135,6 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void showDialog(String info) {
-        AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-        builder2.setMessage(info);
-        builder2.setPositiveButton("OK", null);
-        builder2.show();
-    }
 
 
     @Override

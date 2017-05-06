@@ -25,6 +25,8 @@ public class Constants {
     public static final String PREF_COURSE_NAME = "CourseName";
     public static final String PREF_LESSON_URL = "LessonURL";
     public static final String PREF_COURSE_ID = "CourseId";
+    public static final String PREF_FIRST_TIME = "firstTime";
+
 
     public static final String FIREBASE_LOCATION_USERS = "users";
     public static final String FIREBASE_LOCATION_USER_FRIENDS = "userFriends";

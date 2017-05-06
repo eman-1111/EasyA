@@ -15,6 +15,7 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -124,6 +125,14 @@ public class BaseActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (!mSharedPreferences.getBoolean(Constants.PREF_FIRST_TIME, false)) {
+            Intent helpIntent = new Intent(BaseActivity.this, HelpActivity.class);
+            startActivity(helpIntent);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(Constants.PREF_FIRST_TIME, true);
+            editor.commit();
+        }
         mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -220,8 +229,7 @@ public class BaseActivity extends AppCompatActivity
     private void getResultsFromApi() throws IOException {
         if (!isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
-        } else
-            if (!isDeviceOnline()) {
+        } else if (!isDeviceOnline()) {
             deviceOffline();
         }
     }
@@ -478,7 +486,7 @@ public class BaseActivity extends AppCompatActivity
         final int connectionStatusCode =
                 apiAvailability.isGooglePlayServicesAvailable(this);
         if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
-           // showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+            // showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
         }
     }
 
@@ -642,7 +650,7 @@ public class BaseActivity extends AppCompatActivity
      * @param courseId     .
      */
     long addCourseData(String courseName, String teacherName, String teacherEmail,
-                       String teacherPhoto, String courseId, int  selectedColorId) {
+                       String teacherPhoto, String courseId, int selectedColorId) {
 
         long courseID;
 
@@ -698,7 +706,7 @@ public class BaseActivity extends AppCompatActivity
         View promptsView = li.inflate(R.layout.add_course_name, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                this,R.style.DialogTheme );
+                this, R.style.DialogTheme);
         alertDialogBuilder.setView(promptsView);
         final EditText courseNameET = (EditText) promptsView
                 .findViewById(R.id.course_name_et);
@@ -741,7 +749,7 @@ public class BaseActivity extends AppCompatActivity
 
                 } else {
                     addCourseData(courseNameET.getText().toString(), teacherNameET.getText().toString(),
-                            null, null, courseId,  selectedColorId[0]);
+                            null, null, courseId, selectedColorId[0]);
                     Helper.updateWidgets(BaseActivity.this);
                     alertDialog.cancel();
                 }
@@ -902,7 +910,6 @@ public class BaseActivity extends AppCompatActivity
     public void setDrawer(boolean isDrawerEnable) {
         this.isDrawerEnable = isDrawerEnable;
     }
-
 
 
 }

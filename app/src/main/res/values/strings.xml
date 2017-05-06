@@ -48,6 +48,7 @@
     <string name="teacher_name">Teacher Name</string>
 
     <string name="lesson_name">Lesson Name</string>
+    <string name="lesson_name_des">Try to simplify it.</string>
     <string name="summary">Summary</string>
     <string name="summarize">Summarize what you learned</string>
 
@@ -76,15 +77,15 @@
     <string name="sync_account_type">easya.ideas.link</string>
     <string name="content_authority">link.ideas.easya</string>
 
-    <string name="hint_link">Link the lesson to different things.</string>
-    <string name="hint_debug">look for the difference between your link and the lesson.</string>
-    <string name="hint_title">Write an idea/ example where you can use the lesson</string>
+    <string name="hint_link">Look for a metaphor.</string>
+    <string name="hint_debug">How is your link different from lesson</string>
+    <string name="hint_title">Add an idea or an example.</string>
     <string name="hint_descr">Write your idea in details</string>
 
-    <string name="info_link">Link the lesson to something else, Try using that (reminds me of) Science concepts remind you of history which remind you of the movie you saw. Put in mind that, Lesson come from somewhere, doesn’t stand alone, and it follows patterns. Try linking the lesson to other ideas that interest you. It doesn’t matter if the ideas are ridiculous or completely unrelated.</string>
-    <string name="info_debug">how is your link different from  the lesson </string>
-    <string name="info_title">Find a way you can apply what you learn to your own life, an idea or example that you have seen or listened to before.</string>
-    <string name="info_descr">Summarize the idea. what does it means, methods ,most important results and conclusions.</string>
+    <string name="info_link">Link the lesson to something else, Try using that (reminds me of). Put in mind that, Lesson come from somewhere, doesn’t stand alone, and it follows patterns. Try linking the lesson to other ideas that interest you. It doesn’t matter how ridiculous the idea is.</string>
+    <string name="info_debug">In the link section, you searched for metaphor and state the similarity between it and the lesson, here you will say how the link and the lesson are different.</string>
+    <string name="info_title">Find a way you can apply what you learned, an idea or example that you use in your own life.</string>
+    <string name="info_descr">Summarize the application idea. what does it means, methods ,most important results and conclusions.</string>
 
 
     <!-- Base Error Strings-->
@@ -109,6 +110,7 @@
 
     <string name="you_have_no_friend">You do not have friends yet please add them</string>
 
+    <string name="pixabay_text">Powered by Pixabay search engine </string>
 
     <!-- Instructions and Loading Text -->
     <string name="progress_dialog_loading">Loading…</string>

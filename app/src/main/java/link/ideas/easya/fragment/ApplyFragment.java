@@ -95,11 +95,11 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.title_info:
                 info = this.getString(R.string.info_title);
-                showDialog(info);
+                Helper.startDialog(getActivity(), "",info);
                 break;
             case R.id.app_info:
                 info = this.getString(R.string.info_descr);
-                showDialog(info);
+                Helper.startDialog(getActivity(), "",info);
                 break;
 
             case R.id.app_image:
@@ -125,12 +125,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
     }
 
-    private void showDialog(String info) {
-        AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-        builder2.setMessage(info);
-        builder2.setPositiveButton("OK", null);
-        builder2.show();
-    }
 
 
     @Override

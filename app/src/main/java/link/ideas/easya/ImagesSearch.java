@@ -47,24 +47,25 @@ import link.ideas.easya.models.Image;
 
 public class ImagesSearch extends AppCompatActivity {
     ImageAdapter mImageAdapter;
-    String searchValue;
+
     Bundle data;
     static Bitmap imageB = null;
     LinearLayout linlaHeaderProgress;
+    ImageView ivNoResult;
+    String searchValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("ImagesSearch", "onCreate:2 " );
+
         setContentView(R.layout.activity_image_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        data = intent.getExtras();
-        searchValue = intent.getStringExtra("SearchValue");
         linlaHeaderProgress = (LinearLayout) findViewById(R.id.lin_Progress);
+        ivNoResult = (ImageView) findViewById(R.id.iv_no_result);
+
         mImageAdapter = new ImageAdapter(this, R.layout.list_item_search, new ArrayList<Image>());
         GridView gridView = (GridView) findViewById(R.id.image_gridview);
         gridView.setAdapter(mImageAdapter);
@@ -124,6 +125,7 @@ public class ImagesSearch extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                ivNoResult.setVisibility(View.GONE);
                 return true;
             }
         });
@@ -154,10 +156,16 @@ public class ImagesSearch extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<Image> result) {
             if (result != null) {
-                mImageAdapter.clear();
-                mImageAdapter.addAll(result);
-                mImageAdapter.notifyDataSetChanged();
+
                 linlaHeaderProgress.setVisibility(View.GONE);
+                if (result.size() > 0) {
+                    mImageAdapter.clear();
+                    mImageAdapter.addAll(result);
+                    mImageAdapter.notifyDataSetChanged();
+                } else {
+                    mImageAdapter.clear();
+                    ivNoResult.setVisibility(View.VISIBLE);
+                }
             }
         }
 
