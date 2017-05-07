@@ -2,6 +2,7 @@ package link.ideas.easya.fragment;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,10 +27,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import link.ideas.easya.R;
 import link.ideas.easya.adapter.LessonAdapter;
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.Helper;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -41,6 +50,9 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
     public static final String SUBJECT_URI = "URIS";
     private Uri mUri;
     TextView emptyView;
+
+
+
 
     public LessonListFragment() {
     }
@@ -65,8 +77,9 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
             CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
             CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE
-    };
+            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
+            CourseContract.CourseEntry.COLUMN_FIREBASE_ID,
+            CourseContract.SubjectEntry.COLUMN_FIREBASE_ID};
 
     public static final int COL_COURSE_ID = 0;
     public static final int CO_LESSON_TITLE = 1;
@@ -74,6 +87,8 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
     public static final int COL_COURSE_NAME = 3;
     public static final int COL_LESSON_OUTLINE_IMAGE = 4;
 
+    public static final int COL_FIREBASE_COURSE_ID = 5;
+    public static final int COL_FIREBASE_LESSON_ID = 6;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -112,19 +127,24 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
             }
 
             @Override
-            public boolean onLongClick(final String lessonId, final String lessonName) {
+            public boolean onLongClick(final String lessonId, final String lessonName,
+                                       final String coursePushId, final String lessonPushId) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
-                builder2.setMessage("Are you sure you want to delete this Lesson ");
-                builder2.setPositiveButton("Delete",
+                builder2.setMessage(getResources().getString(R.string.delete_course));
+                builder2.setPositiveButton(getResources().getString(R.string.delete),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                if(lessonPushId != null){
+                                    deleteLessonFromFirebase( lessonName, coursePushId, lessonPushId);
+                                }
+
                                 getContext().getContentResolver().delete(CourseContract.SubjectEntry.CONTENT_URI,
-                                        CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?",
-                                        new String[]{lessonId});
-                                removeItem(lessonId);
+                                        CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ?",
+                                        new String[]{lessonName});
+
                             }
                         });
-                builder2.setNegativeButton("Cancel", null);
+                builder2.setNegativeButton(getResources().getString(R.string.cancel), null);
                 builder2.show();
                 return false;
             }
@@ -136,6 +156,35 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
             mPosition = savedInstanceState.getInt(SELECTED_KEY);
         }
         return rootView;
+    }
+
+    private void deleteLessonFromFirebase(String title, String coursePushId, String lessonPushId) {
+
+
+        FirebaseDatabase  mFirebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseStorage mFirebaseStorage = FirebaseStorage.getInstance();
+
+        DatabaseReference mLessonDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS)
+                .child(coursePushId).child(lessonPushId);
+        mLessonDatabaseReference.removeValue();
+
+        DatabaseReference mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL)
+                .child(coursePushId).child(lessonPushId);
+        mLessonDetailDatabaseReference.removeValue();
+
+        StorageReference mUserImagesReferenceSummary = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + title + "/summary.jpg");
+        StorageReference mUserImagesReferenceLink = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + title + "/link.jpg");
+        StorageReference mUserImagesReferenceApp = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + title + "/app.jpg");
+
+        mUserImagesReferenceSummary.delete();
+        mUserImagesReferenceLink.delete();
+        mUserImagesReferenceApp.delete();
+
     }
 
 
@@ -193,7 +242,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
             emptyView.setText("");
 
         } else {
-            emptyView.setText("The lesson you will add, will show up here, so add some");
+            emptyView.setText(getResources().getString(R.string.no_lesson));
         }
         if (mPosition != ListView.INVALID_POSITION) {
             // Ifp we don't need to restart the loader, and there's a desired position to restore
@@ -211,14 +260,10 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
 
     }
 
-    private void removeItem(String itemId) {
-
-    }
-
 
 
     private void startIntroAnimation() {
-        mRecyclerView.setTranslationY( getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerView.setTranslationY(getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
         mRecyclerView.setAlpha(0f);
         mRecyclerView.animate()
                 .translationY(0)

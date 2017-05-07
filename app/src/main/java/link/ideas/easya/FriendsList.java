@@ -40,7 +40,6 @@ public class FriendsList extends BaseActivity {
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mUsersFriendsDatabaseReference;
 
-    boolean isLoaded;
     private static final String LOG_TAG = FriendsList.class.getSimpleName();
 
     @Override
@@ -76,20 +75,21 @@ public class FriendsList extends BaseActivity {
 
         mRecyclerViewFriends.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerViewFriends.setHasFixedSize(true);
-        mUserFriendsAdapter = new UserFriendsAdapter(userList, friendsEmails, this, new UserFriendsAdapter.UserFriendsAdapterOnClickHolder() {
+        mUserFriendsAdapter = new UserFriendsAdapter(userList, friendsEmails, Helper.encodeEmail(accountName),this, new UserFriendsAdapter.UserFriendsAdapterOnClickHolder() {
             @Override
-            public void onClick(String friendEmail, String name, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
+            public void onClick(String friendEmail, String name,  boolean canEdit, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
                 Intent intent = new Intent(FriendsList.this, CourseListFriends.class);
-                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT ,friendEmail);
-                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT_NAME ,name);
+                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT, friendEmail);
+                intent.putExtra(Constants.PREF_FRIEND_ACCOUNT_NAME, name);
+                intent.putExtra(Constants.PREF_FRIEND_CAN_EDIT, canEdit);
                 startActivity(intent);
             }
         });
         mRecyclerViewFriends.setAdapter(mUserFriendsAdapter);
         if (isDeviceOnline()) {
             attachDatabaseReadListener();
-        }else {
-            Snackbar.make(mRecyclerViewFriends ,getResources().getString(R.string.network) ,
+        } else {
+            Snackbar.make(mRecyclerViewFriends, getResources().getString(R.string.network),
                     Snackbar.LENGTH_LONG).show();
         }
     }
@@ -100,6 +100,8 @@ public class FriendsList extends BaseActivity {
         mChildEventFriendsListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                userList.clear();
+                friendsEmails.clear();
                 for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
                     User user = childDataSnapshot.getValue(User.class);
                     userList.add(user);
@@ -112,8 +114,7 @@ public class FriendsList extends BaseActivity {
                     empty_list.setVisibility(View.GONE);
                 }
                 progress.setVisibility(View.GONE);
-                startIntroAnimation();
-                isLoaded = true;
+
             }
 
             @Override
@@ -152,14 +153,9 @@ public class FriendsList extends BaseActivity {
         startActivity(intent);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (isLoaded)
-            startIntroAnimation();
-    }
+
     private void startIntroAnimation() {
-        mRecyclerViewFriends.setTranslationY( getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerViewFriends.setTranslationY(getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
         mRecyclerViewFriends.setAlpha(0f);
         mRecyclerViewFriends.animate()
                 .translationY(0)

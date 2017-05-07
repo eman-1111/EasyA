@@ -67,6 +67,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     Menu menu;
     MenuItem shareItem;
 
+    boolean isOnLesson = true;
     TextView mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
             mLessonOutline, mLink, mDebug;
 
@@ -198,10 +199,10 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_edit) {
-           getActivity().onBackPressed();
+        if (id == R.id.home) {
+            getActivity().onBackPressed();
             return true;
-        }else if (id == R.id.action_edit) {
+        } else if (id == R.id.action_edit) {
             Intent intent = new Intent(getActivity(), AddNewLesson.class);
             intent.putExtra(Constants.PREF_LESSON_URL, mUri.toString());
             intent.putExtra(Constants.PREF_COURSE_ID, CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
@@ -241,6 +242,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         }
         return super.onOptionsItemSelected(item);
     }
+
     private void startSharing() {
         String lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
         SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
@@ -250,6 +252,8 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
                 shareItem.setEnabled(false);
                 shareItem.setCheckable(false);
                 shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
+                Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_uploading),
+                        Snackbar.LENGTH_LONG).show();
                 createShareUserLesson();
             } else {
                 Helper.startDialog(getActivity(), "",
@@ -396,12 +400,6 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         mCoursDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(Helper.encodeEmail(accountName));
         mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
 
-        mUserImagesReferenceSummary = mFirebaseStorage.getReference()
-                .child(Helper.encodeEmail(accountName) + "/" + lessonName + "/summary.jpg");
-        mUserImagesReferenceLink = mFirebaseStorage.getReference()
-                .child(Helper.encodeEmail(accountName) + "/" + lessonName + "/link.jpg");
-        mUserImagesReferenceApp = mFirebaseStorage.getReference()
-                .child(Helper.encodeEmail(accountName) + "/" + lessonName + "/app.jpg");
     }
 
     private void addCourseToFirebase() {
@@ -427,6 +425,14 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     }
 
     private void addLessonToFirebase() {
+
+        mUserImagesReferenceSummary = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + lessonName + "/summary.jpg");
+        mUserImagesReferenceLink = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + lessonName + "/link.jpg");
+        mUserImagesReferenceApp = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + lessonName + "/app.jpg");
+
         if (outlineImageBit != null) {
             addImageToFirebase(outlineImageBit);
         } else {
@@ -478,12 +484,13 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
                 lessonPracticalTitle, lessonPractical, appUrl + "", lessonDebug,
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
-
-        shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
-        shareItem.setEnabled(true);
-        shareItem.setCheckable(true);
-        Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_added),
-                Snackbar.LENGTH_LONG).show();
+        if (isOnLesson) {
+            shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
+            shareItem.setEnabled(true);
+            shareItem.setCheckable(true);
+            Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_added),
+                    Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void addImageToFirebase(Bitmap bitmap) {
@@ -579,4 +586,9 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         return (networkInfo != null && networkInfo.isConnected());
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        isOnLesson = false;
+    }
 }

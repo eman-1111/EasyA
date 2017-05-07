@@ -11,6 +11,7 @@ public class User {
 
     private String name;
     private String photoUrl;
+    private boolean canEdit;
     private Map<String, Object> timestampAdded;
 
     public User() {
@@ -23,6 +24,20 @@ public class User {
         this.timestampAdded = timestampAdded;
     }
 
+    public User(String name, String photoUrl,boolean canEdit) {
+
+        this.name = name;
+        this.photoUrl = photoUrl;
+        this.canEdit = canEdit;
+    }
+
+    public boolean isCanEdit() {
+        return canEdit;
+    }
+
+    public void setCanEdit(boolean canEdit) {
+        this.canEdit = canEdit;
+    }
 
     public String getName() {
         return name;

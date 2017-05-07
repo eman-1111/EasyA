@@ -41,7 +41,7 @@ public class CourseListFriends extends BaseActivity {
     ValueEventListener mValueEventCourseListener;
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mCourseDatabaseReference;
-    boolean isLoaded;
+    boolean isLoaded,canEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +50,7 @@ public class CourseListFriends extends BaseActivity {
         Intent intent = getIntent();
         friendAccount = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT);
         friendName = intent.getStringExtra(Constants.PREF_FRIEND_ACCOUNT_NAME);
+        canEdit = intent.getBooleanExtra(Constants.PREF_FRIEND_CAN_EDIT, false);
 
         setContentView(R.layout.courses_list_friend);
         setDrawer(true);

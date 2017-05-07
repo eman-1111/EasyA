@@ -2,11 +2,13 @@ package link.ideas.easya;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -16,6 +18,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -25,6 +28,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,17 +52,20 @@ import link.ideas.easya.fragment.LinkFragment;
 import link.ideas.easya.fragment.SummaryFragment;
 import link.ideas.easya.fragment.ApplyFragment;
 import link.ideas.easya.interfacee.SaveLesson;
+import link.ideas.easya.models.*;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 import me.relex.circleindicator.CircleIndicator;
 
 import static link.ideas.easya.fragment.CourseListFragment.LOG_TAG;
 
-public class AddNewLesson extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
 
     ViewPager viewPager;
     CircleIndicator indicator;
+    CardView mCardView;
+
     String courseId;
     ViewPagerAdapter adapter;
     boolean edit = false;
@@ -56,6 +73,20 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
     Cursor mCursor = null;
     private static final int DETAIL_LOADER = 0;
     String oldLessonName = "";
+
+    private FirebaseDatabase mFirebaseDatabase;
+
+    private DatabaseReference mLessonDatabaseReference;
+    private DatabaseReference mLessonDetailDatabaseReference;
+
+    private FirebaseStorage mFirebaseStorage;
+    private StorageReference mUserImagesReferenceSummary, mUserImagesReferenceLink, mUserImagesReferenceApp;
+
+    Bitmap outlineImage = null, imageLink = null, imageApp = null;
+    String title, summary, links, debug, appTitle, appSummary;
+    String lessonPushId, coursePushId;
+    Uri appUrl, linkUrl, summaryUrl;
+
 
     private static final String[] DETAIL_COLUMNS = {
             CourseContract.SubjectEntry.COLUMN_COURSE_ID,
@@ -70,8 +101,9 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
             CourseContract.SubjectEntry.COLUMN_FAVORITE,
             CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
             CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE
-    };
+            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE,
+            CourseContract.CourseEntry.COLUMN_FIREBASE_ID,
+            CourseContract.SubjectEntry.COLUMN_FIREBASE_ID};
 
 
     public static final int COL_COURSE_ID = 0;
@@ -90,11 +122,15 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
     public static final int COL_LESSON_LINK_IMAGE = 11;
     public static final int COL_LESSON_PRACTICAL_IMAGE = 12;
 
+    public static final int COL_FIREBASE_COURSE_ID = 13;
+    public static final int COL_FIREBASE_LESSON_ID = 14;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_lesson);
+        setDrawer(false);
+
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         indicator = (CircleIndicator) findViewById(R.id.indicator);
@@ -111,6 +147,9 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mCardView = (CardView) findViewById(R.id.cv_mainContainer);
+
         setupViewPager(viewPager);
         viewPager.setOffscreenPageLimit(2);
         indicator.setViewPager(viewPager);
@@ -248,19 +287,19 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
 
     private void startSaveLesson() {
         if (validateName() && validateOutline()) {
-            String title = SummaryFragment.lessonNameET.getText().toString();
-            String summary = SummaryFragment.lessonOverViewET.getText().toString();
+            title = SummaryFragment.lessonNameET.getText().toString();
+            summary = SummaryFragment.lessonOverViewET.getText().toString();
 
-            String link = LinkFragment.lessonLink.getText().toString();
-            String debug = LinkFragment.lessonDebug.getText().toString();
+            links = LinkFragment.lessonLink.getText().toString();
+            debug = LinkFragment.lessonDebug.getText().toString();
 
-            String appTitle = ApplyFragment.lessonLifeAppTitle.getText().toString();
-            String appSummary = ApplyFragment.lessonLifeApp.getText().toString();
+            appTitle = ApplyFragment.lessonLifeAppTitle.getText().toString();
+            appSummary = ApplyFragment.lessonLifeApp.getText().toString();
 
 
-            Bitmap outlineImage = SummaryFragment.thumbnail;
-            Bitmap imageLink = LinkFragment.thumbnail;
-            Bitmap imageApp = ApplyFragment.thumbnail;
+            outlineImage = SummaryFragment.thumbnail;
+            imageLink = LinkFragment.thumbnail;
+            imageApp = ApplyFragment.thumbnail;
 
 
             byte[] outlineImage_, imageLink_, imageApp_;
@@ -281,7 +320,7 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
             }
 
             addLessonData(courseId, title, summary, outlineImage_,
-                    link, imageLink_, appTitle,
+                    links, imageLink_, appTitle,
                     appSummary, imageApp_, debug);
         }
     }
@@ -344,13 +383,21 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
 
         if (edit) {
 
-          //  int lessonId =
-           // Log.e(LOG_TAG, "mURI: "+ mUri);
+            //  int lessonId =
+            // Log.e(LOG_TAG, "mURI: "+ mUri);
             this.getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
                     courseValues,
                     CourseContract.SubjectEntry.TABLE_NAME +
                             "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
                     new String[]{oldLessonName});
+            if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
+                if (isDeviceOnline()) {
+                    setUpFireBase();
+                }else{
+                    Snackbar.make(mCardView, getResources().getString(R.string.network_edit),
+                            Snackbar.LENGTH_LONG).show();
+                }
+            }
 
         } else {
             courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, "0");
@@ -368,6 +415,7 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
         finish();
 
     }
+
 
     private void clearSavedData() {
         ApplyFragment.lessonAppTitle = "";
@@ -421,6 +469,150 @@ public class AddNewLesson extends AppCompatActivity implements LoaderManager.Loa
                 fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
             }
         }
+    }
+
+
+    private void setUpFireBase() {
+
+        coursePushId = mCursor.getString(COL_FIREBASE_COURSE_ID);
+        lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
+
+
+
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mFirebaseStorage = FirebaseStorage.getInstance();
+
+        mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
+
+        mUserImagesReferenceSummary = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + title + "/summary.jpg");
+        mUserImagesReferenceLink = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + title + "/link.jpg");
+        mUserImagesReferenceApp = mFirebaseStorage.getReference()
+                .child(coursePushId + "/" + title + "/app.jpg");
+
+        addLessonToFirebase();
+    }
+
+    private void addLessonToFirebase() {
+        if (outlineImage != null) {
+            addImageToFirebase(outlineImage);
+        } else {
+            addLessonLinkToFirebase();
+        }
+
+    }
+
+    private void addLessonLinkToFirebase() {
+
+        mLessonDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
+
+        Lesson lesson = new Lesson(title, links, summaryUrl + "",
+                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
+        lessonPushId = mLessonDatabaseReference.child(lessonPushId).getKey();
+
+        mLessonDatabaseReference.child(lessonPushId).setValue(lesson);
+        mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                addLessonDetailToFirebase();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void addLessonDetailToFirebase() {
+
+        if (imageLink != null) {
+            addImageToFirebaseLink(imageLink);
+        } else if (imageApp != null) {
+            addImageToFirebaseApp(imageApp);
+        } else {
+            addLessonDetailsToFirebase();
+        }
+
+
+    }
+
+    private void addLessonDetailsToFirebase() {
+        link.ideas.easya.models.LessonDetail lessonDetail = new link.ideas.easya.models.LessonDetail(summary, linkUrl + "",
+                appTitle, appSummary, appUrl + "", debug,
+                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
+        mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
+
+        Snackbar.make(mCardView, getResources().getString(R.string.lesson_edited),
+                Snackbar.LENGTH_LONG).show();
+    }
+
+    private void addImageToFirebase(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        UploadTask uploadTask = mUserImagesReferenceSummary.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                summaryUrl = taskSnapshot.getDownloadUrl();
+                addLessonLinkToFirebase();
+
+            }
+        });
+    }
+
+
+    private void addImageToFirebaseLink(Bitmap bitmap) {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = mUserImagesReferenceLink.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                linkUrl = taskSnapshot.getDownloadUrl();
+                if (imageApp != null) {
+                    addImageToFirebaseApp(imageApp);
+                } else {
+                    addLessonDetailsToFirebase();
+                }
+            }
+        });
+    }
+
+    private void addImageToFirebaseApp(Bitmap bitmap) {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+        UploadTask uploadTask = mUserImagesReferenceApp.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                appUrl = taskSnapshot.getDownloadUrl();
+                addLessonDetailsToFirebase();
+            }
+        });
     }
 }
 

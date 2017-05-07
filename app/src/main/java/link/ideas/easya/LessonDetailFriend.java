@@ -154,9 +154,10 @@ public class LessonDetailFriend extends BaseActivity {
 
         int id = item.getItemId();
         if (id == R.id.home) {
-            Intent homeIntent = new Intent(LessonDetailFriend.this, LessonListFriends.class);
-            homeIntent.putExtra(Constants.PREF_COURSE_PUSH_ID, coursePushId);
-            startActivity(homeIntent);
+//            Intent homeIntent = new Intent(LessonDetailFriend.this, LessonListFriends.class);
+//            homeIntent.putExtra(Constants.PREF_COURSE_PUSH_ID, coursePushId);
+//            startActivity(homeIntent);
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);

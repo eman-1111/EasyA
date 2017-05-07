@@ -134,7 +134,10 @@ public class Helper {
     public static String decodeEmail(String userEmail) {
         return userEmail.replace(",", ".");
     }
-
+    public static boolean empty( final String s ) {
+        // Null-safe, short-circuit evaluation.
+        return s == null || s.trim().isEmpty();
+    }
     public static Bitmap getImageCompress(Bitmap original) {
         Log.e("Original   dimensions", original.getByteCount()+" "+original.getHeight()+" "+original.getWidth());
 

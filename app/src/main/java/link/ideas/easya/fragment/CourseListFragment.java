@@ -1,48 +1,58 @@
 package link.ideas.easya.fragment;
 
 
-        import android.content.Context;
-        import android.content.DialogInterface;
-        import android.content.Intent;
-        import android.database.Cursor;
-        import android.net.Uri;
-        import android.os.Bundle;
-        import android.support.v4.app.Fragment;
-        import android.support.v4.app.LoaderManager;
-        import android.support.v4.content.CursorLoader;
-        import android.support.v4.content.Loader;
-        import android.support.v7.app.AlertDialog;
-        import android.support.v7.widget.LinearLayoutManager;
-        import android.support.v7.widget.RecyclerView;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.view.animation.AccelerateDecelerateInterpolator;
-        import android.widget.ListView;
-        import android.widget.TextView;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ListView;
+import android.widget.TextView;
 
 
-        import link.ideas.easya.CoursesList;
-        import link.ideas.easya.adapter.CourseAdapter;
-        import link.ideas.easya.R;
-        import link.ideas.easya.data.CourseContract;
-        import link.ideas.easya.utils.Constants;
-        import link.ideas.easya.utils.Helper;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+import link.ideas.easya.adapter.CourseAdapter;
+import link.ideas.easya.R;
+import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.Helper;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by eman_ashour on 4/21/2016.
  */
-public class CourseListFragment  extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class CourseListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String LOG_TAG = CourseListFragment.class.getSimpleName();
     TextView emptyView;
     boolean isLoaded;
+
+
+
     public interface Callback {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
         public void onItemSelected(Uri idUri, String courseName);
     }
+
     RecyclerView mRecyclerView;
     private CourseAdapter mCourseAdapter;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -57,7 +67,8 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
             CourseContract.CourseEntry.COLUMN_TEACHER_NAME,
             CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL,
-            CourseContract.CourseEntry.COLUMN_TEACHER_COLOR
+            CourseContract.CourseEntry.COLUMN_TEACHER_COLOR,
+            CourseContract.CourseEntry.COLUMN_FIREBASE_ID
     };
 
     public static final int COL_COURSE_ID = 0;
@@ -65,6 +76,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
     public static final int COL_TEACHER_NAME = 2;
     public static final int COL_TEACHER_PHOTO_URL = 3;
     public static final int COL_TEACHER_COLOR = 4;
+    public static final int COL_FIREBASE_COURSE_ID = 5;
 
 
     public CourseListFragment() {
@@ -91,10 +103,10 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mRecyclerView.setHasFixedSize(true);
-        emptyView = (TextView)rootView.findViewById(R.id.empty_tv);
-        mCourseAdapter = new CourseAdapter(getActivity(), new CourseAdapter.CourseAdapterOnClickHolder(){
+        emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
+        mCourseAdapter = new CourseAdapter(getActivity(), new CourseAdapter.CourseAdapterOnClickHolder() {
             @Override
-            public void onClick(String id , String courseName, CourseAdapter.CourseAdapterViewHolder vh) {
+            public void onClick(String id, String courseName, CourseAdapter.CourseAdapterViewHolder vh) {
                 ((Callback) getActivity())
                         .onItemSelected(CourseContract.SubjectEntry.buildSubjectWithID(id),
                                 courseName);
@@ -102,20 +114,23 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
             }
 
             @Override
-            public boolean onLongClick(final String courseId) {
+            public boolean onLongClick(final String courseId, final String coursePushId) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                 builder2.setMessage(getResources().getString(R.string.delete_course));
                 builder2.setPositiveButton(getResources().getString(R.string.delete),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                if (coursePushId != null) {
+                                    deleteLessonFromFirebase(coursePushId);
+                                }
                                 getContext().getContentResolver().delete(CourseContract.CourseEntry.CONTENT_URI,
                                         CourseContract.CourseEntry.COLUMN_COURSE_ID + " = ?",
                                         new String[]{courseId});
                                 getContext().getContentResolver().delete(CourseContract.SubjectEntry.CONTENT_URI,
                                         CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?",
                                         new String[]{courseId});
-                                removeItem(courseId);
                                 Helper.updateWidgets(getContext());
+
 
                             }
                         });
@@ -134,7 +149,6 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
         }
         return rootView;
     }
-
 
 
     @Override
@@ -158,7 +172,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
         mCourseAdapter.swapCursor(data);
         if (data != null && data.moveToFirst()) {
             emptyView.setText("");
-        }else{
+        } else {
             emptyView.setText(getResources().getString(R.string.no_course));
         }
 
@@ -178,9 +192,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
         mCourseAdapter.swapCursor(null);
 
     }
-    private void removeItem(String itemId) {
 
-    }
 
     @Override
     public void onResume() {
@@ -190,7 +202,7 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
     }
 
     private void startIntroAnimation() {
-        mRecyclerView.setTranslationY( getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
+        mRecyclerView.setTranslationY(getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
         mRecyclerView.setAlpha(0f);
         mRecyclerView.animate()
                 .translationY(0)
@@ -199,5 +211,39 @@ public class CourseListFragment  extends Fragment implements LoaderManager.Loade
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
     }
+
+    private void deleteLessonFromFirebase(String coursePushId) {
+
+        SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
+        String accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+
+
+        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseStorage mFirebaseStorage = FirebaseStorage.getInstance();
+
+        DatabaseReference mCoursDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_COURSES).
+                child(Helper.encodeEmail(accountName)).child(coursePushId);
+        mCoursDatabaseReference.removeValue();
+
+        DatabaseReference mLessonDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS)
+                .child(coursePushId);
+        mLessonDatabaseReference.removeValue();
+
+        DatabaseReference mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL)
+                .child(coursePushId);
+
+        mLessonDetailDatabaseReference.removeValue();
+
+        StorageReference mUserImagesReference= mFirebaseStorage.getReference();
+        mUserImagesReference.child(coursePushId);
+
+
+        mUserImagesReference.delete();
+
+    }
+
 
 }

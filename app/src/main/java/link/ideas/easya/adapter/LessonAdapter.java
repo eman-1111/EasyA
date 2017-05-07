@@ -70,7 +70,12 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAda
             mCursor.moveToPosition(adapterPostion);
             int idCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_COURSE_ID);
             int titleCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE);
-            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex), mCursor.getString(titleCulomnIndex));
+
+            int lessonPushIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_FIREBASE_ID);
+            int coursePushIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_FIREBASE_ID);
+
+            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex), mCursor.getString(titleCulomnIndex),
+                    mCursor.getString(coursePushIndex), mCursor.getString(lessonPushIndex) );
             return true;
         }
 
@@ -85,7 +90,7 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAda
     public static interface SubjectAdapterOnClickHolder {
         void onClick(String id, String lessonName, SubjectAdapterViewHolder vh);
 
-        boolean onLongClick(String id, String lessonName);
+        boolean onLongClick(String id, String lessonName, String coursePushId, String lessonPushId);
     }
 
 

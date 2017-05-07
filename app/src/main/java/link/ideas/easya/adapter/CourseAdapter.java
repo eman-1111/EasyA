@@ -66,7 +66,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
             int adapterPostion = getAdapterPosition();
             mCursor.moveToPosition(adapterPostion);
             int idCulomnIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_COURSE_ID);
-            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex));
+            int coursePushIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_FIREBASE_ID);
+            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex),mCursor.getString(coursePushIndex));
             return true;
         }
     }
@@ -81,7 +82,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     public static interface CourseAdapterOnClickHolder {
         void onClick(String id, String courseName, CourseAdapterViewHolder vh);
-        boolean onLongClick(String id);
+        boolean onLongClick(String id, String coursePushId);
     }
 
 

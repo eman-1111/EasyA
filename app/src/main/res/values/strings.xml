@@ -37,11 +37,14 @@
 
     <string name="name">Name</string>
     <string name="email">Email</string>
+    <string name="is_studying">Show studying</string>
+
     <string name="user" translatable="false">user</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="delete_course">Are you sure you want to delete this Course</string>
+    <string name="delete_course">Are you sure you want to delete this course</string>
+    <string name="delete_lesson">Are you sure you want to delete this lesson</string>
     <string name="delete">Delete</string>
 
     <string name="course_name">Course Name</string>
@@ -127,11 +130,15 @@
 
     <string name="no_google_classroom">You need to have Google Classroom,so Easy A could Load your courses</string>
     <string name="network">No network connection available.</string>
+    <string name="network_edit">We cant edit your lesson online, No network connection available.</string>
     <string name="no_course">The Courses you will add, will show up here, so add some</string>
+    <string name="no_lesson">The Lesson you will add, will show up here, so add some</string>
     <string name="title_activity_subject_list_friends">SubjectListFriends</string>
     <string name="not_found">Not Found</string>
     <string name="course_name_error">Please fill in the course name</string>
     <string name="lesson_added">Your Lesson has been shared, all friends how add you can see it </string>
+    <string name="lesson_edited">Your Lesson has been edited, all friends how add you can see it </string>
+    <string name="lesson_uploading">Your Lesson is being uploaded </string>
     <string name="get_image_permissions">we need permissions to be able to get the image</string>
     <string name="lesson_name_error">Enter Lesson Name</string>
     <string name="summary_error">Enter lesson summary</string>
