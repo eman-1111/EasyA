@@ -11,7 +11,6 @@ public class User {
 
     private String name;
     private String photoUrl;
-
     private Map<String, Object> timestampAdded;
 
     public User() {
@@ -24,11 +23,12 @@ public class User {
         this.timestampAdded = timestampAdded;
     }
 
-    public User(String name, String photoUrlt) {
+    public User(String name, String photoUrl) {
 
         this.name = name;
         this.photoUrl = photoUrl;
     }
+
 
     public String getName() {
         return name;

@@ -45,8 +45,9 @@ public class CourseListFriends extends BaseActivity {
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mCourseDatabaseReference;
     DatabaseReference mIsStudyingDatabaseReference;
-    boolean isLoaded,canEdit;
-    MenuItem changeStatus;
+    boolean isLoaded, canEdit;
+    MenuItem changeStatus = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +104,7 @@ public class CourseListFriends extends BaseActivity {
 
 
     }
+
     private void attachDatabaseReadListener() {
 
         progress.setVisibility(View.VISIBLE);
@@ -138,7 +140,7 @@ public class CourseListFriends extends BaseActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                boolean isStudying= (boolean) dataSnapshot.getValue();
+                boolean isStudying = (boolean) dataSnapshot.getValue();
                 changeStudyingStatus(isStudying);
             }
 
@@ -152,10 +154,12 @@ public class CourseListFriends extends BaseActivity {
     }
 
     private void changeStudyingStatus(boolean isStudying) {
-        if(isStudying){
-            changeStatus.setIcon(getResources().getDrawable(R.drawable.studying));
-        }else{
-            changeStatus.setIcon(getResources().getDrawable(R.drawable.not_studying));
+        if (changeStatus != null) {
+            if (isStudying) {
+                changeStatus.setIcon(getResources().getDrawable(R.drawable.studying));
+            } else {
+                changeStatus.setIcon(getResources().getDrawable(R.drawable.not_studying));
+            }
         }
     }
 

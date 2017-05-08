@@ -40,6 +40,9 @@ public class Constants {
     public static final String FIREBASE_LOCATION_USERS_CAN_EDIT = "canEdit";
     public static final String FIREBASE_LOCATION_USERS_IS_STUDYING = "isStudying";
 
+    public static final String FIREBASE_TEST_USER_NAME = "student";
+    public static final String FIREBASE_TEST_USER_URL= "https://lh6.googleusercontent.com/-nmqr42B8cSM/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhq_h10k_Lh7gwiIAampv6VZ11SHrw/s96-c/photo.jpg";
+    public static final String FIREBASE_TEST_USER_EMAIL = "student1_onal9dsr1jlypzupijso@classroom-dev,com";
 
     public static final String FIREBASE_DATABASE_USERS_IMAGE = "userStorgeImage";
 

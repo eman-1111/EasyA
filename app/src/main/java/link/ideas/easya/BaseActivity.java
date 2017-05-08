@@ -438,6 +438,7 @@ public class BaseActivity extends AppCompatActivity
 
                         mUsersDatabaseReference.child(Helper.encodeEmail(acct.getEmail())).setValue(mUser);
                         showUserStudying(true);
+                        showTestFriend(acct.getEmail());
                         if (!task.isSuccessful()) {
                             Toast.makeText(BaseActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -961,6 +962,17 @@ public class BaseActivity extends AppCompatActivity
     public void setDrawer(boolean isDrawerEnable) {
         this.isDrawerEnable = isDrawerEnable;
     }
+
+    public void showTestFriend(String accountName) {
+        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+
+        DatabaseReference mUsersFriendsDatabaseReference = mFirebaseDatabase.getReference()
+                .child(Constants.FIREBASE_LOCATION_USER_FRIENDS)
+                .child(Helper.encodeEmail(accountName)).child(Constants.FIREBASE_TEST_USER_EMAIL);;
+        User user1 = new User(Constants.FIREBASE_TEST_USER_NAME, Constants.FIREBASE_TEST_USER_URL);
+        mUsersFriendsDatabaseReference.setValue(user1);
+    }
+
 
     public void showUserStudying(boolean isStudying) {
         SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);

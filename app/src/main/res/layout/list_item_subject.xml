@@ -46,8 +46,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/image_fram"
-                android:paddingTop="@dimen/text_padding_add"
                 android:paddingEnd="@dimen/text_padding_add"
+                android:paddingTop="@dimen/text_padding_add"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/text_primary_dark"
                 tools:text="@string/lesson_name" />
@@ -58,8 +58,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/list_item_lesson_title"
                 android:layout_toEndOf="@+id/image_fram"
-                android:paddingEnd="@dimen/text_padding_add"
                 android:padding="@dimen/text_padding_add"
+                android:paddingEnd="@dimen/text_padding_add"
+                android:maxLines="2"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/text_secondary_dark"
                 tools:text="@string/lesson_name" />

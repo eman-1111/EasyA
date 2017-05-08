@@ -72,8 +72,6 @@
                     android:id="@+id/lesson_overview_content_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="@dimen/md_keylines"
-                    android:paddingStart="@dimen/md_keylines"
                     android:paddingTop="@dimen/md_keylines"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/text_secondary_dark" />
@@ -91,7 +89,6 @@
                     android:id="@+id/lesson_linkx_content_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="@dimen/md_keylines"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/text_secondary_dark" />
 
@@ -101,7 +98,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="@dimen/activity_less_margin" />
 
                 <TextView
                     android:id="@+id/lesson_debugx_title_tv"
@@ -116,7 +114,6 @@
                     android:id="@+id/lesson_debug_content_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="@dimen/md_keylines"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/text_secondary_dark" />
 
@@ -132,7 +129,6 @@
                     android:id="@+id/lesson_app_content_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="@dimen/md_keylines"
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="@color/text_secondary_dark" />
 
@@ -142,7 +138,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
-                    android:scaleType="fitCenter" />
+                    android:scaleType="fitCenter"
+                    android:layout_marginTop="@dimen/activity_less_margin" />
 
             </LinearLayout>
         </ScrollView>
