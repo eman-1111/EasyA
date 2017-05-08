@@ -3,6 +3,7 @@ package link.ideas.easya.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ public class Lesson implements Parcelable {
     private String lessonName;
     private String lessonLink;
     private String lessonImage;
+    private String lastEditName;
+    private boolean isAgreed;
     private Map<String, Object> timestampLastChanged;
     private Map<String, Object> timestampCreated;
 
@@ -23,11 +26,15 @@ public class Lesson implements Parcelable {
     public Lesson() {
     }
 
-    public Lesson(String lessonName, String lessonLink, String lessonImage,
+
+
+    public Lesson(String lessonName, String lessonLink, String lessonImage,String lastEditName, boolean isAgreed,
                   Map<String, Object> timestampLastChanged, Map<String, Object> timestampCreated) {
         this.lessonName = lessonName;
         this.lessonLink = lessonLink;
         this.lessonImage = lessonImage;
+        this.lastEditName = lastEditName;
+        this.isAgreed = isAgreed;
         this.timestampLastChanged = timestampLastChanged;
         this.timestampCreated = timestampCreated;
     }
@@ -42,6 +49,14 @@ public class Lesson implements Parcelable {
 
     public String getLessonImage() {
         return lessonImage;
+    }
+
+    public String getLastEditName() {
+        return lastEditName;
+    }
+
+    public boolean isAgreed() {
+        return isAgreed;
     }
 
     public Map<String, Object> getTimestampLastChanged() {
@@ -72,6 +87,13 @@ public class Lesson implements Parcelable {
         this.timestampCreated = timestampCreated;
     }
 
+    public void setLastEditName(String lastEditName) {
+        this.lastEditName = lastEditName;
+    }
+
+    public void setAgreed(boolean agreed) {
+        isAgreed = agreed;
+    }
 
     @Override
     public void writeToParcel(Parcel out, int flags) {

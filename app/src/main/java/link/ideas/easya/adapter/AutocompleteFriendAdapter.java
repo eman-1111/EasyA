@@ -96,7 +96,7 @@ public class AutocompleteFriendAdapter extends ArrayAdapter<User> {
                              * Add selected user to current user's friends if not in friends yet
                              */
                             if (isNotAlreadyAdded(dataSnapshot, user)) {
-                                User user1 = new User(user.getName(), user.getPhotoUrl(), false);
+                                User user1 = new User(user.getName(), user.getPhotoUrl());
                                 mUsersFriendsDatabaseReference.setValue(user1);
 //                                ((Activity)context).finish();
                                 Intent intent = new Intent(context, FriendsList.class);

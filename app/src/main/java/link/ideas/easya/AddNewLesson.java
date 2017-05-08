@@ -393,7 +393,7 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
             if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
                 if (isDeviceOnline()) {
                     setUpFireBase();
-                }else{
+                } else {
                     Snackbar.make(mCardView, getResources().getString(R.string.network_edit),
                             Snackbar.LENGTH_LONG).show();
                 }
@@ -478,7 +478,6 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
         lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
 
 
-
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
 
@@ -508,7 +507,10 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
         mLessonDatabaseReference = mFirebaseDatabase.getReference().
                 child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
 
-        Lesson lesson = new Lesson(title, links, summaryUrl + "",
+        SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
+        String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
+
+        Lesson lesson = new Lesson(title, links, summaryUrl + "", userName, true,
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         lessonPushId = mLessonDatabaseReference.child(lessonPushId).getKey();
 

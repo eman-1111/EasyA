@@ -223,7 +223,8 @@ public class CourseListFragment extends Fragment implements LoaderManager.Loader
 
         DatabaseReference mCoursDatabaseReference = mFirebaseDatabase.getReference().
                 child(Constants.FIREBASE_LOCATION_USERS_COURSES).
-                child(Helper.encodeEmail(accountName)).child(coursePushId);
+                child(Helper.encodeEmail(accountName))
+                .child(Constants.FIREBASE_LOCATION_USER_COURSES).child(coursePushId);
         mCoursDatabaseReference.removeValue();
 
         DatabaseReference mLessonDatabaseReference = mFirebaseDatabase.getReference().

@@ -1,8 +1,8 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/coordinator_layout">
+    android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"
@@ -15,7 +15,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            android:background="@drawable/summary"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="@dimen/md_keylines"
             app:expandedTitleMarginStart="@dimen/md_keylines"
@@ -23,9 +22,18 @@
 
             <ImageView
                 android:id="@+id/outlook_iv"
-                android:transitionName="@string/shared_element"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:background="@drawable/summary"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                android:transitionName="@string/shared_element"
+                app:layout_collapseMode="parallax" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shadow"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax" />
@@ -77,7 +85,7 @@
                     android:layout_marginTop="@dimen/md_keylines"
                     android:text="@string/link"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                    android:textColor="?attr/colorAccent"/>
+                    android:textColor="?attr/colorAccent" />
 
                 <TextView
                     android:id="@+id/lesson_linkx_content_tv"

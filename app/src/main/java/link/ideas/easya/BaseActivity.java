@@ -1,7 +1,9 @@
 package link.ideas.easya;
 
 
+import android.app.ActivityManager;
 import android.app.Dialog;
+import android.app.KeyguardManager;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -13,6 +15,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -84,6 +87,9 @@ import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 
+import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND;
+import static android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
+
 public class BaseActivity extends AppCompatActivity
         implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -106,7 +112,6 @@ public class BaseActivity extends AppCompatActivity
 
     private static final String[] SCOPES2 = {ClassroomScopes.CLASSROOM_COURSES_READONLY,
             ClassroomScopes.CLASSROOM_ROSTERS};
-
     MakeRequestTask mMakeRequestTask;
 
     TextView mErrorText;
@@ -123,6 +128,7 @@ public class BaseActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         if (!mSharedPreferences.getBoolean(Constants.PREF_FIRST_TIME, false)) {
             Intent helpIntent = new Intent(BaseActivity.this, HelpActivity.class);
@@ -155,7 +161,10 @@ public class BaseActivity extends AppCompatActivity
         };
         SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
         accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+
+
     }
+
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {
@@ -192,7 +201,6 @@ public class BaseActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-
     }
 
     private void signIn() {
@@ -206,6 +214,21 @@ public class BaseActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+
+
+        if (showUserStudying()) {
+            SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+
+            boolean setStudyingOnce = mSharedPreferences.getBoolean(Constants.PREF_SET_STUDYING, false);
+            if (!setStudyingOnce) {
+                Log.e(LOG_TAG, "setStudyingOnce " + setStudyingOnce);
+                editor.putBoolean(Constants.PREF_SET_STUDYING, true);
+                editor.apply();
+                showUserStudying(true);
+
+            }
+        }
     }
 
     @Override
@@ -215,6 +238,32 @@ public class BaseActivity extends AppCompatActivity
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (showUserStudying()) {
+            if (!isApplicationSentToBackground(this)) {
+                SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = mSharedPreferences.edit();
+                editor.apply();
+                Log.e(LOG_TAG, "isApplicationInBackground");
+                editor.putBoolean(Constants.PREF_SET_STUDYING, false);
+                showUserStudying(false);
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Log.e(LOG_TAG, "onTrimMemory");
+
     }
 
     /**
@@ -229,6 +278,8 @@ public class BaseActivity extends AppCompatActivity
             acquireGooglePlayServices();
         } else if (!isDeviceOnline()) {
             deviceOffline();
+        }else {
+            mMakeRequestTask = (MakeRequestTask) new MakeRequestTask(mCredential).execute();
         }
     }
 
@@ -386,6 +437,7 @@ public class BaseActivity extends AppCompatActivity
                         User mUser = new User(acct.getDisplayName(), acct.getPhotoUrl() + "", Helper.getTimestampCreated());
 
                         mUsersDatabaseReference.child(Helper.encodeEmail(acct.getEmail())).setValue(mUser);
+                        showUserStudying(true);
                         if (!task.isSuccessful()) {
                             Toast.makeText(BaseActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -562,7 +614,7 @@ public class BaseActivity extends AppCompatActivity
                     .execute();
             //UserProfile user = response.
             List<Course> courses = response.getCourses();
-
+            int color = 0;
             if (courses != null) {
                 for (Course course : courses) {
                     String courseName = course.getName();
@@ -594,7 +646,8 @@ public class BaseActivity extends AppCompatActivity
                             "teacherPhotoUrl: " + teacherPhotoUrl);
 
                     addCourseData(courseName, teacherName, teacherEmail,
-                            teacherPhotoUrl, courseId, 0);
+                            teacherPhotoUrl, courseId, color);
+                    color++;
                     Helper.updateWidgets(BaseActivity.this);
                 }
             }
@@ -624,9 +677,9 @@ public class BaseActivity extends AppCompatActivity
             hideProgressDialog();
             if (mLastError != null) {
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-//                    showGooglePlayServicesAvailabilityErrorDialog(
-//                            ((GooglePlayServicesAvailabilityIOException) mLastError)
-//                                    .getConnectionStatusCode());
+                    showGooglePlayServicesAvailabilityErrorDialog(
+                            ((GooglePlayServicesAvailabilityIOException) mLastError)
+                                    .getConnectionStatusCode());
                 } else if (mLastError instanceof UserRecoverableAuthIOException) {
                     startActivityForResult(
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
@@ -909,5 +962,53 @@ public class BaseActivity extends AppCompatActivity
         this.isDrawerEnable = isDrawerEnable;
     }
 
+    public void showUserStudying(boolean isStudying) {
+        SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
+        String accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+        if (accountName != null) {
+
+            FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
+            DatabaseReference mStudyingDatabaseReference = mFirebaseDatabase.getReference().
+                    child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(Helper.encodeEmail(accountName)).child(Constants.FIREBASE_LOCATION_USERS_IS_STUDYING);
+            mStudyingDatabaseReference.setValue(isStudying);
+        }
+    }
+
+    public boolean showUserStudying() {
+        if (accountName != null) {
+            SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            return mSharedPreferences.getBoolean(Constants.PREF_SHOW_STUDYING, true);
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the application is being sent in the background (i.e behind
+     * another application's Activity).
+     *
+     * @param context the context
+     * @return <code>true</code> if another application will be above this one.
+     */
+    public static boolean isApplicationSentToBackground(final Context context) {
+
+
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            ActivityManager am = (ActivityManager) context.getSystemService(ACTIVITY_SERVICE);
+            ActivityManager.RunningTaskInfo foregroundTaskInfo = am.getRunningTasks(1).get(0);
+            String foregroundTaskPackageName = foregroundTaskInfo.topActivity.getPackageName();
+
+            return foregroundTaskPackageName.toLowerCase().equals(context.getPackageName().toLowerCase());
+        } else {
+            ActivityManager.RunningAppProcessInfo appProcessInfo = new ActivityManager.RunningAppProcessInfo();
+            ActivityManager.getMyMemoryState(appProcessInfo);
+            if (appProcessInfo.importance == IMPORTANCE_FOREGROUND || appProcessInfo.importance == IMPORTANCE_VISIBLE) {
+                return true;
+            }
+
+            KeyguardManager km = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+            // App is foreground, but screen is locked, so show notification
+            return km.inKeyguardRestrictedInputMode();
+        }
+    }
 
 }

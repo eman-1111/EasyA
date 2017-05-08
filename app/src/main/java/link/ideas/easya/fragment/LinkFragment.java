@@ -146,8 +146,7 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onPause() {
         super.onPause();
-
-
+        imageLink.setImageBitmap(null);
     }
 
     public void startImageIntent() {
@@ -214,9 +213,8 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
         alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-
-
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {

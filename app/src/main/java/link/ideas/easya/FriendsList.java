@@ -77,11 +77,10 @@ public class FriendsList extends BaseActivity {
         mRecyclerViewFriends.setHasFixedSize(true);
         mUserFriendsAdapter = new UserFriendsAdapter(userList, friendsEmails, Helper.encodeEmail(accountName),this, new UserFriendsAdapter.UserFriendsAdapterOnClickHolder() {
             @Override
-            public void onClick(String friendEmail, String name,  boolean canEdit, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
+            public void onClick(String friendEmail, String name, UserFriendsAdapter.UserFriendsAdapterViewHolder vh) {
                 Intent intent = new Intent(FriendsList.this, CourseListFriends.class);
                 intent.putExtra(Constants.PREF_FRIEND_ACCOUNT, friendEmail);
                 intent.putExtra(Constants.PREF_FRIEND_ACCOUNT_NAME, name);
-                intent.putExtra(Constants.PREF_FRIEND_CAN_EDIT, canEdit);
                 startActivity(intent);
             }
         });

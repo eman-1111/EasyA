@@ -26,6 +26,7 @@ public class Course {
         this.teacherName = teacherName;
         this.teacherPhotoUrl = teacherPhotoUrl;
         this.colorId = colorId;
+
         this.timestampLastChanged = timestampLastChanged;
         this.timestampCreated = timestampCreated;
     }
@@ -45,6 +46,7 @@ public class Course {
     public int getColorId() {
         return colorId;
     }
+
 
     public Map<String, Object> getTimestampLastChanged() {
         return timestampLastChanged;
@@ -73,6 +75,7 @@ public class Course {
     public void setColorId(int colorId) {
         this.colorId = colorId;
     }
+
 
     public void setTimestampLastChanged(Map<String, Object> timestampLastChanged) {
         this.timestampLastChanged = timestampLastChanged;

@@ -106,12 +106,12 @@ public class SummaryFragment extends Fragment {
         outlineImage.setImageBitmap(thumbnail);
     }
 
+
     @Override
     public void onPause() {
         super.onPause();
-
+        outlineImage.setImageBitmap(null);
     }
-
     public void startImageIntent() {
         Intent intent = new Intent(getActivity(), ImagesSearch.class);
         startActivityForResult(intent, 2);

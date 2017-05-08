@@ -135,10 +135,12 @@
                 android:textColor="@color/text_tertiary_dark"/>
 
 
-            <ToggleButton
-                android:id="@+id/tb_is_studying"
+            <Switch
+                android:id="@+id/switch_is_studying"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:padding="@dimen/activity_less_margin"/>
+
         </LinearLayout>
 
         <include layout="@layout/item_divider" />

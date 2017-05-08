@@ -28,6 +28,7 @@ public class Constants {
     public static final String PREF_COURSE_ID = "CourseId";
     public static final String PREF_FIRST_TIME = "firstTime";
     public static final String PREF_SHOW_STUDYING = "show_studying";
+    public static final String PREF_SET_STUDYING = "setStudying";
 
 
     public static final String FIREBASE_LOCATION_USERS = "users";
@@ -35,6 +36,7 @@ public class Constants {
     public static final String FIREBASE_LOCATION_USERS_COURSES = "userCourses";
     public static final String FIREBASE_LOCATION_USERS_LESSONS = "userLessons";
     public static final String FIREBASE_LOCATION_USERS_LESSONS_DETAIL = "userLessonsDetail";
+    public static final String FIREBASE_LOCATION_USER_COURSES = "courses";
     public static final String FIREBASE_LOCATION_USERS_CAN_EDIT = "canEdit";
     public static final String FIREBASE_LOCATION_USERS_IS_STUDYING = "isStudying";
 

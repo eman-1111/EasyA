@@ -4,17 +4,24 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.Helper;
 
 /**
  * Created by Eman on 4/20/2017.
@@ -24,6 +31,7 @@ public class ProfileActivity extends BaseActivity {
     ImageView userImage;
     TextView userName, userEmail;
     RelativeLayout logOut;
+    Switch showStudying;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +50,27 @@ public class ProfileActivity extends BaseActivity {
         userImage = (ImageView)  findViewById(R.id.user_image);
         userName = (TextView)  findViewById(R.id.tv_user_name);
         userEmail = (TextView)  findViewById(R.id.tv_user_email);
+        showStudying = (Switch)  findViewById(R.id.switch_is_studying);
         logOut = (RelativeLayout)  findViewById(R.id.rlt_logout);
+
+        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences.Editor editor = mSharedPreferences.edit();
+
+
+        boolean studyingStatus = mSharedPreferences.getBoolean(Constants.PREF_SHOW_STUDYING, true);
+        showStudying.setChecked(studyingStatus);
+
+        showStudying.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                editor.putBoolean(Constants.PREF_FIRST_TIME, isChecked);
+                editor.apply();
+                showUserStudying(isChecked);
+            }
+        });
+
 
     }
 
@@ -67,6 +95,7 @@ public class ProfileActivity extends BaseActivity {
                 @Override
                 public void onClick(View view) {
                     signOut();
+                    showUserStudying(false);
                     Intent homeIntent = new Intent(ProfileActivity.this, CoursesList.class);
                     startActivity(homeIntent);
                 }

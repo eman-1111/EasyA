@@ -139,7 +139,7 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onPause() {
         super.onPause();
-
+        imageApp.setImageBitmap(null);
 
     }
 

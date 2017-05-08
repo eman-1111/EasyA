@@ -1,5 +1,6 @@
 package link.ideas.easya.fragment;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -65,13 +66,15 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     public static final String DETAIL_URI = "URI";
 
     Menu menu;
-    MenuItem shareItem;
+    MenuItem shareItem = null;
 
     boolean isOnLesson = true;
     TextView mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
             mLessonOutline, mLink, mDebug;
 
     CoordinatorLayout coordinatorLayout;
+
+    public ProgressDialog mProgressDialog;
 
     ImageView outlineImage, linkImage, appImage;
     String accountName;
@@ -252,6 +255,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
                 shareItem.setEnabled(false);
                 shareItem.setCheckable(false);
                 shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
+                showProgressDialog();
                 Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_uploading),
                         Snackbar.LENGTH_LONG).show();
                 createShareUserLesson();
@@ -347,6 +351,12 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
             AppCompatActivity activity = (AppCompatActivity) getActivity();
 
+            if (shareItem != null) {
+                if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
+                    shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
+                }
+            }
+
         }
     }
 
@@ -381,6 +391,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     //firebase share
 
     private void createShareUserLesson() {
+
         setUpFireBase();
         if (mCursor.getString(COL_FIREBASE_COURSE_ID) == null) {
             addCourseToFirebase();
@@ -397,7 +408,8 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
 
-        mCoursDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(Helper.encodeEmail(accountName));
+        mCoursDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_COURSES).
+                child(Helper.encodeEmail(accountName)).child(Constants.FIREBASE_LOCATION_USER_COURSES);
         mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
 
     }
@@ -446,7 +458,10 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         mLessonDatabaseReference = mFirebaseDatabase.getReference().
                 child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
 
-        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "",
+        SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
+        String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
+
+        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "", userName, true,
                 Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         lessonPushId = mLessonDatabaseReference.push().getKey();
 
@@ -490,6 +505,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             shareItem.setCheckable(true);
             Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_added),
                     Snackbar.LENGTH_LONG).show();
+            hideProgressDialog();
         }
     }
 
@@ -590,5 +606,24 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     public void onPause() {
         super.onPause();
         isOnLesson = false;
+    }
+
+
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog.setMessage(getString(R.string.lesson_uploading));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.setCanceledOnTouchOutside(false);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
     }
 }

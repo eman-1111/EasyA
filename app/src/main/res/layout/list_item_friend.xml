@@ -41,10 +41,10 @@
     </LinearLayout>
 
 
-    <ImageButton
-        android:id="@+id/ib_can_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:background="@drawable/ic_border_color_black_24dp"/>
+    <!--<ImageButton-->
+        <!--android:id="@+id/ib_can_edit"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center_vertical"-->
+        <!--android:background="@drawable/ic_border_color_black_24dp"/>-->
 </LinearLayout>

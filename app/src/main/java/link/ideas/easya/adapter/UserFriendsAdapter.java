@@ -41,14 +41,13 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
         public final TextView friendEmail;
         public final TextView friendName;
         public final ImageView friendImage;
-        public final ImageButton canEdit;
+
 
         public UserFriendsAdapterViewHolder(View view) {
             super(view);
             friendEmail = (TextView) view.findViewById(R.id.tv_friend_email);
             friendName = (TextView) view.findViewById(R.id.tv_friend_name);
             friendImage = (ImageView) view.findViewById(R.id.iv_friend_image);
-            canEdit = (ImageButton) view.findViewById(R.id.ib_can_edit);
             view.setOnClickListener(this);
         }
 
@@ -57,8 +56,8 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
             int adapterPostion = getAdapterPosition();
             String name = userList.get(adapterPostion).getName();
             String friendEmail = email.get(adapterPostion);
-            boolean canEdit = userList.get(adapterPostion).isCanEdit();
-            mClickHolder.onClick(friendEmail, name, canEdit,this);
+
+            mClickHolder.onClick(friendEmail, name,this);
         }
 
     }
@@ -74,7 +73,7 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
     }
 
     public static interface UserFriendsAdapterOnClickHolder {
-        void onClick(String friendEmail, String friendName, boolean canEdit, UserFriendsAdapter.UserFriendsAdapterViewHolder vh);
+        void onClick(String friendEmail, String friendName,  UserFriendsAdapter.UserFriendsAdapterViewHolder vh);
     }
 
     @Override
@@ -112,31 +111,7 @@ public class UserFriendsAdapter extends RecyclerView.Adapter<UserFriendsAdapter.
                 .error(R.drawable.ic_account_circle_black_24dp)
                 .into(holder.friendImage);
 
-        changeEditStatus(user.isCanEdit(),holder);
 
-        holder.canEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-
-                final DatabaseReference mUsersFriendsDatabaseReference = mFirebaseDatabase.getReference()
-                        .child(Constants.FIREBASE_LOCATION_USER_FRIENDS)
-                        .child(userEmail)
-                        .child(friendEmail);
-                mUsersFriendsDatabaseReference.child(Constants.FIREBASE_LOCATION_USERS_CAN_EDIT).setValue(!user.isCanEdit());
-                changeEditStatus(user.isCanEdit(),holder);
-
-            }
-        });
-    }
-
-    public void changeEditStatus(boolean canEdit, UserFriendsAdapter.UserFriendsAdapterViewHolder holder) {
-        if (canEdit) {
-            holder.canEdit.setBackground(mContext.getResources().getDrawable(R.drawable.ic_mode_edit_black_24dp));
-        } else {
-            holder.canEdit.setBackground(mContext.getResources().getDrawable(R.drawable.ic_border_color_black_24dp));
-
-        }
     }
 
     @Override

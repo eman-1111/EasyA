@@ -45,7 +45,7 @@ import link.ideas.easya.adapter.ImageAdapter;
 import link.ideas.easya.models.Image;
 
 
-public class ImagesSearch extends AppCompatActivity {
+public class ImagesSearch extends BaseActivity {
     ImageAdapter mImageAdapter;
 
     Bundle data;
@@ -59,6 +59,7 @@ public class ImagesSearch extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image_search);
+        setDrawer(false);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -316,17 +317,7 @@ public class ImagesSearch extends AppCompatActivity {
         }
     }
 
-    /**
-     * Checks whether the device currently has a network connection.
-     *
-     * @return true if the device has a network connection, false otherwise.
-     */
-    private boolean isDeviceOnline() {
-        ConnectivityManager connMgr =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
-    }
+
 
     protected void startDialog(final View view, final Image image) {
 

@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <application
         android:allowBackup="true"
@@ -38,10 +39,6 @@
             android:name=".LessonDetail"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.Translucent.Detail" />
-        <activity
-            android:name=".SettingActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AddFriendActivity"
             android:label="@string/add_friends"

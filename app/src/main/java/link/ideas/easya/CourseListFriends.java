@@ -7,12 +7,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,10 +41,12 @@ public class CourseListFriends extends BaseActivity {
     ArrayList<String> coursePushIds;
 
     ValueEventListener mValueEventCourseListener;
+    ValueEventListener mValueEventStudyingListener;
     FirebaseDatabase mFirebaseDatabase;
     DatabaseReference mCourseDatabaseReference;
+    DatabaseReference mIsStudyingDatabaseReference;
     boolean isLoaded,canEdit;
-
+    MenuItem changeStatus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +63,7 @@ public class CourseListFriends extends BaseActivity {
         setUpNavigationView();
 
         initializeScreen();
-
+        FirebaseCrash.report(new Exception("My first Android non-fatal error"));
     }
 
     private void initializeScreen() {
@@ -85,7 +89,12 @@ public class CourseListFriends extends BaseActivity {
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mCourseDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(friendAccount);
+                child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(friendAccount).
+                child(Constants.FIREBASE_LOCATION_USER_COURSES);
+
+        mIsStudyingDatabaseReference = mFirebaseDatabase.getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(friendAccount).
+                child(Constants.FIREBASE_LOCATION_USERS_IS_STUDYING);
         if (isDeviceOnline()) {
             attachDatabaseReadListener();
         } else {
@@ -94,7 +103,6 @@ public class CourseListFriends extends BaseActivity {
 
 
     }
-
     private void attachDatabaseReadListener() {
 
         progress.setVisibility(View.VISIBLE);
@@ -124,6 +132,31 @@ public class CourseListFriends extends BaseActivity {
             }
         };
         mCourseDatabaseReference.addValueEventListener(mValueEventCourseListener);
+
+
+        mValueEventStudyingListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                boolean isStudying= (boolean) dataSnapshot.getValue();
+                changeStudyingStatus(isStudying);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(LOG_TAG, databaseError + "");
+
+            }
+        };
+        mIsStudyingDatabaseReference.addValueEventListener(mValueEventStudyingListener);
+    }
+
+    private void changeStudyingStatus(boolean isStudying) {
+        if(isStudying){
+            changeStatus.setIcon(getResources().getDrawable(R.drawable.studying));
+        }else{
+            changeStatus.setIcon(getResources().getDrawable(R.drawable.not_studying));
+        }
     }
 
     @Override
@@ -139,13 +172,22 @@ public class CourseListFriends extends BaseActivity {
             mValueEventCourseListener = null;
 
         }
+        if (mValueEventStudyingListener != null) {
+            mCourseDatabaseReference.removeEventListener(mValueEventStudyingListener);
+            mValueEventStudyingListener = null;
+
+        }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
+        getMenuInflater().inflate(R.menu.studying_status, menu);
+        changeStatus = menu.findItem(R.id.btn_studying_menu);
         return true;
     }
+
 
     @Override
     protected void onResume() {

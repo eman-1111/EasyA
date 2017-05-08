@@ -12,6 +12,7 @@
     <string name="pref_sort_default" translatable="false">date</string>
     <string name="save">Save</string>
     <string name="add">Add</string>
+    <string name="studying_status">Studying status</string>
     <string name="search">Search</string>
 
     <string name="about">Help</string>
