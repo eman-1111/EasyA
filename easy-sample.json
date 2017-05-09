@@ -1,0 +1,174 @@
+{
+  "userCourses" : {
+    "eman,ashour1111@gmail,com" : {
+      "isStudying" : true
+    },
+    "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+      "courses" : {
+        "-KjbS8Shux5fHAZRHNwb" : {
+          "colorId" : 1,
+          "courseName" : "Science",
+          "teacherEmail" : "Not Found",
+          "teacherName" : "Alex",
+          "teacherPhotoUrl" : "Not Found",
+          "timestampCreated" : {
+            "timestampLastChanged" : 1494236830638
+          },
+          "timestampLastChanged" : {
+            "timestamp" : 1494236830638
+          }
+        }
+      },
+      "isStudying" : true
+    }
+  },
+  "userFriends" : {
+    "eman,ashour1111@gmail,com" : {
+      "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+        "name" : "student",
+        "photoUrl" : "https://lh6.googleusercontent.com/-nmqr42B8cSM/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhq_h10k_Lh7gwiIAampv6VZ11SHrw/s96-c/photo.jpg"
+      },
+      "student2_lvazfb-hnrbgi46f9uwr@classroom-dev,com" : {
+        "name" : "student2 User",
+        "photoUrl" : "https://lh6.googleusercontent.com/-S3qb5HvzAeE/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhoQHPfIQ8_HbVmbKa_H_1WzvLsCug/s96-c/photo.jpg"
+      }
+    },
+    "khaledparis999@gmail,com" : {
+      "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+        "name" : "student",
+        "photoUrl" : "https://lh6.googleusercontent.com/-nmqr42B8cSM/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhq_h10k_Lh7gwiIAampv6VZ11SHrw/s96-c/photo.jpg"
+      }
+    },
+    "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+      "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+        "name" : "student",
+        "photoUrl" : "https://lh6.googleusercontent.com/-nmqr42B8cSM/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhq_h10k_Lh7gwiIAampv6VZ11SHrw/s96-c/photo.jpg"
+      }
+    },
+    "student2_lvazfb-hnrbgi46f9uwr@classroom-dev,com" : {
+      "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+        "name" : "student",
+        "photoUrl" : "https://lh6.googleusercontent.com/-nmqr42B8cSM/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhq_h10k_Lh7gwiIAampv6VZ11SHrw/s96-c/photo.jpg"
+      }
+    },
+    "teacher_b5ahf60tjwwkzszlfpoj@classroom-dev,com" : {
+      "eman,ashour1111@gmail,com" : {
+        "name" : "eman ashour",
+        "photoUrl" : "https://lh6.googleusercontent.com/-fC8GzY-P-lY/AAAAAAAAAAI/AAAAAAAAACQ/9gaLGgW4HPk/s96-c/photo.jpg"
+      },
+      "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+        "name" : "student",
+        "photoUrl" : "https://lh6.googleusercontent.com/-nmqr42B8cSM/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhq_h10k_Lh7gwiIAampv6VZ11SHrw/s96-c/photo.jpg"
+      },
+      "student2_lvazfb-hnrbgi46f9uwr@classroom-dev,com" : {
+        "name" : "student2 User",
+        "photoUrl" : "https://lh6.googleusercontent.com/-S3qb5HvzAeE/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhoQHPfIQ8_HbVmbKa_H_1WzvLsCug/s96-c/photo.jpg"
+      }
+    }
+  },
+  "userLessons" : {
+    "-KjbS8Shux5fHAZRHNwb" : {
+      "-KjbS9bkpxyP4AOJ6bKX" : {
+        "agreed" : true,
+        "lastEditName" : "student1 User",
+        "lessonImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FMass%2Fsummary.jpg?alt=media&token=94dadc8c-1d58-47d3-98d3-259781b6511d",
+        "lessonLink" : "When we buy fruits we ask for the mass.",
+        "lessonName" : "Mass",
+        "timestampCreated" : {
+          "timestampLastChanged" : 1494236834647
+        },
+        "timestampLastChanged" : {
+          "timestamp" : 1494236834647
+        }
+      },
+      "-KjbSDHIr6L-Zv63UPvr" : {
+        "agreed" : true,
+        "lastEditName" : "student1 User",
+        "lessonImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FStates+of+matter.%2Fsummary.jpg?alt=media&token=9c58df59-d78c-44e5-b85d-94b13216ddb1",
+        "lessonLink" : "Just like the matter, the human can change their mode they can be happy, then sad, or excited. and we change our mode based on something that happened around us.",
+        "lessonName" : "States of matter.",
+        "timestampCreated" : {
+          "timestampLastChanged" : 1494236849594
+        },
+        "timestampLastChanged" : {
+          "timestamp" : 1494236849594
+        }
+      },
+      "-Kjb_n60J7LQsBOCG9iJ" : {
+        "agreed" : true,
+        "lastEditName" : "student1 User",
+        "lessonImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FPhysical+change.%2Fsummary.jpg?alt=media&token=205a3503-c0b9-4a9c-aadd-4c784414689e",
+        "lessonLink" : "If we cut paper into different pieces, it's shape only changes so it's a physical change.",
+        "lessonName" : "Physical change.",
+        "timestampCreated" : {
+          "timestampLastChanged" : 1494239098781
+        },
+        "timestampLastChanged" : {
+          "timestamp" : 1494239098781
+        }
+      }
+    }
+  },
+  "userLessonsDetail" : {
+    "-KjbS8Shux5fHAZRHNwb" : {
+      "-KjbS9bkpxyP4AOJ6bKX" : {
+        "appImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FMass%2Fapp.jpg?alt=media&token=9296368a-a2c1-4da1-b5d5-3665fb3c93c4",
+        "lessonAppDescription" : "1-Get two cubes that have the same size one is made of wood the other is made iron.\n2- put them in common balance.\n3- the iron cube has larger mass.",
+        "lessonAppTitle" : "Different mass for objects.",
+        "lessonDebug" : "",
+        "lessonSummery" : "It is the amount of matter that the object contains, so we say mass is the same as weight.",
+        "linkImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FMass%2Flink.jpg?alt=media&token=e84b8084-1ffa-49c2-8e65-416724c363ec",
+        "timestampCreated" : {
+          "timestampLastChanged" : 1494236839986
+        },
+        "timestampLastChanged" : {
+          "timestamp" : 1494236839986
+        }
+      },
+      "-KjbSDHIr6L-Zv63UPvr" : {
+        "appImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FStates+of+matter.%2Fapp.jpg?alt=media&token=b4ce8fa0-52cc-48bd-9d8e-0bdaf4539af2",
+        "lessonAppDescription" : "1- get some ice from the refrigerator and put it in a glass.\n\n2- ice change from solid state  to water liquid state, it takes the heat from the air.",
+        "lessonAppTitle" : "Melting",
+        "lessonDebug" : "unlike the matter, we choose to change our mode, maybe everything around us should make us sad but we choose to be happy.",
+        "lessonSummery" : "Matter is every where around us, it can exist in three states solid, liquid, and gaseous. A matter can change from one state to another if we change some factors of the environment around it.",
+        "linkImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FStates+of+matter.%2Flink.jpg?alt=media&token=ae7552cd-d108-41e6-800b-2ab978e77406",
+        "timestampCreated" : {
+          "timestampLastChanged" : 1494236853829
+        },
+        "timestampLastChanged" : {
+          "timestamp" : 1494236853829
+        }
+      },
+      "-Kjb_n60J7LQsBOCG9iJ" : {
+        "appImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FPhysical+change.%2Fapp.jpg?alt=media&token=2ddefda7-9f24-4700-bef5-c53dad0ac1ae",
+        "lessonAppDescription" : "1-take a sugar cube and taste it's flavour.\n2- grind the sugar cube then taste it again.\nThe sweety taste of sugar does not change only it's shape does.",
+        "lessonAppTitle" : "grinding sugar",
+        "lessonDebug" : "If we burn a paper, it's shape and structure change, so it's a chemical change.",
+        "lessonSummery" : "It's a change in the appearance (shape) of matter without any change in the structure (properties). The change of water from one state to another is physical change.",
+        "linkImage" : "https://firebasestorage.googleapis.com/v0/b/easy-a-165118.appspot.com/o/-KjbS8Shux5fHAZRHNwb%2FPhysical+change.%2Flink.jpg?alt=media&token=b934386c-8d34-4586-9ef5-97ae1fb1dce0",
+        "timestampCreated" : {
+          "timestampLastChanged" : 1494239103064
+        },
+        "timestampLastChanged" : {
+          "timestamp" : 1494239103064
+        }
+      }
+    }
+  },
+  "users" : {
+    "eman,ashour1111@gmail,com" : {
+      "name" : "eman ashour",
+      "photoUrl" : "https://lh6.googleusercontent.com/-fC8GzY-P-lY/AAAAAAAAAAI/AAAAAAAAACQ/9gaLGgW4HPk/s96-c/photo.jpg",
+      "timestampAdded" : {
+        "timestamp" : 1494311073054
+      }
+    },
+    "student1_onal9dsr1jlypzupijso@classroom-dev,com" : {
+      "name" : "student1 User",
+      "photoUrl" : "https://lh6.googleusercontent.com/-nmqr42B8cSM/AAAAAAAAAAI/AAAAAAAAAAA/AHalGhq_h10k_Lh7gwiIAampv6VZ11SHrw/s96-c/photo.jpg",
+      "timestampAdded" : {
+        "timestamp" : 1494312518896
+      }
+    }
+  }
+}
