@@ -27,6 +27,7 @@
                 android:background="@drawable/summary"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
+                android:contentDescription="@string/a11y_outline_image"
                 android:transitionName="@string/shared_element"
                 app:layout_collapseMode="parallax" />
 
@@ -98,6 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
+                    android:contentDescription="@string/a11y_link_image"
                     android:scaleType="fitCenter"
                     android:layout_marginTop="@dimen/activity_less_margin" />
 
@@ -137,6 +139,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:contentDescription="@string/a11y_app_image"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
                     android:layout_marginTop="@dimen/activity_less_margin" />

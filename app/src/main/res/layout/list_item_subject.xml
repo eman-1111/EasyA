@@ -24,8 +24,7 @@
                 android:id="@+id/image_fram"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:paddingEnd="@dimen/activity_vertical_margin">
+                android:layout_gravity="center">
 
                 <ImageView
                     android:id="@+id/list_item_lesson_image"
@@ -46,7 +45,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/image_fram"
-                android:paddingEnd="@dimen/text_padding_add"
+                android:layout_marginEnd="@dimen/activity_less_margin"
+                android:layout_marginStart="@dimen/activity_less_margin"
                 android:paddingTop="@dimen/text_padding_add"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="@color/text_primary_dark"
@@ -58,8 +58,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/list_item_lesson_title"
                 android:layout_toEndOf="@+id/image_fram"
-                android:padding="@dimen/text_padding_add"
-                android:paddingEnd="@dimen/text_padding_add"
+                android:paddingTop="@dimen/text_padding_add"
+                android:layout_marginEnd="@dimen/activity_less_margin"
+                android:layout_marginStart="@dimen/activity_less_margin"
                 android:maxLines="2"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/text_secondary_dark"

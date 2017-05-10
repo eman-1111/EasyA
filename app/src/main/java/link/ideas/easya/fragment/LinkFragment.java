@@ -88,13 +88,10 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
         infoLink = (ImageView) view.findViewById(R.id.link_info);
         infoDebug = (ImageView) view.findViewById(R.id.debug_info);
-        infoLink.setContentDescription(getResources().getString(R.string.a11y_link_info));
-        infoDebug.setContentDescription(getResources().getString(R.string.a11y_debug_info));
         infoLink.setOnClickListener(this);
         infoDebug.setOnClickListener(this);
 
         imageLink = (ImageView) view.findViewById(R.id.link_image);
-        imageLink.setContentDescription(getResources().getString(R.string.a11y_link_image));
         imageLink.setOnClickListener(this);
 
     }

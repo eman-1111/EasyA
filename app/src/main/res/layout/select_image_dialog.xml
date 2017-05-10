@@ -25,6 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:contentDescription="@string/a11y_gallery_icon"
                 android:src="@drawable/ic_burst_mode_black_24dp" />
 
             <TextView
@@ -50,6 +51,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/a11y_camera_icon"
                 android:src="@drawable/ic_photo_camera_black_24dp" />
 
             <TextView
@@ -74,6 +76,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:contentDescription="@string/a11y_search_online_icon"
             android:src="@drawable/ic_palette_black_24dp" />
 
         <TextView

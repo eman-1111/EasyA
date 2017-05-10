@@ -382,9 +382,6 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
         coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinator_layout);
 
-        linkImage.setContentDescription(getResources().getString(R.string.a11y_link_image));
-        appImage.setContentDescription(getResources().getString(R.string.a11y_outline_image));
-        outlineImage.setContentDescription(getResources().getString(R.string.a11y_app_image));
     }
 
 

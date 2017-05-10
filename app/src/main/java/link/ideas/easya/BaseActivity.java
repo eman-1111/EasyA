@@ -836,7 +836,6 @@ public class BaseActivity extends AppCompatActivity
         navHeader = navigationView.getHeaderView(0);
         txtName = (TextView) navHeader.findViewById(R.id.name);
         imgProfile = (ImageView) navHeader.findViewById(R.id.img_profile);
-        imgProfile.setContentDescription(getString(R.string.a11y_profileImage));
 
         signInButton = (SignInButton) navHeader.findViewById(R.id.sign_in_button);
         signInButton.setSize(SignInButton.SIZE_STANDARD);

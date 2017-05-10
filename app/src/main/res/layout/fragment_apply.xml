@@ -15,8 +15,8 @@
             android:background="@color/white"
             android:orientation="vertical"
             android:paddingBottom="@dimen/activity_horizontal_margin"
-            android:paddingLeft="@dimen/article_keylines"
-            android:paddingRight="@dimen/article_keylines"
+            android:paddingEnd="@dimen/article_keylines"
+            android:paddingStart="@dimen/article_keylines"
             android:paddingTop="@dimen/activity_horizontal_margin">
 
             <LinearLayout
@@ -37,6 +37,7 @@
                     android:id="@+id/title_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/a11y_app_title_info"
                     android:background="@drawable/ic_info_black" />
             </LinearLayout>
 
@@ -73,6 +74,7 @@
                     android:id="@+id/app_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/a11y_app_info"
                     android:background="@drawable/ic_info_black" />
             </LinearLayout>
 
@@ -100,6 +102,7 @@
                     android:id="@+id/app_image"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/add_lesson_image_height"
+                    android:contentDescription="@string/a11y_app_image"
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:background="@drawable/bachground2"

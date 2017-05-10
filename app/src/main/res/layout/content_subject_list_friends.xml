@@ -19,7 +19,7 @@
         android:id="@+id/empty_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|left"
+        android:layout_gravity="bottom|end"
         android:gravity="center_horizontal"
         android:padding="@dimen/activity_vertical_margin" />
     <include layout="@layout/progress_bar" />

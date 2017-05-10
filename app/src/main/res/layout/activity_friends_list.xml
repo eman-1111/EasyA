@@ -72,6 +72,7 @@
                     android:layout_gravity="center_vertical"
                     android:background="@android:color/transparent"
                     android:onClick="onAddFriendPressed"
+                    android:contentDescription="@string/a11y_add_friend_button"
                     android:src="@drawable/icon_add_friend" />
             </LinearLayout>
         </LinearLayout>

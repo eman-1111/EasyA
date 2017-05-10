@@ -8,9 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="60dp">
+        android:paddingEnd="@dimen/md_keylines"
+        android:paddingStart="@dimen/md_keylines"
+        android:paddingTop="@dimen/article_keylines">
 
         <TextView
             android:layout_width="match_parent"
@@ -24,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:hint="@string/course_name_hint"
             android:minLines="1"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -40,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:minLines="1"
+            android:hint="@string/teacher_name_hint"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <GridView

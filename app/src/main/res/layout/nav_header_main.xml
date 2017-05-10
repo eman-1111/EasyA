@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitXY"
+        android:contentDescription="@string/a11y_menu_background"
         android:src="@drawable/couse3b" />
 
     <LinearLayout
@@ -28,6 +29,7 @@
             android:layout_width="@dimen/profile_width"
             android:layout_height="@dimen/profile_height"
             android:padding="@dimen/activity_less_margin"
+            android:contentDescription="@string/a11y_profile_image"
             android:src="@drawable/ic_account_circle_black_24dp"
             android:paddingTop="@dimen/nav_header_vertical_spacing" />
 

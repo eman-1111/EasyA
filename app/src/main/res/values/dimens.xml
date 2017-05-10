@@ -9,7 +9,7 @@
     <dimen name="list_item_extra_padding">8dp</dimen>
     <dimen name="list_item_hight">150dp</dimen>
     <dimen name="widget_list_item_hight">90dp</dimen>
-    <dimen name="course_titel_text_size">32dp</dimen>
+    <dimen name="course_titel_text_size">32sp</dimen>
     <dimen name="course_text_size">16dp</dimen>
     <dimen name="color_item">100dp</dimen>
     <dimen name="add_lesson_image_height">200dp</dimen>

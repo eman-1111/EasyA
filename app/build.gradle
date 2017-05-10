@@ -5,7 +5,7 @@ android {
         easyAKey {
             keyAlias 'EasyAKey'
             keyPassword 'emanEasyA'
-            storeFile file('E:/Android/EasyA/app/easyAKey.jks')
+            storeFile file('easyAKey.jks')
             storePassword 'narutox2017'
         }
     }

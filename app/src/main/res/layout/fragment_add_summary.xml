@@ -20,8 +20,8 @@
             android:background="@color/white"
             android:orientation="vertical"
             android:paddingBottom="@dimen/activity_horizontal_margin"
-            android:paddingLeft="@dimen/article_keylines"
-            android:paddingRight="@dimen/article_keylines"
+            android:paddingEnd="@dimen/article_keylines"
+            android:paddingStart="@dimen/article_keylines"
             android:paddingTop="@dimen/activity_horizontal_margin">
 
             <TextView
@@ -30,8 +30,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_less_margin"
                 android:paddingBottom="@dimen/activity_less_margin"
-                android:paddingLeft="@dimen/text_padding_add"
-                android:paddingRight="@dimen/text_padding_add"
+                android:paddingEnd="@dimen/text_padding_add"
+                android:paddingStart="@dimen/text_padding_add"
                 android:text="@string/lesson_name"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textColor="?attr/colorAccent" />
@@ -90,6 +90,7 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:background="@drawable/summary"
+                    android:contentDescription="@string/a11y_outline_image"
                     android:scaleType="fitXY" />
 
                 <TextView

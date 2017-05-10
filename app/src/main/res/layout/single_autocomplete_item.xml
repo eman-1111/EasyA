@@ -9,7 +9,7 @@
     android:descendantFocusability="blocksDescendants"
     android:focusable="false"
     android:foreground="?selectableItemBackground"
-    android:paddingLeft="@dimen/md_keylines"
+    android:paddingEnd="@dimen/md_keylines"
     android:paddingStart="@dimen/md_keylines">
 
     <TextView

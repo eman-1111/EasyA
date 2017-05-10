@@ -50,6 +50,8 @@
 
     <string name="course_name">Course Name</string>
     <string name="teacher_name">Teacher Name</string>
+    <string name="course_name_hint">Enter Course Name</string>
+    <string name="teacher_name_hint">Enter Teacher Name</string>
 
     <string name="lesson_name">Lesson Name</string>
     <string name="lesson_name_des">Try to simplify it.</string>
@@ -131,7 +133,7 @@
 
     <string name="no_google_classroom">You need to have Google Classroom,so Easy A could Load your courses</string>
     <string name="network">No network connection available.</string>
-    <string name="network_edit">We cant edit your lesson online, No network connection available.</string>
+    <string name="network_edit">We cannot edit your lesson online, No network connection available.</string>
     <string name="no_course">The Courses you will add, will show up here, so add some</string>
     <string name="no_lesson">The Lesson you will add, will show up here, so add some</string>
     <string name="title_activity_subject_list_friends">SubjectListFriends</string>
@@ -143,19 +145,35 @@
     <string name="get_image_permissions">we need permissions to be able to get the image</string>
     <string name="lesson_name_error">Enter Lesson Name</string>
     <string name="summary_error">Enter lesson summary</string>
-
+    <string name="add_friend">Enter friends email</string>
 
     <!-- A11y -->
     <string name="a11y_profileImage">User Profile Image </string>
-    <string name="a11y_link_image">Link Image</string>
-    <string name="a11y_app_image">Real life application image </string>
-    <string name="a11y_outline_image">Lesson Image </string>
+    <string name="a11y_link_image">Link selected Image</string>
+    <string name="a11y_app_image">Real life application selected image</string>
+    <string name="a11y_outline_image">Lesson selected Image </string>
 
+    <string name="a11y_menu_background">Menu background </string>
+    <string name="a11y_gallery_icon">Gallery icon</string>
+    <string name="a11y_camera_icon">Camera icon</string>
+    <string name="a11y_search_online_icon">Search online icon</string>
+
+    <!--get the name of the image and put it-->
+    <string name="a11y_image_search_item">Image item search result</string>
+    <string name="a11y_email_icon">email icon</string>
+    <string name="a11y_user_name_icon">User name icon</string>
+    <string name="a11y_course_background">Course Background image</string>
+
+    <string name="a11y_add_friend_button">Add Friend button</string>
+    <string name="a11y_profile_image">user profile image</string>
+    <string name="a11y_add_image">selected image</string>
 
     <string name="a11y_link_info">link information button</string>
     <string name="a11y_debug_info">debug information button</string>
     <string name="a11y_app_info">Real life application information button</string>
     <string name="a11y_app_title_info">Real life application title information button</string>
+
+
     <string name="a11y_course_name">Course name is:   <xliff:g id="condition">%1$s</xliff:g></string>
     <string name="a11y_teacher_name">Teacher name is:   <xliff:g id="condition">%1$s</xliff:g></string>
     <string name="a11y_teacher_image">teacher image</string>

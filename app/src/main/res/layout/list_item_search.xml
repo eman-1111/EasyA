@@ -12,5 +12,6 @@
       android:layout_height="match_parent"
       android:layout_gravity="center"
       android:adjustViewBounds="true"
+       android:contentDescription="@string/a11y_image_search_item"
       android:scaleType="fitCenter" />
 </LinearLayout>

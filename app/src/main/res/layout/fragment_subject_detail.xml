@@ -23,6 +23,7 @@
             <ImageView
                 android:id="@+id/outlook_iv"
                 android:transitionName="@string/shared_element"
+                android:contentDescription="@string/a11y_outline_image"
                 android:layout_width="match_parent"
                 android:background="@drawable/summary"
                 android:layout_height="match_parent"
@@ -94,6 +95,7 @@
                     android:layout_gravity="center"
                     android:layout_width="match_parent"
                     android:adjustViewBounds="true"
+                    android:contentDescription="@string/a11y_link_image"
                     android:scaleType="fitCenter"
                     android:layout_marginTop="@dimen/activity_less_margin"
                     android:layout_height="wrap_content" />
@@ -132,6 +134,7 @@
                     android:layout_gravity="center"
                     android:layout_width="match_parent"
                     android:adjustViewBounds="true"
+                    android:contentDescription="@string/a11y_app_image"
                     android:scaleType="fitCenter"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/activity_less_margin" />
