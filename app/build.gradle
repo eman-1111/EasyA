@@ -1,14 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    signingConfigs {
-        easyAKey {
-            keyAlias 'EasyAKey'
-            keyPassword 'emanEasyA'
-            storeFile file('easyAKey.jks')
-            storePassword 'narutox2017'
-        }
-    }
+
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
     defaultConfig {
@@ -17,7 +10,6 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1"
-        signingConfig signingConfigs.easyAKey
     }
     buildTypes {
         release {
