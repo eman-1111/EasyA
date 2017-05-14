@@ -1,7 +1,7 @@
 EasyA
 ===================================
 
-EasyA help orgnize your lesson for easier remembering and accessing, The lessons is saved in Content Provider 
+Easy A help organize your lesson for easier remembering and accessing, The lessons is saved in Content Provider 
 and when the user share the lessons it will be saved in Firebase so user friends can view them . Used as Udacity capstone project [link in google play](https://play.google.com/store/apps/details?id=link.ideas.easya).
 
  
