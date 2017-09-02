@@ -4,42 +4,47 @@ package link.ideas.easya.models;
  * Created by eman_ashour on 6/9/2016.
  */
 public class Image {
-    String hashId;
-    String image;
-    String imageHD;
+    private String id;
+    private String secret;
+    private String server;
+    private String farm;
 
-    public Image( String hashId, String image, String imageHD) {
-
-        this.hashId = hashId;
-        this.image = image;
-        this.imageHD = imageHD;
-
+    public Image(String id, String secret, String server, String farm) {
+        this.id = id;
+        this.secret = secret;
+        this.server = server;
+        this.farm = farm;
     }
 
-    public String getHashId() {
-        return hashId;
+    public String getId() {
+        return id;
     }
 
-    public void setHashId(String hashId) {
-
-        this.hashId = hashId;
+    public String getSecret() {
+        return secret;
     }
 
-    public String getImage() {
-        return image;
+    public String getServer() {
+        return server;
     }
 
-    public void setImage(String image) {
-
-        this.image = image;
+    public String getFarm() {
+        return farm;
     }
 
-    public String getImageHD() {
-        return imageHD;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setImageHD(String imageHD) {
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
 
-        this.imageHD = imageHD;
+    public void setServer(String server) {
+        this.server = server;
+    }
+
+    public void setFarm(String farm) {
+        this.farm = farm;
     }
 }

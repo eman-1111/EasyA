@@ -1,6 +1,7 @@
 package link.ideas.easya.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,7 @@ public class ImageAdapter extends ArrayAdapter<Image> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        Image imageNor = getItem(position);
+        Image image = getItem(position);
 
         if (convertView == null) {
 
@@ -50,7 +51,10 @@ public class ImageAdapter extends ArrayAdapter<Image> {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        Glide.with(context).load(imageNor.getImage()).placeholder(R.drawable.placeholder).dontAnimate()
+        String url = "https://farm" + image.getFarm() + ".staticflickr.com/" + image.getServer() +
+                "/" + image.getId() + "_" + image.getSecret() + ".jpg";
+        Log.e("URls", url);
+        Glide.with(context).load(url).placeholder(R.drawable.placeholder).dontAnimate()
                 .into(holder.imageView);
 
         return convertView;

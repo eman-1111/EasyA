@@ -156,8 +156,8 @@ public class ImagesSearch extends BaseActivity {
 
         @Override
         protected void onPostExecute(ArrayList<Image> result) {
-            if (result != null) {
 
+            if (result != null) {
                 linlaHeaderProgress.setVisibility(View.GONE);
                 if (result.size() > 0) {
                     mImageAdapter.clear();
@@ -186,29 +186,35 @@ public class ImagesSearch extends BaseActivity {
             String imageJsonStr = null;
 
 
-            String apiKey = BuildConfig.UNIQUE_PIXABAY_KEY;
-            String high_resolution = "high_resolution";
-            String safeSearch = "true";
+            String apiKey = BuildConfig.UNIQUE_FLICKR_KEY;;
+            String pagesValue = "20";
+            String formValue = "json";
+            final String callBack = "1";
             ArrayList<Image> imageUrl = null;
 
             try {
-                // Construct the URL for the api.themoviedb.org query
+
 
                 final String IMAGE_BASE_URL =
-                        "https://pixabay.com/api/?";
-                final String RESPONSE_PARAM = "response_group";
-                final String KEY_PARAM = "key";
-                final String SEARCH = "q";
-                final String SAFE_SEARCH = "safesearch";
+                        "https://api.flickr.com/services/rest/?method=flickr.photos.search";
+                final String PAGES = "per_page";
+                final String KEY_PARAM = "api_key";
+                final String SEARCH = "tags";
+                final String FORMAT = "format";
+                final String JSON_CALL_BACK = "nojsoncallback";
+//                final String API_SIG = "api_sig";
+//                final String AUTH_TOKEN = "auth_token";
 
-                //https://pixabay.com/api/?key=[KEY]&response_group=high_resolution&q=yellow+flower&pretty=true
+                //https://api.flickr.com/services/rest/?method=flickr.photos.search&
+                // api_key=f5caac7e998b2510dbe40f47f8f3c469&tags=cat&per_page=10&format=json&nojsoncallback=1
+
                 Uri builtUri = Uri.parse(IMAGE_BASE_URL).buildUpon()
                         .appendQueryParameter(KEY_PARAM, apiKey)
-                        .appendQueryParameter(RESPONSE_PARAM, high_resolution)
                         .appendQueryParameter(SEARCH, params[0])
-                        .appendQueryParameter(SAFE_SEARCH, safeSearch)
+                        .appendQueryParameter(PAGES, pagesValue)
+                        .appendQueryParameter(FORMAT, formValue)
+                        .appendQueryParameter(JSON_CALL_BACK, callBack)
                         .build();
-
 
                 URL url = new URL(builtUri.toString());
                 Log.e("URL", builtUri.toString());
@@ -260,13 +266,6 @@ public class ImagesSearch extends BaseActivity {
                     }
                 }
             }
-            String[] imageNor = new String[imageUrl.size()];
-            int i = 0;
-            for (Image image : imageUrl) {
-
-                imageNor[i] = image.getImage();
-                i++;
-            }
 
             return imageUrl;
         }
@@ -274,39 +273,42 @@ public class ImagesSearch extends BaseActivity {
         private ArrayList<Image> getImageDataFromJson(String imageJsonStr)
                 throws JSONException {
 
-            final String OWM_RESULT = "hits";
+            final String OWM_RESULT = "photos";
 
-            final String OWM_HD_IMAGE = "fullHDURL";
-            final String OWM_IMAGE = "previewURL";
-            final String OWM_HASH = "id_hash";
+            final String OWM_PHOTO = "photo";
+            final String OWM_ID = "id";
+            final String OWM_SECRET = "secret";
+            final String OWM_SERVER = "server";
+            final String OWM_FARM = "farm";
 
 
             try {
 
 
                 JSONObject imagesJson = new JSONObject(imageJsonStr);
-                JSONArray imageArray = imagesJson.getJSONArray(OWM_RESULT);
+                JSONObject photosJson = imagesJson.getJSONObject(OWM_RESULT);
+                JSONArray imageArray = photosJson.getJSONArray(OWM_PHOTO);
                 ArrayList<Image> images = new ArrayList<Image>();
                 for (int i = 0; i < imageArray.length(); i++) {
 
-                    String hdImage;
-                    String imageNor;
-                    String hashId;
+                    String id;
+                    String secret;
+                    String server;
+                    String farm;
 
 
-                    JSONObject fullMovie = imageArray.getJSONObject(i);
-                    hdImage = fullMovie.getString(OWM_HD_IMAGE);
-                    imageNor = fullMovie.getString(OWM_IMAGE);
-                    hashId = fullMovie.getString(OWM_HASH);
+                    JSONObject fullImage = imageArray.getJSONObject(i);
 
-                    Image image = new Image(hashId, imageNor, hdImage);
+                    id = fullImage.getString(OWM_ID);
+                    secret = fullImage.getString(OWM_SECRET);
+                    server = fullImage.getString(OWM_SERVER);
+                    farm = fullImage.getString(OWM_FARM);
+
+                    Image image = new Image(id, secret, server, farm);
+
                     images.add(image);
-
-
                 }
                 return images;
-
-
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
@@ -316,7 +318,6 @@ public class ImagesSearch extends BaseActivity {
 
         }
     }
-
 
 
     protected void startDialog(final View view, final Image image) {
@@ -334,13 +335,17 @@ public class ImagesSearch extends BaseActivity {
         final ImageView imageIV = (ImageView) promptsView
                 .findViewById(R.id.icon_img);
 
+
+        String url = "https://farm" + image.getFarm() + ".staticflickr.com/" + image.getServer() +
+                "/" + image.getId() + "_" + image.getSecret() + ".jpg";
+        Log.e("imageUrl ", url);
+
         Glide.with(this)
-                .load(image.getImage())
+                .load(url)
                 .asBitmap()
                 .into(new SimpleTarget<Bitmap>(100, 100) {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-
                         imageB = resource;
                         imageIV.setImageBitmap(imageB);
 

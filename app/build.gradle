@@ -22,7 +22,7 @@ android {
         }
     }
     buildTypes.each {
-        it.buildConfigField 'String', 'UNIQUE_PIXABAY_KEY', UniquePixabayKey
+        it.buildConfigField 'String', 'UNIQUE_FLICKR_KEY', UniqueFlickrKey
     }
     productFlavors {
     }
@@ -38,7 +38,7 @@ dependencies {
     compile('com.google.apis:google-api-services-classroom:v1-rev9-1.22.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    compile 'com.google.android.gms:play-services-auth:10.2.1'
+    compile 'com.google.android.gms:play-services-auth:10.2.4'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'

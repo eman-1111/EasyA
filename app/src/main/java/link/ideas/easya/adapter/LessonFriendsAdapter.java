@@ -72,8 +72,6 @@ public class LessonFriendsAdapter extends RecyclerView.Adapter<LessonFriendsAdap
     public LessonFriendsAdapter.CourseAdapterFriendsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         if (parent instanceof RecyclerView) {
-
-
             View view = LayoutInflater.from(parent.getContext()).
                     inflate(R.layout.list_item_subject, parent, false);
 

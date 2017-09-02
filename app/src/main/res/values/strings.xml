@@ -116,7 +116,7 @@
 
     <string name="you_have_no_friend">You do not have friends yet please add them</string>
 
-    <string name="pixabay_text">Powered by Pixabay search engine </string>
+    <string name="flickr_text">Powered by Flickr search engine </string>
 
     <!-- Instructions and Loading Text -->
     <string name="progress_dialog_loading">Loading…</string>
