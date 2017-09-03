@@ -313,12 +313,17 @@ public class BaseActivity extends AppCompatActivity
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
+                Log.e("REQUEST_ACCOUNT_PICKER","resultCode: " + resultCode);
                 if (resultCode == RESULT_OK) {
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+                    //// TODO: 9/2/2017
+                    Log.e("REQUEST_ACCOUNT_PICKER","resultCode");
                     try {
                         handleSignInResult(result);
+                        Log.e("REQUEST_ACCOUNT_PICKER","try");
                     } catch (IOException e) {
                         e.printStackTrace();
+                        Log.e("REQUEST_ACCOUNT_PICKER","IOException");
                     }
                 }
                 break;
@@ -331,11 +336,7 @@ public class BaseActivity extends AppCompatActivity
                     }
                 }
                 break;
-            case 11:
-                if (resultCode == RESULT_OK) {
-                    Uri selectedImageUri = data.getData();
-                }
-                break;
+
         }
     }
 

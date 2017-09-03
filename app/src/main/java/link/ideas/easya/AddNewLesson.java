@@ -55,6 +55,7 @@ import link.ideas.easya.interfacee.SaveLesson;
 import link.ideas.easya.models.*;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.ImageSaver;
 import me.relex.circleindicator.CircleIndicator;
 
 import static link.ideas.easya.fragment.CourseListFragment.LOG_TAG;
@@ -99,10 +100,6 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
             CourseContract.CourseEntry.COLUMN_TEACHER_NAME,
             CourseContract.SubjectEntry.COLUMN_FAVORITE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE,
-            CourseContract.CourseEntry.COLUMN_FIREBASE_ID,
             CourseContract.SubjectEntry.COLUMN_FIREBASE_ID};
 
 
@@ -118,12 +115,8 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
     public static final int COL_TEACHER_NAME = 8;
     public static final int COL_FAVORITE = 9;
 
-    public static final int COL_LESSON_OUTLINE_IMAGE = 10;
-    public static final int COL_LESSON_LINK_IMAGE = 11;
-    public static final int COL_LESSON_PRACTICAL_IMAGE = 12;
-
-    public static final int COL_FIREBASE_COURSE_ID = 13;
-    public static final int COL_FIREBASE_LESSON_ID = 14;
+    public static final int COL_FIREBASE_COURSE_ID = 10;
+    public static final int COL_FIREBASE_LESSON_ID = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,7 +187,8 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
     }
 
     private void ladEditData() {
-        SummaryFragment.lessonNameET.setText(mCursor.getString(COL_LESSON_TITLE));
+        String lessonName = mCursor.getString(COL_LESSON_TITLE);
+        SummaryFragment.lessonNameET.setText(lessonName);
         SummaryFragment.lessonOverViewET.setText(mCursor.getString(COL_LESSON_OUTLINE));
         oldLessonName = mCursor.getString(COL_LESSON_TITLE);
 
@@ -204,21 +198,26 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
         ApplyFragment.lessonAppTitle = mCursor.getString(COL_LESSON_PRACTICAL_TITLE);
         ApplyFragment.lessonApp = mCursor.getString(COL_LESSON_PRACTICAL);
 
-        byte[] outlineImageB = mCursor.getBlob(COL_LESSON_OUTLINE_IMAGE);
-        byte[] linkImageB = mCursor.getBlob(COL_LESSON_LINK_IMAGE);
-        byte[] appImageB = mCursor.getBlob(COL_LESSON_PRACTICAL_IMAGE);
-        if (outlineImageB != null) {
-            SummaryFragment.thumbnail = Helper.getImage(outlineImageB);
-            SummaryFragment.outlineImage.setImageBitmap(Helper.getImage(outlineImageB));
-        }
-        if (linkImageB != null) {
-            LinkFragment.imageLink.setImageBitmap(Helper.getImage(linkImageB));
-            LinkFragment.thumbnail = Helper.getImage(linkImageB);
-        }
-        if (appImageB != null) {
-            ApplyFragment.thumbnail = Helper.getImage(appImageB);
-        }
-        //
+
+
+        Bitmap bitmap = new ImageSaver(this).
+                setFileName(lessonName + Constants.LESSON_SUMMARY).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        SummaryFragment.outlineImage.setImageBitmap(bitmap);
+
+        Bitmap bitmapLink = new ImageSaver(this).
+                setFileName(lessonName + Constants.LESSON_LINK).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        LinkFragment.imageLink.setImageBitmap(bitmapLink);
+
+        Bitmap bitmapApp = new ImageSaver(this).
+                setFileName(lessonName + Constants.LESSON_APP).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        ApplyFragment.imageApp.setImageBitmap(bitmapApp);
+
     }
 
     @Override
@@ -305,23 +304,34 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
             byte[] outlineImage_, imageLink_, imageApp_;
             if (outlineImage != null) {
                 outlineImage_ = Helper.getBytes(outlineImage);
+                new ImageSaver(this).
+                        setFileName(title + Constants.LESSON_SUMMARY).
+                        setDirectoryName(Constants.APP_NAME).
+                        save(outlineImage);
             } else {
                 outlineImage_ = null;
             }
             if (imageLink != null) {
-                imageLink_ = Helper.getBytes(imageLink);
+                new ImageSaver(this).
+                        setFileName(title + Constants.LESSON_LINK).
+                        setDirectoryName(Constants.APP_NAME).
+                        save(imageLink);
             } else {
                 imageLink_ = null;
             }
             if (imageApp != null) {
                 imageApp_ = Helper.getBytes(imageApp);
+                new ImageSaver(this).
+                        setFileName(title + Constants.LESSON_APP).
+                        setDirectoryName(Constants.APP_NAME).
+                        save(imageApp);
             } else {
                 imageApp_ = null;
             }
 
-            addLessonData(courseId, title, summary, outlineImage_,
-                    links, imageLink_, appTitle,
-                    appSummary, imageApp_, debug);
+            addLessonData(courseId, title, summary,
+                    links, appTitle,
+                    appSummary, debug);
         }
     }
 
@@ -357,27 +367,22 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
      *
      * @param courseId           .
      * @param lessonLink         .
-     * @param lessonLinkImage    .
      * @param lessonDebugs       .
      * @param lessonLifeAppTitle .
      * @param lessonLifeApp      .
-     * @param lessonAppImage
      */
-    void addLessonData(String courseId, String lessonName, String lessonOutline, byte[] lessonOutlineImage,
-                       String lessonLink, byte[] lessonLinkImage, String lessonLifeAppTitle,
-                       String lessonLifeApp, byte[] lessonAppImage, String lessonDebugs) {
+    void addLessonData(String courseId, String lessonName, String lessonOutline,
+                       String lessonLink, String lessonLifeAppTitle,
+                       String lessonLifeApp,  String lessonDebugs) {
 
         ContentValues courseValues = new ContentValues();
 
         courseValues.put(CourseContract.SubjectEntry.COLUMN_COURSE_ID, courseId);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE, lessonName);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE, lessonOutline);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE, lessonOutlineImage);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_LINK, lessonLink);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE, lessonLinkImage);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE, lessonLifeAppTitle);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL, lessonLifeApp);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE, lessonAppImage);
         courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG, lessonDebugs);
 
 

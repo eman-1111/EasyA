@@ -3,6 +3,7 @@ package link.ideas.easya.adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewCompat;
@@ -18,7 +19,9 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.LessonListFragment;
+import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.ImageSaver;
 
 /**
  * Created by eman_ashour on 4/23/2016.
@@ -125,10 +128,12 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAda
         holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link, link));
 
 
-        byte[] image = mCursor.getBlob(LessonListFragment.COL_LESSON_OUTLINE_IMAGE);
-        if (image != null) {
-            holder.lessonImage.setImageBitmap(Helper.getImage(image));
-        }
+        Bitmap summaryImage = new ImageSaver(mContext).
+                setFileName(lessonName + Constants.LESSON_SUMMARY).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        holder.lessonImage.setImageBitmap(summaryImage);
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             ViewCompat.setTransitionName(holder.lessonImage, "iconView" + position);
         }

@@ -53,6 +53,7 @@ import link.ideas.easya.models.Lesson;
 import link.ideas.easya.models.LessonDetail;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.ImageSaver;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -108,9 +109,6 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE,
             CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG,
             CourseContract.SubjectEntry.COLUMN_FAVORITE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE,
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
             CourseContract.CourseEntry.COLUMN_TEACHER_NAME,
             CourseContract.CourseEntry.COLUMN_TEACHER_COLOR,
@@ -128,18 +126,15 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     public static final int COL_LESSON_OUTLINE = 5;
     public static final int COL_LESSON_DEBUG = 6;
     public static final int COL_FAVORITE = 7;
-    public static final int COL_LESSON_OUTLINE_IMAGE = 8;
-    public static final int COL_LESSON_LINK_IMAGE = 9;
-    public static final int COL_LESSON_PRACTICAL_IMAGE = 10;
 
-    public static final int COL_COURSE_NAME = 11;
-    public static final int COL_TEACHER_NAME = 12;
-    public static final int COL_TEACHER_COLOR = 13;
-    public static final int COL_TEACHER_PHOTO = 14;
-    public static final int COL_TEACHER_EMAIL = 15;
+    public static final int COL_COURSE_NAME = 8;
+    public static final int COL_TEACHER_NAME = 9;
+    public static final int COL_TEACHER_COLOR = 10;
+    public static final int COL_TEACHER_PHOTO = 11;
+    public static final int COL_TEACHER_EMAIL = 12;
 
-    public static final int COL_FIREBASE_COURSE_ID = 16;
-    public static final int COL_FIREBASE_LESSON_ID = 17;
+    public static final int COL_FIREBASE_COURSE_ID = 13;
+    public static final int COL_FIREBASE_LESSON_ID = 14;
 
     CollapsingToolbarLayout collapsingToolbar;
 
@@ -330,21 +325,25 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             courserColor = data.getInt(COL_TEACHER_COLOR);
             teacherName = data.getString(COL_TEACHER_NAME);
 
-            byte[] outlineImageB = data.getBlob(COL_LESSON_OUTLINE_IMAGE);
-            byte[] linkImageB = data.getBlob(COL_LESSON_LINK_IMAGE);
-            byte[] appImageB = data.getBlob(COL_LESSON_PRACTICAL_IMAGE);
-            if (outlineImageB != null) {
-                outlineImageBit = Helper.getImage(outlineImageB);
-                outlineImage.setImageBitmap(outlineImageBit);
-            }
-            if (linkImageB != null) {
-                linkImageBit = Helper.getImage(linkImageB);
-                linkImage.setImageBitmap(linkImageBit);
-            }
-            if (appImageB != null) {
-                appImageBit = Helper.getImage(appImageB);
-                appImage.setImageBitmap(appImageBit);
-            }
+
+            outlineImageBit = new ImageSaver(getActivity()).
+                    setFileName(lessonName + Constants.LESSON_SUMMARY).
+                    setDirectoryName(Constants.APP_NAME).
+                    load();
+            outlineImage.setImageBitmap(outlineImageBit);
+
+
+            linkImageBit = new ImageSaver(getActivity()).
+                    setFileName(lessonName + Constants.LESSON_LINK).
+                    setDirectoryName(Constants.APP_NAME).
+                    load();
+            linkImage.setImageBitmap(linkImageBit);
+
+            appImageBit = new ImageSaver(getActivity()).
+                    setFileName(lessonName + Constants.LESSON_APP).
+                    setDirectoryName(Constants.APP_NAME).
+                    load();
+            appImage.setImageBitmap(appImageBit);
 
 
             favorite = Integer.parseInt(data.getString(COL_FAVORITE));

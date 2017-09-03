@@ -10,6 +10,10 @@ public class Constants {
 
     public static final String APP_NAME = "EasyA";
 
+    public static final String LESSON_LINK = "_link";
+    public static final String LESSON_SUMMARY = "_summary";
+    public static final String LESSON_APP = "_app";
+
     public static final int BYTE_COUNT =  100000;
 
     public static final String PREF_USER_DATA = "userData";

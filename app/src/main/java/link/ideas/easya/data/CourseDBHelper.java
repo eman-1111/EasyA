@@ -44,14 +44,11 @@ public class CourseDBHelper  extends SQLiteOpenHelper {
                 CourseContract.SubjectEntry.COLUMN_COURSE_ID + " TEXT NOT NULl, " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " TEXT NOT NULL, " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE + " TEXT NOT NULL, " +
-                CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE+ " BLOB , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_LINK + " TEXT , " +
-                CourseContract.SubjectEntry.COLUMN_LESSON_LINK_IMAGE + " BLOB , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG + " TEXT ," +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE + " TEXT , " +
                 CourseContract.SubjectEntry.COLUMN_FAVORITE + " TEXT , " +
                 CourseContract.SubjectEntry.COLUMN_FIREBASE_ID + " TEXT , " +
-                CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_IMAGE + " BLOB , " +
                 CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL + " TEXT , " +
 
                 "UNIQUE (" + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE +

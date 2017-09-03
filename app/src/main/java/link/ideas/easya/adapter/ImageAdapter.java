@@ -53,7 +53,7 @@ public class ImageAdapter extends ArrayAdapter<Image> {
 
         String url = "https://farm" + image.getFarm() + ".staticflickr.com/" + image.getServer() +
                 "/" + image.getId() + "_" + image.getSecret() + ".jpg";
-        Log.e("URls", url);
+
         Glide.with(context).load(url).placeholder(R.drawable.placeholder).dontAnimate()
                 .into(holder.imageView);
 

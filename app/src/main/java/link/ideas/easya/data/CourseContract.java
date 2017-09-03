@@ -84,13 +84,10 @@ public class CourseContract {
 
         public static final String COLUMN_LESSON_TITLE = "lesson_title";
         public static final String COLUMN_LESSON_OUTLINE= "lesson_outline";
-        public static final String COLUMN_LESSON_OUTLINE_IMAGE= "lesson_outline_image";
         public static final String COLUMN_LESSON_LINK = "lesson_link";
-        public static final String COLUMN_LESSON_LINK_IMAGE = "lesson_link_image";
         public static final String COLUMN_LESSON_DEBUG = "lesson_debug";
         public static final String COLUMN_LESSON_PRACTICAL_TITLE= "lesson_practical_title";
         public static final String COLUMN_LESSON_PRACTICAL= "lesson_practical";
-        public static final String COLUMN_LESSON_PRACTICAL_IMAGE= "lesson_practical_image";
         public static final String COLUMN_FAVORITE = "favorite";
         public static final String COLUMN_FIREBASE_ID = "firebase_lesson_id";
 

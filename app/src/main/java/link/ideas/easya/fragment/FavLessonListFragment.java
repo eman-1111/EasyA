@@ -66,7 +66,6 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
             CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
             CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
             CourseContract.SubjectEntry.COLUMN_FAVORITE
     };
 
@@ -74,8 +73,7 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
     public static final int CO_LESSON_TITLE = 1;
     public static final int COL_LESSON_LINK = 2;
     public static final int COL_COURSE_NAME = 3;
-    public static final int COL_LESSON_OUTLINE_IMAGE = 4;
-    public static final int COL_LESSON_FAV= 5;
+    public static final int COL_LESSON_FAV= 4;
 
 
     @Override

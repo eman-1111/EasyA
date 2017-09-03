@@ -77,7 +77,6 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
             CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
             CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
             CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE_IMAGE,
             CourseContract.CourseEntry.COLUMN_FIREBASE_ID,
             CourseContract.SubjectEntry.COLUMN_FIREBASE_ID};
 
@@ -85,10 +84,9 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
     public static final int CO_LESSON_TITLE = 1;
     public static final int COL_LESSON_LINK = 2;
     public static final int COL_COURSE_NAME = 3;
-    public static final int COL_LESSON_OUTLINE_IMAGE = 4;
 
-    public static final int COL_FIREBASE_COURSE_ID = 5;
-    public static final int COL_FIREBASE_LESSON_ID = 6;
+    public static final int COL_FIREBASE_COURSE_ID = 4;
+    public static final int COL_FIREBASE_LESSON_ID = 5;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -3,6 +3,7 @@ package link.ideas.easya.adapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewCompat;
@@ -19,7 +20,9 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.FavLessonListFragment;
+import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.ImageSaver;
 
 /**
  * Created by Eman on 4/11/2017.
@@ -77,7 +80,7 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
             int coursePushIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_FIREBASE_ID);
 
             mClickHolder.onLongClick(mCursor.getString(idCulomnIndex), mCursor.getString(titleCulomnIndex),
-                    mCursor.getString(coursePushIndex), mCursor.getString(lessonPushIndex) );
+                    mCursor.getString(coursePushIndex), mCursor.getString(lessonPushIndex));
             return true;
         }
 
@@ -120,16 +123,18 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
 
         String lessonName = mCursor.getString(FavLessonListFragment.CO_LESSON_TITLE);
         holder.lessonName.setText(lessonName);
-        holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name,lessonName));
+        holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name, lessonName));
 
         String link = mCursor.getString(FavLessonListFragment.COL_LESSON_LINK);
         holder.practicalLink.setText(link);
-        holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link,link));
+        holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link, link));
 
-        byte[] image = mCursor.getBlob(FavLessonListFragment.COL_LESSON_OUTLINE_IMAGE);
-        if (image != null) {
-            holder.lessonImage.setImageBitmap(Helper.getImage(image));
-        }
+
+        Bitmap summaryImage = new ImageSaver(mContext).
+                setFileName(lessonName + Constants.LESSON_SUMMARY).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        holder.lessonImage.setImageBitmap(summaryImage);
 
         int fav = Integer.parseInt(mCursor.getString(FavLessonListFragment.COL_LESSON_FAV));
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
