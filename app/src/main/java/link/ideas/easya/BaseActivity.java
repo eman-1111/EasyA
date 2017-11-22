@@ -187,10 +187,13 @@ public class BaseActivity extends AppCompatActivity
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+
+
         mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, BaseActivity.this)
+                .enableAutoManage(this, this )
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS);
 
@@ -313,18 +316,16 @@ public class BaseActivity extends AppCompatActivity
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
-                Log.e("REQUEST_ACCOUNT_PICKER","resultCode: " + resultCode);
+                Log.e("REQUEST_ACCOUNT_PICKER","resultCode: " + resultCode + RESULT_OK +Auth.GoogleSignInApi.getSignInResultFromIntent(data) );
                 if (resultCode == RESULT_OK) {
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                    //// TODO: 9/2/2017
-                    Log.e("REQUEST_ACCOUNT_PICKER","resultCode");
                     try {
                         handleSignInResult(result);
-                        Log.e("REQUEST_ACCOUNT_PICKER","try");
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Log.e("REQUEST_ACCOUNT_PICKER","IOException");
                     }
+                }else {
+                    hideProgressDialog();
                 }
                 break;
             case REQUEST_AUTHORIZATION:
