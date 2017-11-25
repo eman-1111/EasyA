@@ -11,7 +11,7 @@ import java.util.Date;
  * Created by Eman on 11/22/2017.
  */
 @Entity(tableName = "lesson", foreignKeys =
-        {@ForeignKey(entity = Course.class, parentColumns = "courseId", childColumns = "courseId")})
+        {@ForeignKey(entity = Course.class, parentColumns = "id", childColumns = "courseId")})
 public class Lesson {
 
     @PrimaryKey

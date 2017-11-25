@@ -7,6 +7,7 @@ import android.arch.persistence.room.Query;
 import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
+import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 /**
  * Created by Eman on 11/21/2017.
@@ -15,15 +16,19 @@ import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 @Dao
 public interface CourseDao {
 
-    @Query("SELECT * FROM Course")
+    @Query("SELECT * FROM course")
     List<Course> getCourses();
 
-    @Insert
+    @Query("SELECT * From course WHERE id = :id ")
+   Course getCourse(int id);
+
+    @Query("SELECT * From course WHERE courseId = :courseId ")
+    Course getCourse(String courseId);
+
+    @Insert(onConflict = REPLACE)
     void insertCourse(Course course);
 
-    @Insert(onConflict = IGNORE)
-    void insertOrReplaceCourse(Course... courseEntries);
 
-    @Query("DELETE FROM Course WHERE  courseId < :courseId")
-    void deleteCourse(String courseId);
+    @Query("DELETE FROM course WHERE  id = :id")
+    void deleteCourse(int id);
 }

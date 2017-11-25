@@ -1,6 +1,7 @@
 package link.ideas.easya.data.database;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 /**
@@ -44,6 +45,29 @@ public class Course {
         this.teacherColor = teacherColor;
         this.firebaseId = firebaseId;
     }
+    /**
+     * This constructor is used by Room to create CourseEntry.
+     *
+     * @param courseId        course Id
+     * @param courseName      course name
+     * @param teacherName     course teacher name
+     * @param teacherEmail    course teacher email
+     * @param teacherPhotoURL course teacher photo
+     * @param teacherColor    course teacher color
+     * @param firebaseId      fire base course id
+     */
+    @Ignore
+    public Course(String courseId, String courseName, String teacherName,
+                  String teacherEmail, String teacherPhotoURL, int teacherColor,
+                  String firebaseId) {
+        this.courseId = courseId;
+        this.courseName = courseName;
+        this.teacherName = teacherName;
+        this.teacherEmail = teacherEmail;
+        this.teacherPhotoURL = teacherPhotoURL;
+        this.teacherColor = teacherColor;
+        this.firebaseId = firebaseId;
+    }
 
     public int getId() {
         return id;
@@ -75,5 +99,37 @@ public class Course {
 
     public String getFirebaseId() {
         return firebaseId;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setCourseName(String courseName) {
+        this.courseName = courseName;
+    }
+
+    public void setTeacherName(String teacherName) {
+        this.teacherName = teacherName;
+    }
+
+    public void setTeacherEmail(String teacherEmail) {
+        this.teacherEmail = teacherEmail;
+    }
+
+    public void setTeacherPhotoURL(String teacherPhotoURL) {
+        this.teacherPhotoURL = teacherPhotoURL;
+    }
+
+    public void setTeacherColor(int teacherColor) {
+        this.teacherColor = teacherColor;
+    }
+
+    public void setFirebaseId(String firebaseId) {
+        this.firebaseId = firebaseId;
     }
 }
