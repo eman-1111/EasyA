@@ -22,18 +22,18 @@ public interface LessonDao {
             "INNER JOIN course ON lesson.courseId = course.id " +
             "WHERE lesson.courseId = :courseId "+
             "AND course.id = :courseId ")
-    List<ListLesson> getLessons(String courseId);
+    List<ListLesson> getLessons(int courseId);
 
     @Query("SELECT * From lesson WHERE id = :id ")
     Lesson getLesson(int id);
 
     @Insert(onConflict = ABORT)
-    void addLesson(Lesson lesson);
+    void insertLesson(Lesson lesson);
 
     @Query("DELETE FROM lesson WHERE id = :id ")
     void deleteLesson(int id);
 
     @Query("DELETE FROM lesson WHERE courseId = :courseId ")
-    void deleteCourseLessons(String courseId);
+    void deleteCourseLessons(int courseId);
 
 }

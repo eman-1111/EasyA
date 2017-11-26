@@ -11,7 +11,7 @@ package link.ideas.easya.data.database;
 public class ListLesson {
     private String courseName;
     private int id;
-    private String courseId;
+    private int courseId;
     private String lessonTitle;
     private String lessonSummary;
     private String favoriteLesson;
@@ -25,7 +25,7 @@ public class ListLesson {
      *  @param lessonSummary             column lesson summary
      *  @param favoriteLesson            column favorite Lesson
      */
-    public ListLesson(int id, String courseId, String lessonTitle, String lessonSummary,
+    public ListLesson(int id, int courseId, String lessonTitle, String lessonSummary,
                   String courseName, String favoriteLesson) {
         this.id = id;
         this.courseId = courseId;
@@ -43,7 +43,7 @@ public class ListLesson {
         return id;
     }
 
-    public String getCourseId() {
+    public int getCourseId() {
         return courseId;
     }
 

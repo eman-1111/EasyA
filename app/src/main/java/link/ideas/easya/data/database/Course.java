@@ -46,7 +46,6 @@ public class Course {
         this.firebaseId = firebaseId;
     }
     /**
-     * This constructor is used by Room to create CourseEntry.
      *
      * @param courseId        course Id
      * @param courseName      course name
@@ -101,9 +100,6 @@ public class Course {
         return firebaseId;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public void setCourseId(String courseId) {
         this.courseId = courseId;
