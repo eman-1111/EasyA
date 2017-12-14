@@ -40,7 +40,10 @@ public class LessonDaoTest {
     @Before
     public void initDb() {
         mDatabase = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(),
-                EasyADatabase.class).build();
+                EasyADatabase.class)
+                // allowing main thread queries, just for testing
+                .allowMainThreadQueries()
+                .build();
     }
 
     @Test

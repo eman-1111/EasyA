@@ -34,9 +34,11 @@ public class CourseDaoTest {
         // using an in-memory database because the information stored here disappears when the
         // process is killed
         mDatabase = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getContext(), EasyADatabase.class)
+                // allowing main thread queries, just for testing
+                .allowMainThreadQueries()
                 .build();
     }
-
+    //todo know how to test synchronous room equivalent
     @Test
     public void insertAndGetCourse() {
         //inserting new user into the course table

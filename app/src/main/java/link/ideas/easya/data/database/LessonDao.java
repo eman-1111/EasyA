@@ -1,5 +1,6 @@
 package link.ideas.easya.data.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -22,10 +23,10 @@ public interface LessonDao {
             "INNER JOIN course ON lesson.courseId = course.id " +
             "WHERE lesson.courseId = :courseId "+
             "AND course.id = :courseId ")
-    List<ListLesson> getLessons(int courseId);
+    LiveData<List<ListLesson>> getLessons(int courseId);
 
     @Query("SELECT * From lesson WHERE id = :id ")
-    Lesson getLesson(int id);
+    LiveData<Lesson> getLesson(int id);
 
     @Insert(onConflict = ABORT)
     void insertLesson(Lesson lesson);

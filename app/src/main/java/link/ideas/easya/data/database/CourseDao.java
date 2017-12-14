@@ -1,5 +1,6 @@
 package link.ideas.easya.data.database;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
@@ -17,13 +18,13 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface CourseDao {
 
     @Query("SELECT * FROM course")
-    List<Course> getCourses();
+    LiveData<List<Course>> getCourses();
 
     @Query("SELECT * From course WHERE id = :id ")
-   Course getCourse(int id);
+    LiveData<Course> getCourse(int id);
 
     @Query("SELECT * From course WHERE courseId = :courseId ")
-    Course getCourse(String courseId);
+    LiveData<Course> getCourse(String courseId);
 
     @Insert(onConflict = REPLACE)
     void insertCourse(Course course);

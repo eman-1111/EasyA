@@ -69,10 +69,16 @@ dependencies {
     compile 'com.github.paolorotolo:appintro:4.1.0'
     compile 'android.arch.persistence.room:runtime:' + rootProject.archRoomVersion
     annotationProcessor 'android.arch.persistence.room:compiler:' + rootProject.archRoomVersion
+
+    compile 'android.arch.lifecycle:runtime:' + rootProject.archLifecycleVersion;
+    compile 'android.arch.lifecycle:extensions:' + rootProject.archLifecycleVersion;
+    annotationProcessor 'android.arch.lifecycle:compiler:' + rootProject.archLifecycleVersion;
     androidTestCompile 'junit:junit:4.12'
 
     androidTestCompile 'com.android.support:support-annotations:26.0.2'
     androidTestCompile 'com.android.support.test:runner:1.0.0'
     androidTestCompile 'com.android.support.test:rules:1.0.0'
+    testImplementation "org.mockito:mockito-core:2.11.0"
+    androidTestImplementation "org.mockito:mockito-android:2.11.0"
 }
 apply plugin: 'com.google.gms.google-services'
