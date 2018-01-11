@@ -1,7 +1,11 @@
 package link.ideas.easya;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +31,9 @@ import link.ideas.easya.adapter.CourseFriendAdapter;
 import link.ideas.easya.models.Course;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.viewmodel.CourseListViewModel;
+import link.ideas.easya.viewmodel.FriendsListViewModel;
+import link.ideas.easya.viewmodel.StudyingViewModel;
 
 public class CourseListFriends extends BaseActivity {
 
@@ -36,15 +43,13 @@ public class CourseListFriends extends BaseActivity {
     LinearLayout progress;
 
     private CourseFriendAdapter mCourseFriendAdapter;
+    StudyingViewModel studyingViewModel;
     String friendAccount, friendName;
     ArrayList<Course> friendsCourse;
     ArrayList<String> coursePushIds;
+    CourseListViewModel courseViewModel;
 
-    ValueEventListener mValueEventCourseListener;
-    ValueEventListener mValueEventStudyingListener;
-    FirebaseDatabase mFirebaseDatabase;
-    DatabaseReference mCourseDatabaseReference;
-    DatabaseReference mIsStudyingDatabaseReference;
+
     boolean isLoaded, canEdit;
     MenuItem changeStatus = null;
 
@@ -88,14 +93,12 @@ public class CourseListFriends extends BaseActivity {
         });
         mRecyclerView.setAdapter(mCourseFriendAdapter);
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mCourseDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(friendAccount).
-                child(Constants.FIREBASE_LOCATION_USER_COURSES);
+        courseViewModel = ViewModelProviders.of(this).get(CourseListViewModel.class);
+        courseViewModel.setAccountName(friendAccount);
 
-        mIsStudyingDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_COURSES).child(friendAccount).
-                child(Constants.FIREBASE_LOCATION_USERS_IS_STUDYING);
+        studyingViewModel = ViewModelProviders.of(this).get(StudyingViewModel.class);
+        studyingViewModel.setAccountName(friendAccount);
+
         if (isDeviceOnline()) {
             attachDatabaseReadListener();
         } else {
@@ -108,49 +111,42 @@ public class CourseListFriends extends BaseActivity {
     private void attachDatabaseReadListener() {
 
         progress.setVisibility(View.VISIBLE);
-        mValueEventCourseListener = new ValueEventListener() {
+
+        LiveData<DataSnapshot> liveDataCourse = courseViewModel.getDataSnapshotLiveData();
+
+        liveDataCourse.observe(this, new Observer<DataSnapshot>() {
+                    @Override
+                    public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                            Course course = childDataSnapshot.getValue(Course.class);
+                            friendsCourse.add(course);
+                            coursePushIds.add(childDataSnapshot.getKey());
+                        }
+                        mCourseFriendAdapter.notifyDataSetChanged();
+                        if (friendsCourse.size() == 0) {
+                            emptyView.setVisibility(View.VISIBLE);
+                        } else {
+                            emptyView.setVisibility(View.GONE);
+                        }
+                        progress.setVisibility(View.GONE);
+                        isLoaded = true;
+                        startIntroAnimation();
+                    }
+                });
+
+
+        LiveData<DataSnapshot> liveDataStudying = courseViewModel.getDataSnapshotLiveData();
+
+        liveDataStudying.observe(this, new Observer<DataSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                    Course course = childDataSnapshot.getValue(Course.class);
-                    friendsCourse.add(course);
-                    coursePushIds.add(childDataSnapshot.getKey());
-                }
-                mCourseFriendAdapter.notifyDataSetChanged();
-                if (friendsCourse.size() == 0) {
-                    emptyView.setVisibility(View.VISIBLE);
-                } else {
-                    emptyView.setVisibility(View.GONE);
-                }
-                progress.setVisibility(View.GONE);
-                isLoaded = true;
-                startIntroAnimation();
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                Log.e("data00" ,dataSnapshot.getKey());
+//                boolean isStudying = (boolean) dataSnapshot.getValue();
+//                changeStudyingStatus(isStudying);
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, databaseError + "");
-
-            }
-        };
-        mCourseDatabaseReference.addValueEventListener(mValueEventCourseListener);
+        });
 
 
-        mValueEventStudyingListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                boolean isStudying = (boolean) dataSnapshot.getValue();
-                changeStudyingStatus(isStudying);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, databaseError + "");
-
-            }
-        };
-        mIsStudyingDatabaseReference.addValueEventListener(mValueEventStudyingListener);
     }
 
     private void changeStudyingStatus(boolean isStudying) {
@@ -166,22 +162,9 @@ public class CourseListFriends extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        detachDatabaseReadListener();
 
     }
 
-    private void detachDatabaseReadListener() {
-        if (mValueEventCourseListener != null) {
-            mCourseDatabaseReference.removeEventListener(mValueEventCourseListener);
-            mValueEventCourseListener = null;
-
-        }
-        if (mValueEventStudyingListener != null) {
-            mCourseDatabaseReference.removeEventListener(mValueEventStudyingListener);
-            mValueEventStudyingListener = null;
-
-        }
-    }
 
 
     @Override

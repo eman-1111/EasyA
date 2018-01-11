@@ -1,8 +1,12 @@
 package link.ideas.easya;
 
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +30,7 @@ import link.ideas.easya.models.Course;
 import link.ideas.easya.models.User;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.viewmodel.FriendsListViewModel;
 
 public class FriendsList extends BaseActivity {
 
@@ -35,10 +40,6 @@ public class FriendsList extends BaseActivity {
     TextView empty_list;
     ArrayList<User> userList;
     ArrayList<String> friendsEmails;
-
-    ValueEventListener mChildEventFriendsListener;
-    FirebaseDatabase mFirebaseDatabase;
-    DatabaseReference mUsersFriendsDatabaseReference;
 
     private static final String LOG_TAG = FriendsList.class.getSimpleName();
 
@@ -69,9 +70,7 @@ public class FriendsList extends BaseActivity {
 
         mRecyclerViewFriends = (RecyclerView) findViewById(R.id.recyclerview_friend);
         progress = (LinearLayout) findViewById(R.id.lin_Progress);
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mUsersFriendsDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USER_FRIENDS).child(Helper.encodeEmail(accountName));
+
 
         mRecyclerViewFriends.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerViewFriends.setHasFixedSize(true);
@@ -95,53 +94,44 @@ public class FriendsList extends BaseActivity {
 
     private void attachDatabaseReadListener() {
 
-        // What I will do with this data iget from firebase
-        mChildEventFriendsListener = new ValueEventListener() {
+        // Obtain a new or prior instance of HotStockViewModel from the accountName
+        // ViewModelProviders utility class.
+        FriendsListViewModel viewModel = ViewModelProviders.of(this).get(FriendsListViewModel.class);
+        viewModel.setAccountName(accountName);
+
+        LiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
+
+        liveData.observe(this, new Observer<DataSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                userList.clear();
-                friendsEmails.clear();
-                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                    User user = childDataSnapshot.getValue(User.class);
-                    userList.add(user);
-                    friendsEmails.add(childDataSnapshot.getKey());
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    userList.clear();
+                    friendsEmails.clear();
+                    for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                        User user = childDataSnapshot.getValue(User.class);
+                        userList.add(user);
+                        friendsEmails.add(childDataSnapshot.getKey());
+                    }
+                    mUserFriendsAdapter.notifyDataSetChanged();
+                    if (userList.size() == 0) {
+                        empty_list.setVisibility(View.VISIBLE);
+                    } else {
+                        empty_list.setVisibility(View.GONE);
+                    }
+                    progress.setVisibility(View.GONE);
                 }
-                mUserFriendsAdapter.notifyDataSetChanged();
-                if (userList.size() == 0) {
-                    empty_list.setVisibility(View.VISIBLE);
-                } else {
-                    empty_list.setVisibility(View.GONE);
-                }
-                progress.setVisibility(View.GONE);
-
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("DatabaseError", databaseError + "");
-
-            }
-        };
-
-        //what cild I am listening to
-        mUsersFriendsDatabaseReference.addValueEventListener(mChildEventFriendsListener);
+        });
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        detachDatabaseReadListener();
 
     }
 
-    private void detachDatabaseReadListener() {
-        if (mChildEventFriendsListener != null) {
-            mUsersFriendsDatabaseReference.removeEventListener(mChildEventFriendsListener);
-            mChildEventFriendsListener = null;
 
-        }
-    }
 
     /**
      * Launch AddFriendActivity to find and add user to current user's friends list
@@ -153,14 +143,5 @@ public class FriendsList extends BaseActivity {
     }
 
 
-    private void startIntroAnimation() {
-        mRecyclerViewFriends.setTranslationY(getResources().getDimensionPixelSize(R.dimen.list_item_lesson));
-        mRecyclerViewFriends.setAlpha(0f);
-        mRecyclerViewFriends.animate()
-                .translationY(0)
-                .setDuration(500)
-                .alpha(1f)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .start();
-    }
+
 }

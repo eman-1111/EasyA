@@ -1,6 +1,10 @@
 package link.ideas.easya;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
@@ -23,6 +27,8 @@ import com.google.firebase.database.ValueEventListener;
 import link.ideas.easya.models.Lesson;
 import link.ideas.easya.models.LessonDetail;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.viewmodel.FriendsListViewModel;
+import link.ideas.easya.viewmodel.LessonDetailViewModel;
 
 public class LessonDetailFriend extends BaseActivity {
 
@@ -32,10 +38,7 @@ public class LessonDetailFriend extends BaseActivity {
     CollapsingToolbarLayout collapsingToolbar;
     ImageView outlineImage, linkImage, appImage;
     LinearLayout progress;
-
-    ValueEventListener mValueEventLessonDetailListener;
-    FirebaseDatabase mFirebaseDatabase;
-    DatabaseReference mLessonDatabaseReference;
+    LessonDetailViewModel viewModel;
 
     String coursePushId, lessonPushId;
 
@@ -85,9 +88,10 @@ public class LessonDetailFriend extends BaseActivity {
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mLessonDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL).child(coursePushId).child(lessonPushId);
+        viewModel = ViewModelProviders.of(this).get(LessonDetailViewModel.class);
+        viewModel.setLessonIds(coursePushId, lessonPushId);
+
+
         if (isDeviceOnline()) {
             attachDatabaseReadListener();
         } else {
@@ -100,24 +104,17 @@ public class LessonDetailFriend extends BaseActivity {
     private void attachDatabaseReadListener() {
 
         progress.setVisibility(View.VISIBLE);
-        mValueEventLessonDetailListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        LiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
 
+        liveData.observe(this, new Observer<DataSnapshot>() {
+            @Override
+            public void onChanged(@Nullable DataSnapshot dataSnapshot) {
                 lessonDetail = dataSnapshot.getValue(LessonDetail.class);
 
                 progress.setVisibility(View.GONE);
                 setUpView();
-
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e("DatabaseError", databaseError + "");
-
-            }
-        };
-        mLessonDatabaseReference.addValueEventListener(mValueEventLessonDetailListener);
+        });
     }
 
     private void setUpView() {
@@ -166,15 +163,6 @@ public class LessonDetailFriend extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        detachDatabaseReadListener();
 
-    }
-
-    private void detachDatabaseReadListener() {
-        if (mValueEventLessonDetailListener != null) {
-            mLessonDatabaseReference.removeEventListener(mValueEventLessonDetailListener);
-            mValueEventLessonDetailListener = null;
-
-        }
     }
 }

@@ -13,6 +13,7 @@ public class User {
     private String photoUrl;
     private Map<String, Object> timestampAdded;
 
+
     public User() {
     }
 

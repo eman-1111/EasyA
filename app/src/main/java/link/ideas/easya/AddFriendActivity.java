@@ -1,8 +1,12 @@
 package link.ideas.easya;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
@@ -27,6 +31,8 @@ import java.util.ArrayList;
 import link.ideas.easya.adapter.AutocompleteFriendAdapter;
 import link.ideas.easya.models.User;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.viewmodel.AddFriendsViewModel;
+import link.ideas.easya.viewmodel.FriendsListViewModel;
 
 /**
  * Created by Eman on 4/23/2017.
@@ -37,8 +43,6 @@ public class AddFriendActivity extends BaseActivity {
     ArrayList<User> userList;
     ArrayList<String> userEmail;
 
-    FirebaseDatabase mFirebaseDatabase;
-    DatabaseReference mUsersDatabaseReference;
 
     private AutocompleteFriendAdapter mFriendsAutocompleteAdapter;
     private String mInput;
@@ -76,13 +80,11 @@ public class AddFriendActivity extends BaseActivity {
 
         userList = new ArrayList<User>();
         userEmail = new ArrayList<String>();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mUsersDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS);
 
         if (isDeviceOnline()) {
             addAutoComplete();
-        }else {
-            Snackbar.make(mListViewAutocomplete,getResources().getString(R.string.network) ,
+        } else {
+            Snackbar.make(mListViewAutocomplete, getResources().getString(R.string.network),
                     Snackbar.LENGTH_LONG).show();
         }
 
@@ -102,7 +104,8 @@ public class AddFriendActivity extends BaseActivity {
 
 
     private void addAutoComplete() {
-
+        final AddFriendsViewModel viewModel =
+                ViewModelProviders.of(this).get(AddFriendsViewModel.class);
         mEditTextAddFriendEmail.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -116,7 +119,7 @@ public class AddFriendActivity extends BaseActivity {
             public void afterTextChanged(Editable s) {
                 /* Get the input after every textChanged event and transform it to lowercase */
                 mInput = mEditTextAddFriendEmail.getText().toString().toLowerCase();
-
+                viewModel.setQuery(mInput);
             /* Clean up the old adapter */
                 if (mFriendsAutocompleteAdapter != null) {
                     userList.clear();
@@ -130,11 +133,10 @@ public class AddFriendActivity extends BaseActivity {
             /* Define and set the adapter otherwise. */
                 } else {
                     progress.setVisibility(View.VISIBLE);
-                    Query query = mUsersDatabaseReference.orderByKey().startAt(mInput).endAt(mInput + "~")
-                            .limitToFirst(5);
-                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    LiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
+                    liveData.observe(AddFriendActivity.this, new Observer<DataSnapshot>() {
                         @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                        public void onChanged(@Nullable DataSnapshot dataSnapshot) {
                             for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
 
                                 User user = childDataSnapshot.getValue(User.class);
@@ -144,24 +146,16 @@ public class AddFriendActivity extends BaseActivity {
                             if (accountName != null) {
                                 mFriendsAutocompleteAdapter = new AutocompleteFriendAdapter
                                         (AddFriendActivity.this, R.layout.single_autocomplete_item,
-                                                userEmail,userList, accountName);
+                                                userEmail, userList, accountName);
                                 mListViewAutocomplete.setAdapter(mFriendsAutocompleteAdapter);
 
                                 progress.setVisibility(View.GONE);
 
                             }
-                            if(userList.size() == 0){
-                                Snackbar.make(mListViewAutocomplete,getResources().getString(R.string.toast_user_is_not_found) ,
+                            if (userList.size() == 0) {
+                                Snackbar.make(mListViewAutocomplete, getResources().getString(R.string.toast_user_is_not_found),
                                         Snackbar.LENGTH_LONG).show();
                             }
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Log.e(LOG_TAG , databaseError +"");
-
-                            progress.setVisibility(View.GONE);
                         }
                     });
 

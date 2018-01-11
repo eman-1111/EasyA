@@ -1,7 +1,11 @@
 package link.ideas.easya;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -25,6 +29,8 @@ import link.ideas.easya.adapter.LessonFriendsAdapter;
 import link.ideas.easya.models.Lesson;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.viewmodel.FriendsListViewModel;
+import link.ideas.easya.viewmodel.LessonListViewModel;
 
 public class LessonListFriends extends BaseActivity {
 
@@ -37,10 +43,7 @@ public class LessonListFriends extends BaseActivity {
     String coursePushId;
     ArrayList<Lesson> friendsLesson;
     ArrayList<String> lessonPushIds;
-
-    ValueEventListener mValueEventLessonListener;
-    FirebaseDatabase mFirebaseDatabase;
-    DatabaseReference mLessonDatabaseReference;
+    LessonListViewModel viewModel;
     boolean isLoaded;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +89,10 @@ public class LessonListFriends extends BaseActivity {
         });
         mRecyclerView.setAdapter(mLessonFriendsAdapter);
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mLessonDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
+
+        viewModel = ViewModelProviders.of(this).get(LessonListViewModel.class);
+        viewModel.setCoursePushId(coursePushId);
+
         if (isDeviceOnline()) {
             attachDatabaseReadListener();
         }else {
@@ -101,47 +105,35 @@ public class LessonListFriends extends BaseActivity {
     private void attachDatabaseReadListener() {
 
         progress.setVisibility(View.VISIBLE);
-        mValueEventLessonListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
-                    Lesson lesson = childDataSnapshot.getValue(Lesson.class);
-                    friendsLesson.add(lesson);
-                    lessonPushIds.add(childDataSnapshot.getKey());
-                }
-                mLessonFriendsAdapter.notifyDataSetChanged();
-                if (friendsLesson.size() == 0) {
-                    emptyView.setVisibility(View.VISIBLE);
-                } else {
-                    emptyView.setVisibility(View.GONE);
-                }
-                progress.setVisibility(View.GONE);
-                startIntroAnimation();
-                isLoaded = true;
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, databaseError + "");
+        LiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
 
-            }
-        };
-        mLessonDatabaseReference.addValueEventListener(mValueEventLessonListener);
+        liveData.observe(this, new Observer<DataSnapshot>() {
+                    @Override
+                    public void onChanged(@Nullable DataSnapshot dataSnapshot) {
+                        for (DataSnapshot childDataSnapshot : dataSnapshot.getChildren()) {
+                            Lesson lesson = childDataSnapshot.getValue(Lesson.class);
+                            friendsLesson.add(lesson);
+                            lessonPushIds.add(childDataSnapshot.getKey());
+                        }
+                        mLessonFriendsAdapter.notifyDataSetChanged();
+                        if (friendsLesson.size() == 0) {
+                            emptyView.setVisibility(View.VISIBLE);
+                        } else {
+                            emptyView.setVisibility(View.GONE);
+                        }
+                        progress.setVisibility(View.GONE);
+                        startIntroAnimation();
+                        isLoaded = true;
+                    }
+                });
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        detachDatabaseReadListener();
 
-    }
-
-    private void detachDatabaseReadListener() {
-        if (mValueEventLessonListener != null) {
-            mLessonDatabaseReference.removeEventListener(mValueEventLessonListener);
-            mValueEventLessonListener = null;
-
-        }
     }
 
     private void startIntroAnimation() {
