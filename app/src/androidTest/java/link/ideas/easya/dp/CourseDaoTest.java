@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import link.ideas.easya.LiveDataTestUtil;
 import link.ideas.easya.data.database.Course;
 import link.ideas.easya.data.database.EasyADatabase;
 
@@ -40,12 +41,12 @@ public class CourseDaoTest {
     }
     //todo know how to test synchronous room equivalent
     @Test
-    public void insertAndGetCourse() {
+    public void insertAndGetCourse() throws InterruptedException  {
         //inserting new user into the course table
         mDatabase.courseModel().insertCourse(COURSE);
 
         //retrieving inserted course
-        Course dbCourse = mDatabase.courseModel().getCourse(COURSE.getCourseId());
+        Course dbCourse = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse(COURSE.getCourseId()));
 
         //make sure its the same course I inserted
         assertEquals(dbCourse.getCourseName(), COURSE.getCourseName());
@@ -55,16 +56,16 @@ public class CourseDaoTest {
 
 
     @Test
-    public void updateAndGetCourse() {
+    public void updateAndGetCourse()throws InterruptedException  {
         //insert new course
         mDatabase.courseModel().insertCourse(COURSE);
         //retrieve the course
-        Course course = mDatabase.courseModel().getCourse(COURSE.getCourseId());
+        Course course = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse(COURSE.getCourseId()));
 
         //update value
         course.setCourseName("Math2");
         mDatabase.courseModel().insertCourse(course);
-        Course updaterCourse = mDatabase.courseModel().getCourse(course.getId());
+        Course updaterCourse = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse(course.getId()));
 
         //make sure its the same course I inserted
         assertEquals(updaterCourse.getCourseName(), course.getCourseName());
@@ -72,12 +73,12 @@ public class CourseDaoTest {
     }
 
     @Test
-    public void getCoursesList() {
+    public void getCoursesList() throws InterruptedException {
         //insert new course
         mDatabase.courseModel().insertCourse(COURSE);
 
         //retrieve courses list it should has one row only
-        List<Course> courses = mDatabase.courseModel().getCourses();
+        List<Course> courses = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourses());
         assertThat(courses.size(), is(1));
         Course course = courses.get(0);
 
@@ -86,17 +87,17 @@ public class CourseDaoTest {
     }
 
     @Test
-    public void deleteAndGetCourse(){
+    public void deleteAndGetCourse()throws InterruptedException {
         //insert new course
         mDatabase.courseModel().insertCourse(COURSE);
 
         //get that course
-        Course dbCourse = mDatabase.courseModel().getCourse(COURSE.getCourseId());
+        Course dbCourse = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse(COURSE.getCourseId()));
         //delete the course
         mDatabase.courseModel().deleteCourse(dbCourse.getId());
 
         //the course is no longer in the data source
-        List<Course> courses = mDatabase.courseModel().getCourses();
+        List<Course> courses = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourses());
         assertThat(courses.size(), is(0));
     }
 
