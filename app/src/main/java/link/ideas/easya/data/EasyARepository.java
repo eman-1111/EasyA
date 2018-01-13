@@ -4,9 +4,14 @@ package link.ideas.easya.data;
  * Created by Eman on 11/27/2017.
  */
 
+import android.arch.lifecycle.LiveData;
 import android.util.Log;
 
+import java.util.Date;
+import java.util.List;
+
 import link.ideas.easya.AppExecutors;
+import link.ideas.easya.data.database.Course;
 import link.ideas.easya.data.database.CourseDao;
 import link.ideas.easya.data.database.LessonDao;
 
@@ -47,6 +52,16 @@ public class EasyARepository {
         return sInstance;
     }
 
+    public LiveData<List<Course>> getUserCourses() {
+        return mCourseDao.getCourses();
+    }
 
-
+    public void insertCourse(final Course course) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mCourseDao.insertCourse(course);
+            }
+        });
+    }
 }

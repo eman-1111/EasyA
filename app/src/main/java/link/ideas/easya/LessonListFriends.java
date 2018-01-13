@@ -11,17 +11,12 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -29,8 +24,7 @@ import link.ideas.easya.adapter.LessonFriendsAdapter;
 import link.ideas.easya.models.Lesson;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
-import link.ideas.easya.viewmodel.FriendsListViewModel;
-import link.ideas.easya.viewmodel.LessonListViewModel;
+import link.ideas.easya.viewmodel.FriendLessonListViewModel;
 
 public class LessonListFriends extends BaseActivity {
 
@@ -43,7 +37,7 @@ public class LessonListFriends extends BaseActivity {
     String coursePushId;
     ArrayList<Lesson> friendsLesson;
     ArrayList<String> lessonPushIds;
-    LessonListViewModel viewModel;
+    FriendLessonListViewModel viewModel;
     boolean isLoaded;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +84,7 @@ public class LessonListFriends extends BaseActivity {
         mRecyclerView.setAdapter(mLessonFriendsAdapter);
 
 
-        viewModel = ViewModelProviders.of(this).get(LessonListViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(FriendLessonListViewModel.class);
         viewModel.setCoursePushId(coursePushId);
 
         if (isDeviceOnline()) {

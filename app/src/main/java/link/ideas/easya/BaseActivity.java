@@ -124,7 +124,7 @@ public class BaseActivity extends AppCompatActivity
     private Toolbar toolbar;
     private SignInButton signInButton;
     public String accountName;
-
+     //todo remove Classroom API from BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -753,74 +753,7 @@ public class BaseActivity extends AppCompatActivity
     }
 
 
-    public void startDialog() {
 
-
-        LayoutInflater li = LayoutInflater.from(this);
-        View promptsView = li.inflate(R.layout.add_course_name, null);
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                this, R.style.DialogTheme);
-        alertDialogBuilder.setView(promptsView);
-        final EditText courseNameET = (EditText) promptsView
-                .findViewById(R.id.course_name_et);
-
-        final EditText teacherNameET = (EditText) promptsView
-                .findViewById(R.id.teacher_name_et);
-        final TextView txtOK = (TextView) promptsView
-                .findViewById(R.id.txt_ok);
-
-        final TextView txtCancel = (TextView) promptsView
-                .findViewById(R.id.txt_cancel);
-
-        final int[] selectedColorId = {0};
-        final GridView gridView = (GridView) promptsView.findViewById(R.id.gridview_color);
-        ColorAdapter mColorAdapter = new ColorAdapter(this);
-        gridView.setAdapter(mColorAdapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                ColorAdapter mColorAdapter = (ColorAdapter) gridView.getAdapter();
-                mColorAdapter.selectedImage = position;
-                mColorAdapter.notifyDataSetChanged();
-                selectedColorId[0] = position;
-
-
-            }
-        });
-
-        // create alert dialog
-        final AlertDialog alertDialog = alertDialogBuilder.create();
-        txtOK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Random randomGenerator = new Random();
-                int random = randomGenerator.nextInt(8964797);
-                String courseId = getResources().getString(R.string.user) + random;
-                if (courseNameET.getText().toString().trim().isEmpty()) {
-                    Snackbar.make(drawer, getResources().getString(R.string.course_name_error),
-                            Snackbar.LENGTH_LONG).show();
-
-                } else {
-                    addCourseData(courseNameET.getText().toString(), teacherNameET.getText().toString(),
-                            null, null, courseId, selectedColorId[0]);
-                    Helper.updateWidgets(BaseActivity.this);
-                    alertDialog.cancel();
-                }
-
-            }
-        });
-        txtCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.cancel();
-            }
-        });
-        // show it
-        alertDialog.show();
-
-
-    }
 
     public void loadNavHeader(String activityTitle) {
 

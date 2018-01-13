@@ -6,7 +6,6 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,10 +19,6 @@ import android.widget.TextView;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -31,8 +26,7 @@ import link.ideas.easya.adapter.CourseFriendAdapter;
 import link.ideas.easya.models.Course;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
-import link.ideas.easya.viewmodel.CourseListViewModel;
-import link.ideas.easya.viewmodel.FriendsListViewModel;
+import link.ideas.easya.viewmodel.FriendCourseListViewModel;
 import link.ideas.easya.viewmodel.StudyingViewModel;
 
 public class CourseListFriends extends BaseActivity {
@@ -47,7 +41,7 @@ public class CourseListFriends extends BaseActivity {
     String friendAccount, friendName;
     ArrayList<Course> friendsCourse;
     ArrayList<String> coursePushIds;
-    CourseListViewModel courseViewModel;
+    FriendCourseListViewModel courseViewModel;
 
 
     boolean isLoaded, canEdit;
@@ -93,7 +87,7 @@ public class CourseListFriends extends BaseActivity {
         });
         mRecyclerView.setAdapter(mCourseFriendAdapter);
 
-        courseViewModel = ViewModelProviders.of(this).get(CourseListViewModel.class);
+        courseViewModel = ViewModelProviders.of(this).get(FriendCourseListViewModel.class);
         courseViewModel.setAccountName(friendAccount);
 
         studyingViewModel = ViewModelProviders.of(this).get(StudyingViewModel.class);

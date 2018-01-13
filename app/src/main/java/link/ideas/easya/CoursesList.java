@@ -18,8 +18,9 @@ import link.ideas.easya.utils.Constants;
 
 
 public class CoursesList extends BaseActivity implements
-        CourseListFragment.Callback  {
+        CourseListFragment.Callback {
     MenuItem addCourse;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,11 +29,12 @@ public class CoursesList extends BaseActivity implements
         setContentView(R.layout.courses_list);
         setDrawer(true);
         setUpAPIs();
-        loadNavHeader(getResources().getString(R.string.your_course) );
+        loadNavHeader(getResources().getString(R.string.your_course));
         setUpNavigationView();
 
 
     }
+
     @Override
     public void onItemSelected(Uri contentUri, String courseName) {
 
@@ -45,30 +47,4 @@ public class CoursesList extends BaseActivity implements
         this.overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        getMenuInflater().inflate(R.menu.menu_add, menu);
-         addCourse = menu.findItem(R.id.btn_add_menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.btn_add_menu) {
-            startDialog();
-            return true;
-        }
-
-
-        return super.onOptionsItemSelected(item);
-    }
-
 }

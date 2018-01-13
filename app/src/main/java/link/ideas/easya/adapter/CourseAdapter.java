@@ -16,8 +16,11 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.bumptech.glide.Glide;
 
 
+import java.util.List;
+
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.data.database.Course;
 import link.ideas.easya.fragment.CourseListFragment;
 import link.ideas.easya.utils.Helper;
 
@@ -29,7 +32,7 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
 
     final private Context mContext;
-    private Cursor mCursor;
+    private List<Course> courseList;
     final private CourseAdapterOnClickHolder mClickHolder;
 
 
@@ -53,10 +56,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         @Override
         public void onClick(View v) {
             int adapterPostion = getAdapterPosition();
-            mCursor.moveToPosition(adapterPostion);
-            int idCulomnIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_COURSE_ID);
-            int idCulomnName = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_COURSE_NAME);
-            mClickHolder.onClick(mCursor.getString(idCulomnIndex),mCursor.getString(idCulomnName), this);
+            Course course = courseList.get(adapterPostion);
+            String index = course.getCourseId();
+            String courseName = course.getCourseName();
+            mClickHolder.onClick(index,courseName, this);
 
         }
 
@@ -64,10 +67,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         @Override
         public boolean onLongClick(View v) {
             int adapterPostion = getAdapterPosition();
-            mCursor.moveToPosition(adapterPostion);
-            int idCulomnIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_COURSE_ID);
-            int coursePushIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_FIREBASE_ID);
-            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex),mCursor.getString(coursePushIndex));
+            Course course = courseList.get(adapterPostion);
+            String index = course.getCourseId();
+            String coursePushId = course.getFirebaseId();
+            mClickHolder.onLongClick(index,coursePushId);
             return true;
         }
     }
@@ -105,9 +108,9 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     @Override
     public void onBindViewHolder(final CourseAdapterViewHolder holder, int position) {
-        mCursor.moveToPosition(position);
-        int courseId = mCursor.getInt(CourseListFragment.COL_COURSE_ID);
-        String teacherPhotoURL = mCursor.getString(CourseListFragment.COL_TEACHER_PHOTO_URL);
+        Course course = courseList.get(position);
+
+        String teacherPhotoURL = course.getTeacherPhotoURL();
         int image = 0;
 
         if (position == 0 || position % 4 == 0) {
@@ -126,16 +129,16 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
         Glide.with(mContext).load(teacherPhotoURL).error(image).
                 into(holder.teacherImage);
 
-        String courseName = mCursor.getString(CourseListFragment.COL_COURSE_NAME);
+        String courseName = course.getCourseName();
         holder.coursName.setText(courseName);
         holder.coursName.setContentDescription(mContext.getString(R.string.a11y_course_name,courseName));
 
-        String teacherName = mCursor.getString(CourseListFragment.COL_TEACHER_NAME);
+        String teacherName = course.getTeacherName();
         holder.teacherName.setText(teacherName);
         holder.teacherName.setContentDescription(mContext.getString(R.string.a11y_teacher_name,teacherName));
 
 
-        int courseItemColor = mCursor.getInt(CourseListFragment.COL_TEACHER_COLOR);
+        int courseItemColor =  course.getTeacherColor();
 
         holder.listItemCours.setBackground
                 (mContext.getResources().getDrawable(Helper.getCourseColor(courseItemColor)));
@@ -151,19 +154,19 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseAdap
 
     @Override
     public int getItemCount() {
-        if (mCursor == null) {
+        if (courseList == null) {
             return 0;
         }
-        return mCursor.getCount();
+        return courseList.size();
     }
 
-    public Cursor getCursor() {
-        return mCursor;
+    public List<Course> getCourseList() {
+        return courseList;
     }
 
 
-    public void swapCursor(Cursor cursor) {
-        mCursor = cursor;
+    public void swapCursor(List<Course> courseList) {
+        this.courseList = courseList;
         notifyDataSetChanged();
 
     }

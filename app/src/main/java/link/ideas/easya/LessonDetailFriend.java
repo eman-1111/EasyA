@@ -19,16 +19,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import link.ideas.easya.models.Lesson;
 import link.ideas.easya.models.LessonDetail;
 import link.ideas.easya.utils.Constants;
-import link.ideas.easya.viewmodel.FriendsListViewModel;
-import link.ideas.easya.viewmodel.LessonDetailViewModel;
+import link.ideas.easya.viewmodel.FriendLessonDetailViewModel;
 
 public class LessonDetailFriend extends BaseActivity {
 
@@ -38,7 +33,7 @@ public class LessonDetailFriend extends BaseActivity {
     CollapsingToolbarLayout collapsingToolbar;
     ImageView outlineImage, linkImage, appImage;
     LinearLayout progress;
-    LessonDetailViewModel viewModel;
+    FriendLessonDetailViewModel viewModel;
 
     String coursePushId, lessonPushId;
 
@@ -88,7 +83,7 @@ public class LessonDetailFriend extends BaseActivity {
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
-        viewModel = ViewModelProviders.of(this).get(LessonDetailViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(FriendLessonDetailViewModel.class);
         viewModel.setLessonIds(coursePushId, lessonPushId);
 
 

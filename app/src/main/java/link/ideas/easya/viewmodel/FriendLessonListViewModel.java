@@ -15,7 +15,7 @@ import link.ideas.easya.utils.Constants;
  * Created by Eman on 1/11/2018.
  */
 
-public class LessonListViewModel extends ViewModel {
+public class FriendLessonListViewModel extends ViewModel {
     private static DatabaseReference LESSON_LIST_REF;
     private FirebaseQueryLiveData liveData;
     private String coursePushId;
