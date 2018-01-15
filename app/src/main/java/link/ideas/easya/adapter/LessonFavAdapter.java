@@ -2,13 +2,11 @@ package link.ideas.easya.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +15,11 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import java.util.List;
+
 import link.ideas.easya.R;
-import link.ideas.easya.data.CourseContract;
-import link.ideas.easya.fragment.FavLessonListFragment;
+import link.ideas.easya.data.database.ListLesson;
 import link.ideas.easya.utils.Constants;
-import link.ideas.easya.utils.Helper;
 import link.ideas.easya.utils.ImageSaver;
 
 /**
@@ -32,7 +30,7 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
 
 
     final private Context mContext;
-    private Cursor mCursor;
+    private List<ListLesson> listLessons;
     final private LessonFavAdapter.SubjectFavAdapterOnClickHolder mClickHolder;
     ColorGenerator generator = ColorGenerator.MATERIAL;
 
@@ -61,26 +59,28 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
         @Override
         public void onClick(View v) {
             int adapterPostion = getAdapterPosition();
-            mCursor.moveToPosition(adapterPostion);
-            int idCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_COURSE_ID);
-            int titleCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE);
-            mClickHolder.onClick(mCursor.getString(idCulomnIndex),
-                    mCursor.getString(titleCulomnIndex), this);
+            ListLesson lessonList = listLessons.get(adapterPostion);
+
+            int idCulomn = lessonList.getCourseId();
+            String titleCulomn = lessonList.getLessonTitle();
+            mClickHolder.onClick(idCulomn, titleCulomn, this);
 
         }
 
         @Override
         public boolean onLongClick(View v) {
             int adapterPostion = getAdapterPosition();
-            mCursor.moveToPosition(adapterPostion);
-            int idCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_COURSE_ID);
-            int titleCulomnIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE);
+            ListLesson lessonList = listLessons.get(adapterPostion);
 
-            int lessonPushIndex = mCursor.getColumnIndex(CourseContract.SubjectEntry.COLUMN_FIREBASE_ID);
-            int coursePushIndex = mCursor.getColumnIndex(CourseContract.CourseEntry.COLUMN_FIREBASE_ID);
+            int idCulomn = lessonList.getCourseId();
+            String titleCulomn = lessonList.getLessonTitle();
 
-            mClickHolder.onLongClick(mCursor.getString(idCulomnIndex), mCursor.getString(titleCulomnIndex),
-                    mCursor.getString(coursePushIndex), mCursor.getString(lessonPushIndex));
+            String lessonPush = lessonList.getFirebaseId();
+            String coursePush = lessonList.getFirebaseId();
+
+
+            mClickHolder.onLongClick(idCulomn, titleCulomn,
+                    lessonPush, coursePush);
             return true;
         }
 
@@ -93,9 +93,9 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
     }
 
     public static interface SubjectFavAdapterOnClickHolder {
-        void onClick(String id, String lessonName, LessonFavAdapter.SubjectFavAdapterViewHolder vh);
+        void onClick(int id, String lessonName, LessonFavAdapter.SubjectFavAdapterViewHolder vh);
 
-        boolean onLongClick(String id, String lessonName, String coursePushId, String lessonPushId);
+        boolean onLongClick(int id, String lessonName, String coursePushId, String lessonPushId);
     }
 
 
@@ -118,14 +118,15 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
 
     @Override
     public void onBindViewHolder(LessonFavAdapter.SubjectFavAdapterViewHolder holder, int position) {
-        mCursor.moveToPosition(position);
+
+        ListLesson lessonList = listLessons.get(position);
 
 
-        String lessonName = mCursor.getString(FavLessonListFragment.CO_LESSON_TITLE);
+        String lessonName = lessonList.getLessonTitle();
         holder.lessonName.setText(lessonName);
         holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name, lessonName));
 
-        String link = mCursor.getString(FavLessonListFragment.COL_LESSON_LINK);
+        String link = lessonList.getLessonSummary();
         holder.practicalLink.setText(link);
         holder.practicalLink.setContentDescription(mContext.getString(R.string.a11y_link, link));
 
@@ -136,10 +137,8 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
                 load();
         holder.lessonImage.setImageBitmap(summaryImage);
 
-        int fav = Integer.parseInt(mCursor.getString(FavLessonListFragment.COL_LESSON_FAV));
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             ViewCompat.setTransitionName(holder.lessonImage, "iconViewFav" + position);
-        }
 
 
     }
@@ -152,19 +151,19 @@ public class LessonFavAdapter extends RecyclerView.Adapter<LessonFavAdapter.Subj
 
     @Override
     public int getItemCount() {
-        if (mCursor == null) {
+        if (listLessons == null) {
             return 0;
         }
-        return mCursor.getCount();
+        return listLessons.size();
     }
 
-    public Cursor getCursor() {
-        return mCursor;
+    public List<ListLesson> getLessonList() {
+        return listLessons;
     }
 
 
-    public void swapCursor(Cursor cursor) {
-        mCursor = cursor;
+    public void swapCursor(List<ListLesson> listLessons) {
+        this.listLessons = listLessons;
         notifyDataSetChanged();
 
     }

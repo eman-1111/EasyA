@@ -1,11 +1,14 @@
 package link.ideas.easya.fragment;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -32,11 +35,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.List;
+
 import link.ideas.easya.R;
 import link.ideas.easya.adapter.LessonAdapter;
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.data.database.ListLesson;
+import link.ideas.easya.factory.LessonListModelFactory;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.InjectorUtils;
+import link.ideas.easya.viewmodel.LessonListViewModel;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -44,15 +53,14 @@ import static android.content.Context.MODE_PRIVATE;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LessonListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LessonListFragment extends Fragment {
 
     private static final String LOG_TAG = LessonListFragment.class.getSimpleName();
-    public static final String SUBJECT_URI = "URIS";
-    private Uri mUri;
+    public static final String COURSE_ID = "course_id";
+    private String courseId;
     TextView emptyView;
 
-
-
+    LessonListViewModel mViewModel;
 
     public LessonListFragment() {
     }
@@ -69,24 +77,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
 
 
     private static final String SELECTED_KEY = "selected_position";
-    private static final int COURSE_LOADER = 1;
 
-    private static final String[] SUBJECT_COLUMNS = {
-
-            CourseContract.SubjectEntry.COLUMN_COURSE_ID,
-            CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
-            CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.CourseEntry.COLUMN_FIREBASE_ID,
-            CourseContract.SubjectEntry.COLUMN_FIREBASE_ID};
-
-    public static final int COL_COURSE_ID = 0;
-    public static final int CO_LESSON_TITLE = 1;
-    public static final int COL_LESSON_LINK = 2;
-    public static final int COL_COURSE_NAME = 3;
-
-    public static final int COL_FIREBASE_COURSE_ID = 4;
-    public static final int COL_FIREBASE_LESSON_ID = 5;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,7 +93,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mUri = arguments.getParcelable(LessonListFragment.SUBJECT_URI);
+            courseId = arguments.getString(LessonListFragment.COURSE_ID);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
@@ -116,16 +107,14 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
 
         mSubjectAdapter = new LessonAdapter(getActivity(), new LessonAdapter.SubjectAdapterOnClickHolder() {
             @Override
-            public void onClick(String id, String lessonTitle, LessonAdapter.SubjectAdapterViewHolder vh) {
-                Uri uri = CourseContract.SubjectEntry.buildCourseWithIDAndTitle(id, lessonTitle);
-                ((Callback) getActivity())
-                        .onItemSelected(uri, vh);
+            public void onClick(int id, String lessonTitle, LessonAdapter.SubjectAdapterViewHolder vh) {
+
 
                 mPosition = vh.getAdapterPosition();
             }
 
             @Override
-            public boolean onLongClick(final String lessonId, final String lessonName,
+            public boolean onLongClick(final int lessonId, final String lessonName,
                                        final String coursePushId, final String lessonPushId) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                 builder2.setMessage(getResources().getString(R.string.delete_course));
@@ -136,15 +125,35 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
                                     deleteLessonFromFirebase( lessonName, coursePushId, lessonPushId);
                                 }
 
-                                getContext().getContentResolver().delete(CourseContract.SubjectEntry.CONTENT_URI,
-                                        CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ?",
-                                        new String[]{lessonName});
 
                             }
                         });
                 builder2.setNegativeButton(getResources().getString(R.string.cancel), null);
                 builder2.show();
                 return false;
+            }
+        });
+
+        LessonListModelFactory factory = InjectorUtils.provideLessonListViewModelFactory(getContext(), courseId);
+        mViewModel = ViewModelProviders.of(this, factory).get(LessonListViewModel.class);
+
+        mViewModel.getUserLesson().observe(getActivity(), new Observer<List<ListLesson>>() {
+            @Override
+            public void onChanged(@Nullable List<ListLesson> listLessons) {
+                mSubjectAdapter.swapCursor(listLessons);
+                if (listLessons.size() != 0 ) {
+                    emptyView.setText("");
+                } else {
+                    emptyView.setText(getResources().getString(R.string.no_course));
+                }
+
+
+                if (mPosition != ListView.INVALID_POSITION) {
+                    // Ifp we don't need to restart the loader, and there's a desired position to restore
+                    // to, do so now.
+                    mRecyclerView.smoothScrollToPosition(mPosition);
+
+                }
             }
         });
         mRecyclerView.setAdapter(mSubjectAdapter);
@@ -197,66 +206,7 @@ public class LessonListFragment extends Fragment implements LoaderManager.Loader
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(COURSE_LOADER, null, this);
 
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-
-        if (null != mUri) {
-
-            String sortOrder;
-            if (LessonAdapter.getSortBy(getActivity()).equals("date")) {
-                sortOrder = null;
-            } else {
-                sortOrder = CourseContract.SubjectEntry.COLUMN_FAVORITE + " DESC";
-            }
-
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(
-                    getActivity(),
-                    mUri,
-                    SUBJECT_COLUMNS,
-                    null,
-                    null,
-                    sortOrder
-            );
-        }
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mSubjectAdapter.swapCursor(data);
-
-        if (data != null && data.moveToFirst()) {
-            getActivity().setTitle(data.getString(LessonListFragment.COL_COURSE_NAME));
-            emptyView.setText("");
-
-        } else {
-            emptyView.setText(getResources().getString(R.string.no_lesson));
-        }
-        if (mPosition != ListView.INVALID_POSITION) {
-            // Ifp we don't need to restart the loader, and there's a desired position to restore
-            // to, do so now.
-            mRecyclerView.smoothScrollToPosition(mPosition);
-
-        }
-        startIntroAnimation();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
-        mSubjectAdapter.swapCursor(null);
-
-    }
 
 
 

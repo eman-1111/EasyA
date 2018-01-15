@@ -29,5 +29,9 @@ public class CourseListViewModel extends ViewModel {
     public void createNewCourse(Course course) {
         mRepository.insertCourse(course);
     }
+
+    public void deleteCourse(String courseId) {
+        mRepository.deleteCourse(courseId);
+    }
 }
 

@@ -23,7 +23,7 @@ public interface LessonDao {
             "INNER JOIN course ON lesson.courseId = course.id " +
             "WHERE lesson.courseId = :courseId "+
             "AND course.id = :courseId ")
-    LiveData<List<ListLesson>> getLessons(int courseId);
+    LiveData<List<ListLesson>> getLessons(String courseId);
 
     @Query("SELECT * From lesson WHERE id = :id ")
     LiveData<Lesson> getLesson(int id);

@@ -24,12 +24,14 @@ import link.ideas.easya.adapter.LessonFavAdapter;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.FavLessonListFragment;
 import link.ideas.easya.fragment.LessonListFragment;
+import link.ideas.easya.utils.Constants;
 
 
 public class LessonList extends BaseActivity implements
         LessonListFragment.Callback, FavLessonListFragment.Callback {
 
     static Uri mUri;
+    String courseId;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -40,7 +42,9 @@ public class LessonList extends BaseActivity implements
 
         if (savedInstanceState == null) {
 
-            mUri = getIntent().getData();
+            Intent intent = getIntent();
+            mUri = intent.getData();
+            courseId = intent.getStringExtra(Constants.PREF_COURSE_ID);
 
         }
         setDrawer(true);
@@ -60,7 +64,7 @@ public class LessonList extends BaseActivity implements
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         Bundle arguments = new Bundle();
-        arguments.putParcelable(LessonListFragment.SUBJECT_URI, mUri);
+        arguments.putString(LessonListFragment.COURSE_ID, courseId);
 
         LessonListFragment fragment = new LessonListFragment();
         fragment.setArguments(arguments);
@@ -146,7 +150,7 @@ public class LessonList extends BaseActivity implements
     public void startIntent() {
         //Intent intent = new Intent(this, AddSubjectTitel.class);
         Intent intent = new Intent(this, AddNewLesson.class);
-        intent.putExtra("CourseId", CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
+        intent.putExtra(Constants.PREF_COURSE_ID, courseId);
         startActivity(intent);
     }
 

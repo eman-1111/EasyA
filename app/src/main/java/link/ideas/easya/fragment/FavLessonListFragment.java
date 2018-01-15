@@ -1,11 +1,15 @@
 package link.ideas.easya.fragment;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -27,22 +31,32 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.List;
+
 import link.ideas.easya.R;
 import link.ideas.easya.adapter.LessonFavAdapter;
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.data.database.Course;
+import link.ideas.easya.data.database.ListLesson;
+import link.ideas.easya.factory.CourseListModelFactory;
+import link.ideas.easya.factory.LessonListModelFactory;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.InjectorUtils;
+import link.ideas.easya.viewmodel.CourseListViewModel;
+import link.ideas.easya.viewmodel.FavLessonListViewModel;
+import link.ideas.easya.viewmodel.LessonListViewModel;
 
 /**
  * Created by Eman on 4/11/2017.
  */
 
-public class FavLessonListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FavLessonListFragment extends Fragment  {
 
     private static final String LOG_TAG = LessonListFragment.class.getSimpleName();
-    public static final String SUBJECT_URI = "URIS";
-    private Uri mUri;
+    public static final String COURSE_ID = "course_id";
+    private String courseId;
     TextView emptyView;
-
+    FavLessonListViewModel mViewModel;
     public FavLessonListFragment() {
     }
 
@@ -58,22 +72,6 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
 
 
     private static final String SELECTED_KEY = "selected_position";
-    private static final int COURSE_LOADER = 2;
-
-    private static final String[] SUBJECT_COLUMNS = {
-
-            CourseContract.SubjectEntry.COLUMN_COURSE_ID,
-            CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
-            CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.SubjectEntry.COLUMN_FAVORITE
-    };
-
-    public static final int COL_COURSE_ID = 0;
-    public static final int CO_LESSON_TITLE = 1;
-    public static final int COL_LESSON_LINK = 2;
-    public static final int COL_COURSE_NAME = 3;
-    public static final int COL_LESSON_FAV= 4;
 
 
     @Override
@@ -90,9 +88,9 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mUri = arguments.getParcelable(LessonListFragment.SUBJECT_URI);
+            courseId = arguments.getString(LessonListFragment.COURSE_ID);
+            Log.e("COURSE_ID",courseId );
         }
-
         // getActivity().setTitle(arguments.getStringExtra("CourseName"));
         //getActivity().setTitle("");
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
@@ -108,15 +106,13 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
 
         mSubjectFavAdapter = new LessonFavAdapter(getActivity(), new LessonFavAdapter.SubjectFavAdapterOnClickHolder() {
             @Override
-            public void onClick(String id, String lessonTitle, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
-                Uri uri = CourseContract.SubjectEntry.buildCourseWithIDAndTitle(id, lessonTitle);
-                ((FavLessonListFragment.Callback) getActivity())
-                        .onItemSelected(uri, vh);
+            public void onClick(int id, String lessonTitle, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
+
                 mPosition = vh.getAdapterPosition();
             }
 
             @Override
-            public boolean onLongClick(final String lessonId, final String lessonName,
+            public boolean onLongClick(final int lessonId, final String lessonName,
                                        final String coursePushId, final String lessonPushId) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                 builder2.setMessage(getResources().getString(R.string.delete_course));
@@ -127,10 +123,7 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
                                     deleteLessonFromFirebase( lessonName, coursePushId, lessonPushId);
                                 }
 
-                                getContext().getContentResolver().delete(CourseContract.SubjectEntry.CONTENT_URI,
-                                        CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?",
-                                        new String[]{lessonId});
-                                removeItem(lessonId);
+
                             }
                         });
                 builder2.setNegativeButton(getResources().getString(R.string.cancel), null);
@@ -138,6 +131,31 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
                 return false;
             }
         });
+
+        LessonListModelFactory factory = InjectorUtils.provideLessonListViewModelFactory(getContext(), courseId);
+        mViewModel = ViewModelProviders.of(this, factory).get(FavLessonListViewModel.class);
+
+        mViewModel.getUserLesson().observe(getActivity(), new Observer<List<ListLesson>>() {
+            @Override
+            public void onChanged(@Nullable List<ListLesson> listLessons) {
+                mSubjectFavAdapter.swapCursor(listLessons);
+                if (listLessons.size() != 0 ) {
+                    emptyView.setText("");
+                } else {
+                    emptyView.setText(getResources().getString(R.string.no_course));
+                }
+
+
+                if (mPosition != ListView.INVALID_POSITION) {
+                    // Ifp we don't need to restart the loader, and there's a desired position to restore
+                    // to, do so now.
+                    mRecyclerView.smoothScrollToPosition(mPosition);
+
+                }
+            }
+        });
+
+
         mRecyclerView.setAdapter(mSubjectFavAdapter);
         if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
             // The listview probably hasn't even been populated yet.  Actually perform the
@@ -159,57 +177,7 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(COURSE_LOADER, null, this);
 
-        super.onActivityCreated(savedInstanceState);
-
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-
-        if (null != mUri) {
-
-            String sortOrder;
-            if (LessonFavAdapter.getSortBy(getActivity()).equals("date")) {
-                sortOrder = null;
-            } else {
-                sortOrder = CourseContract.SubjectEntry.COLUMN_FAVORITE + " DESC";
-            }
-
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(getActivity(), mUri,
-                    SUBJECT_COLUMNS,
-                    CourseContract.SubjectEntry.COLUMN_FAVORITE + " = ?",
-                    new String[]{"1"},
-                    null);
-        }
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mSubjectFavAdapter.swapCursor(data);
-
-        if (data != null && data.moveToFirst()) {
-          //  getActivity().setTitle(data.getString(FavLessonListFragment.COL_COURSE_NAME));
-            emptyView.setText("");
-
-        } else {
-            emptyView.setText(getResources().getString(R.string.no_lesson));
-        }
-        if (mPosition != ListView.INVALID_POSITION) {
-            // Ifp we don't need to restart the loader, and there's a desired position to restore
-            // to, do so now.
-            mRecyclerView.smoothScrollToPosition(mPosition);
-
-        }
-
-    }
     private void deleteLessonFromFirebase(String title, String coursePushId, String lessonPushId) {
 
 
@@ -238,15 +206,7 @@ public class FavLessonListFragment extends Fragment implements LoaderManager.Loa
         mUserImagesReferenceApp.delete();
 
     }
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
 
-        mSubjectFavAdapter.swapCursor(null);
 
-    }
-
-    private void removeItem(String itemId) {
-
-    }
 }
 

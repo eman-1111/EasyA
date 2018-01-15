@@ -94,7 +94,7 @@ public class CourseDaoTest {
         //get that course
         Course dbCourse = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse(COURSE.getCourseId()));
         //delete the course
-        mDatabase.courseModel().deleteCourse(dbCourse.getId());
+        mDatabase.courseModel().deleteCourse(dbCourse.getCourseId());
 
         //the course is no longer in the data source
         List<Course> courses = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourses());

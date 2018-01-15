@@ -36,11 +36,11 @@ public class CoursesList extends BaseActivity implements
     }
 
     @Override
-    public void onItemSelected(Uri contentUri, String courseName) {
+    public void onItemSelected(String courseId, String courseName) {
 
-        Intent intent = new Intent(this, LessonList.class)
-                .setData(contentUri);
+        Intent intent = new Intent(this, LessonList.class);
         intent.putExtra(Constants.PREF_COURSE_NAME, courseName);
+        intent.putExtra(Constants.PREF_COURSE_ID, courseId);
         ActivityOptionsCompat activityOptions =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(this);
         ActivityCompat.startActivity(this, intent, activityOptions.toBundle());

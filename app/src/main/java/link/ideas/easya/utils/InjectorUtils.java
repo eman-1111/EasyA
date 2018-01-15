@@ -8,6 +8,7 @@ import link.ideas.easya.AppExecutors;
 import link.ideas.easya.data.EasyARepository;
 import link.ideas.easya.data.database.EasyADatabase;
 import link.ideas.easya.factory.CourseListModelFactory;
+import link.ideas.easya.factory.LessonListModelFactory;
 
 /**
  * Provides static methods to inject the various classes needed for EasyA
@@ -27,5 +28,11 @@ public class InjectorUtils {
         EasyARepository repository = provideRepository(context.getApplicationContext());
         return new CourseListModelFactory(repository);
     }
+
+    public static LessonListModelFactory provideLessonListViewModelFactory(Context context, String courseId) {
+        EasyARepository repository = provideRepository(context.getApplicationContext());
+        return new LessonListModelFactory(repository, courseId);
+    }
+
 
 }

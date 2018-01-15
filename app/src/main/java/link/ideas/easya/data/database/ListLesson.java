@@ -15,6 +15,8 @@ public class ListLesson {
     private String lessonTitle;
     private String lessonSummary;
     private String favoriteLesson;
+    private String firebaseId;
+
 
     /**
      *
@@ -26,13 +28,14 @@ public class ListLesson {
      *  @param favoriteLesson            column favorite Lesson
      */
     public ListLesson(int id, int courseId, String lessonTitle, String lessonSummary,
-                  String courseName, String favoriteLesson) {
+                  String courseName, String favoriteLesson, String firebaseId) {
         this.id = id;
         this.courseId = courseId;
         this.lessonTitle = lessonTitle;
         this.lessonSummary = lessonSummary;
         this.courseName = courseName;
         this.favoriteLesson = favoriteLesson;
+        this.firebaseId = firebaseId;
     }
 
     public String getCourseName() {
@@ -57,5 +60,9 @@ public class ListLesson {
 
     public String getFavoriteLesson() {
         return favoriteLesson;
+    }
+
+    public String getFirebaseId() {
+        return firebaseId;
     }
 }

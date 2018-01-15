@@ -39,7 +39,6 @@ import java.util.Random;
 import link.ideas.easya.adapter.ColorAdapter;
 import link.ideas.easya.adapter.CourseAdapter;
 import link.ideas.easya.R;
-import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.data.database.Course;
 import link.ideas.easya.factory.CourseListModelFactory;
 import link.ideas.easya.utils.Constants;
@@ -65,7 +64,7 @@ public class CourseListFragment extends Fragment {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(Uri idUri, String courseName);
+        public void onItemSelected(String  courseId, String courseName);
     }
 
     RecyclerView mRecyclerView;
@@ -130,8 +129,7 @@ public class CourseListFragment extends Fragment {
             @Override
             public void onClick(String id, String courseName, CourseAdapter.CourseAdapterViewHolder vh) {
                 ((Callback) getActivity())
-                        .onItemSelected(CourseContract.SubjectEntry.buildSubjectWithID(id),
-                                courseName);
+                        .onItemSelected(id, courseName);
                 mPosition = vh.getAdapterPosition();
             }
 
@@ -145,12 +143,7 @@ public class CourseListFragment extends Fragment {
                                 if (coursePushId != null) {
                                     deleteLessonFromFirebase(coursePushId);
                                 }
-                                getContext().getContentResolver().delete(CourseContract.CourseEntry.CONTENT_URI,
-                                        CourseContract.CourseEntry.COLUMN_COURSE_ID + " = ?",
-                                        new String[]{courseId});
-                                getContext().getContentResolver().delete(CourseContract.SubjectEntry.CONTENT_URI,
-                                        CourseContract.SubjectEntry.COLUMN_COURSE_ID + " = ?",
-                                        new String[]{courseId});
+                                mViewModel.deleteCourse(courseId);
                                 Helper.updateWidgets(getContext());
 
 

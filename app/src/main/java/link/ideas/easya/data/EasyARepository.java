@@ -13,7 +13,9 @@ import java.util.List;
 import link.ideas.easya.AppExecutors;
 import link.ideas.easya.data.database.Course;
 import link.ideas.easya.data.database.CourseDao;
+import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.data.database.LessonDao;
+import link.ideas.easya.data.database.ListLesson;
 
 /**
  * Handled data operation in EasyA.
@@ -56,11 +58,49 @@ public class EasyARepository {
         return mCourseDao.getCourses();
     }
 
+    public LiveData<List<ListLesson>> getUserLessons(String courseId) {
+        return mLessonDao.getLessons(courseId);
+    }
+
+
+
+    public LiveData<List<ListLesson>> getUserFavLessons(String courseId) {
+        return mLessonDao.getLessons(courseId);
+    }
+
+
     public void insertCourse(final Course course) {
         mAppExecutors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 mCourseDao.insertCourse(course);
+            }
+        });
+    }
+
+    public void insertLesson(final Lesson lesson) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mLessonDao.insertLesson(lesson);
+            }
+        });
+    }
+
+    public void deleteLesson(final int lessonId) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mLessonDao.deleteLesson(lessonId);
+            }
+        });
+    }
+
+    public void deleteCourse(final String courseId) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mCourseDao.deleteCourse(courseId);
             }
         });
     }
