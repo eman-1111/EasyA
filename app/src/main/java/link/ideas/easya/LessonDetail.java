@@ -9,11 +9,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.fragment.LessonDetailFragment;
+import link.ideas.easya.utils.Constants;
 
 
 public class LessonDetail extends BaseActivity {
     String lessonName;
-    String lessonId;
+    int lessonId;
 
     private static final String LOG_TAG = LessonDetail.class.getSimpleName();
     @Override
@@ -27,13 +28,12 @@ public class LessonDetail extends BaseActivity {
 
 
             Bundle arguments = new Bundle();
+            Intent intent = getIntent();
+            lessonName = intent.getStringExtra(Constants.PREF_LESSON_NAME);
+            lessonId = intent.getIntExtra(Constants.PREF_LESSON_ID,0);
 
-            arguments.putParcelable(LessonDetailFragment.DETAIL_URI, getIntent().getData());
-
-
-            Uri mUri = arguments.getParcelable(LessonDetailFragment.DETAIL_URI);
-            lessonName = CourseContract.SubjectEntry.getSubjectTitleFromUri(mUri);
-            lessonId = CourseContract.SubjectEntry.getSubjectIdFromUri(mUri);
+            arguments.putString(Constants.PREF_LESSON_NAME, lessonName);
+            arguments.putInt(Constants.PREF_LESSON_ID, lessonId);
             LessonDetailFragment fragment = new LessonDetailFragment();
             fragment.setArguments(arguments);
 
@@ -48,8 +48,7 @@ public class LessonDetail extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(this, LessonList.class)
-                    .setData(CourseContract.SubjectEntry.buildSubjectWithID(lessonId));
+            Intent intent = new Intent(this, LessonList.class);
             intent.putExtra("CourseName", lessonName);
             startActivity(intent);
             finish();

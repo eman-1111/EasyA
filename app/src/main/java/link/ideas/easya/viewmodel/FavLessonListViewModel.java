@@ -21,12 +21,12 @@ public class FavLessonListViewModel extends ViewModel {
         mLesson  = mRepository.getUserFavLessons(courseId);
     }
 
-    public LiveData<List<ListLesson>> getUserLesson() {
+    public LiveData<List<ListLesson>> getUserLessons() {
         return mLesson;
     }
 
 
-    public void deleteCourse(int lessonId) {
+    public void deleteLesson(int lessonId) {
         mRepository.deleteLesson(lessonId);
     }
 }

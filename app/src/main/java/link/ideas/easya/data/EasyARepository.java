@@ -54,6 +54,11 @@ public class EasyARepository {
         return sInstance;
     }
 
+    public LiveData<Lesson> getUserLesson(int lessonId) {
+        return mLessonDao.getLesson(lessonId);
+    }
+
+
     public LiveData<List<Course>> getUserCourses() {
         return mCourseDao.getCourses();
     }

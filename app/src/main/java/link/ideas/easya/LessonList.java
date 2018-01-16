@@ -30,7 +30,6 @@ import link.ideas.easya.utils.Constants;
 public class LessonList extends BaseActivity implements
         LessonListFragment.Callback, FavLessonListFragment.Callback {
 
-    static Uri mUri;
     String courseId;
     private TabLayout tabLayout;
     private ViewPager viewPager;
@@ -41,11 +40,8 @@ public class LessonList extends BaseActivity implements
         setContentView(R.layout.subject_list);
 
         if (savedInstanceState == null) {
-
             Intent intent = getIntent();
-            mUri = intent.getData();
             courseId = intent.getStringExtra(Constants.PREF_COURSE_ID);
-
         }
         setDrawer(true);
         setUpAPIs();
@@ -125,9 +121,10 @@ public class LessonList extends BaseActivity implements
 
 
     @Override
-    public void onItemSelected(Uri contentUri, LessonAdapter.SubjectAdapterViewHolder vh) {
-        Intent intent = new Intent(this, LessonDetail.class)
-                .setData(contentUri);
+    public void onItemSelected(int id,String lessonTitle, LessonAdapter.SubjectAdapterViewHolder vh) {
+        Intent intent = new Intent(this, LessonDetail.class);
+        intent.putExtra(Constants.PREF_LESSON_ID, id);
+        intent.putExtra(Constants.PREF_LESSON_NAME, lessonTitle);
         ActivityOptionsCompat activityOptions =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(this,
                         new Pair<View, String>(vh.lessonImage, getString(R.string.shared_element)));
@@ -137,9 +134,10 @@ public class LessonList extends BaseActivity implements
     }
 
     @Override
-    public void onItemSelected(Uri idUri, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
-        Intent intent = new Intent(this, LessonDetail.class)
-                .setData(idUri);
+    public void onItemSelected(int id, String lessonTitle, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
+        Intent intent = new Intent(this, LessonDetail.class);
+        intent.putExtra(Constants.PREF_LESSON_ID, id);
+        intent.putExtra(Constants.PREF_LESSON_NAME, lessonTitle);
         ActivityOptionsCompat activityOptions =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(this,
                         new Pair<View, String>(vh.lessonImage, getString(R.string.shared_element)));

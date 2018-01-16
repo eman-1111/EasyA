@@ -67,7 +67,7 @@ public class LessonListFragment extends Fragment {
 
 
     public interface Callback {
-        public void onItemSelected(Uri idUri, LessonAdapter.SubjectAdapterViewHolder vh);
+        public void onItemSelected(int id,String lessonTitle, LessonAdapter.SubjectAdapterViewHolder vh);
     }
 
     // RecyclerView mRecyclerView;
@@ -99,18 +99,15 @@ public class LessonListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_lesson);
         emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
-
-        // Set the layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
         mRecyclerView.setHasFixedSize(true);
 
         mSubjectAdapter = new LessonAdapter(getActivity(), new LessonAdapter.SubjectAdapterOnClickHolder() {
             @Override
             public void onClick(int id, String lessonTitle, LessonAdapter.SubjectAdapterViewHolder vh) {
-
-
                 mPosition = vh.getAdapterPosition();
+                ((Callback) getActivity())
+                        .onItemSelected(id,lessonTitle, vh);
             }
 
             @Override
@@ -124,8 +121,7 @@ public class LessonListFragment extends Fragment {
                                 if(lessonPushId != null){
                                     deleteLessonFromFirebase( lessonName, coursePushId, lessonPushId);
                                 }
-
-
+                                mViewModel.deleteLesson(lessonId);
                             }
                         });
                 builder2.setNegativeButton(getResources().getString(R.string.cancel), null);
@@ -137,7 +133,7 @@ public class LessonListFragment extends Fragment {
         LessonListModelFactory factory = InjectorUtils.provideLessonListViewModelFactory(getContext(), courseId);
         mViewModel = ViewModelProviders.of(this, factory).get(LessonListViewModel.class);
 
-        mViewModel.getUserLesson().observe(getActivity(), new Observer<List<ListLesson>>() {
+        mViewModel.getUserLessons().observe(getActivity(), new Observer<List<ListLesson>>() {
             @Override
             public void onChanged(@Nullable List<ListLesson> listLessons) {
                 mSubjectAdapter.swapCursor(listLessons);
@@ -149,8 +145,6 @@ public class LessonListFragment extends Fragment {
 
 
                 if (mPosition != ListView.INVALID_POSITION) {
-                    // Ifp we don't need to restart the loader, and there's a desired position to restore
-                    // to, do so now.
                     mRecyclerView.smoothScrollToPosition(mPosition);
 
                 }

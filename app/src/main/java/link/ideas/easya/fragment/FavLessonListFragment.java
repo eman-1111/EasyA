@@ -62,7 +62,7 @@ public class FavLessonListFragment extends Fragment  {
 
 
     public interface Callback {
-        public void onItemSelected(Uri idUri,  LessonFavAdapter.SubjectFavAdapterViewHolder vh);
+        public void onItemSelected(int id,  String lessonTitle, LessonFavAdapter.SubjectFavAdapterViewHolder vh);
     }
 
     // RecyclerView mRecyclerView;
@@ -91,15 +91,9 @@ public class FavLessonListFragment extends Fragment  {
             courseId = arguments.getString(LessonListFragment.COURSE_ID);
             Log.e("COURSE_ID",courseId );
         }
-        // getActivity().setTitle(arguments.getStringExtra("CourseName"));
-        //getActivity().setTitle("");
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
-        // Get a reference to the RecyclerView, and attach this adapter to it.
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_lesson);
-        //  mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview);
         emptyView = (TextView) rootView.findViewById(R.id.empty_tv);
-
-        // Set the layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         mRecyclerView.setHasFixedSize(true);
@@ -107,7 +101,8 @@ public class FavLessonListFragment extends Fragment  {
         mSubjectFavAdapter = new LessonFavAdapter(getActivity(), new LessonFavAdapter.SubjectFavAdapterOnClickHolder() {
             @Override
             public void onClick(int id, String lessonTitle, LessonFavAdapter.SubjectFavAdapterViewHolder vh) {
-
+                ((Callback) getActivity())
+                        .onItemSelected(id,lessonTitle, vh);
                 mPosition = vh.getAdapterPosition();
             }
 
@@ -122,6 +117,7 @@ public class FavLessonListFragment extends Fragment  {
                                 if(lessonPushId != null){
                                     deleteLessonFromFirebase( lessonName, coursePushId, lessonPushId);
                                 }
+                                mViewModel.deleteLesson(lessonId);
 
 
                             }
@@ -135,7 +131,7 @@ public class FavLessonListFragment extends Fragment  {
         LessonListModelFactory factory = InjectorUtils.provideLessonListViewModelFactory(getContext(), courseId);
         mViewModel = ViewModelProviders.of(this, factory).get(FavLessonListViewModel.class);
 
-        mViewModel.getUserLesson().observe(getActivity(), new Observer<List<ListLesson>>() {
+        mViewModel.getUserLessons().observe(getActivity(), new Observer<List<ListLesson>>() {
             @Override
             public void onChanged(@Nullable List<ListLesson> listLessons) {
                 mSubjectFavAdapter.swapCursor(listLessons);

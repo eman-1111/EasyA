@@ -1,27 +1,25 @@
 package link.ideas.easya.fragment;
 
 import android.app.ProgressDialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,26 +43,27 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 
 import link.ideas.easya.AddNewLesson;
-import link.ideas.easya.LessonList;
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
+import link.ideas.easya.factory.LessonDetailModelFactory;
 import link.ideas.easya.models.Course;
-import link.ideas.easya.models.Lesson;
+import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.models.LessonDetail;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 import link.ideas.easya.utils.ImageSaver;
+import link.ideas.easya.utils.InjectorUtils;
+import link.ideas.easya.viewmodel.LessonDetailViewModel;
 
 import static android.content.Context.MODE_PRIVATE;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class LessonDetailFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LessonDetailFragment extends Fragment {
 
 
     private static final String LOG_TAG = LessonDetailFragment.class.getSimpleName();
-    public static final String DETAIL_URI = "URI";
 
     Menu menu;
     MenuItem shareItem = null;
@@ -74,18 +73,18 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             mLessonOutline, mLink, mDebug;
 
     CoordinatorLayout coordinatorLayout;
-
-    public ProgressDialog mProgressDialog;
+    CollapsingToolbarLayout collapsingToolbar;
+    ProgressDialog mProgressDialog;
 
     ImageView outlineImage, linkImage, appImage;
     String accountName;
     String teacherEmail, teacherPhoto, courseName, teacherName, lessonName, lessonOutline, lessonLink,
-            lessonDebug, lessonPracticalTitle, lessonPractical, courseId;
+            lessonDebug, lessonPracticalTitle, lessonPractical;
+    int courseId;
 
     Bitmap outlineImageBit = null, linkImageBit = null, appImageBit = null;
     Uri appUrl, linkUrl, summaryUrl;
     int courserColor = 0, favorite = 0;
-    Cursor mCursor;
     String coursePushId, lessonPushId;
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -97,46 +96,9 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     private StorageReference mUserImagesReferenceSummary, mUserImagesReferenceLink, mUserImagesReferenceApp;
 
 
-    private Uri mUri;
-    private static final int DETAIL_LOADER = 0;
-
-    private static final String[] DETAIL_COLUMNS = {
-            CourseContract.SubjectEntry.COLUMN_COURSE_ID,
-            CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
-            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG,
-            CourseContract.SubjectEntry.COLUMN_FAVORITE,
-            CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.CourseEntry.COLUMN_TEACHER_NAME,
-            CourseContract.CourseEntry.COLUMN_TEACHER_COLOR,
-            CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL,
-            CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL,
-            CourseContract.CourseEntry.COLUMN_FIREBASE_ID,
-            CourseContract.SubjectEntry.COLUMN_FIREBASE_ID};
-
-
-    public static final int COL_COURSE_ID = 0;
-    public static final int COL_LESSON_TITLE = 1;
-    public static final int COL_LESSON_LINK = 2;
-    public static final int COL_LESSON_PRACTICAL_TITLE = 3;
-    public static final int COL_LESSON_PRACTICAL = 4;
-    public static final int COL_LESSON_OUTLINE = 5;
-    public static final int COL_LESSON_DEBUG = 6;
-    public static final int COL_FAVORITE = 7;
-
-    public static final int COL_COURSE_NAME = 8;
-    public static final int COL_TEACHER_NAME = 9;
-    public static final int COL_TEACHER_COLOR = 10;
-    public static final int COL_TEACHER_PHOTO = 11;
-    public static final int COL_TEACHER_EMAIL = 12;
-
-    public static final int COL_FIREBASE_COURSE_ID = 13;
-    public static final int COL_FIREBASE_LESSON_ID = 14;
-
-    CollapsingToolbarLayout collapsingToolbar;
+    String lessonNames;
+    int lessonId;
+    LessonDetailViewModel mViewModel;
 
 
     public LessonDetailFragment() {
@@ -148,7 +110,8 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mUri = arguments.getParcelable(LessonDetailFragment.DETAIL_URI);
+            lessonId = arguments.getInt(Constants.PREF_LESSON_ID);
+            lessonNames = arguments.getString(Constants.PREF_LESSON_NAME);
 
         }
 
@@ -162,6 +125,17 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         collapsingToolbar =
                 (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
         setUpIds(rootView);
+        LessonDetailModelFactory factory = InjectorUtils.
+                provideLessonDetailViewModelFactory(getActivity(), lessonId);
+        mViewModel = ViewModelProviders.of(this, factory)
+                .get(LessonDetailViewModel.class);
+        mViewModel.getUserLesson().observe(this, new Observer<Lesson>() {
+            @Override
+            public void onChanged(@Nullable Lesson lesson) {
+                setUpValues(lesson);
+            }
+        });
+
         return rootView;
     }
 
@@ -183,11 +157,9 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_white_24dp));
         }
         shareItem = menu.findItem(R.id.action_share);
-        if (mCursor != null) {
-            if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
-                shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
-            }
-        }
+        //todo see if shared on firebase
+        shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
+
     }
 
     @Override
@@ -202,31 +174,16 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
             return true;
         } else if (id == R.id.action_edit) {
             Intent intent = new Intent(getActivity(), AddNewLesson.class);
-            intent.putExtra(Constants.PREF_LESSON_URL, mUri.toString());
-            intent.putExtra(Constants.PREF_COURSE_ID, CourseContract.SubjectEntry.getSubjectIdFromUri(mUri));
             startActivity(intent);
         } else if (id == R.id.action_favorite) {
 
             MenuItem favItem = menu.findItem(R.id.action_favorite);
             if (favorite == 0) {
                 favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_white_24dp));
-                ContentValues favorite = new ContentValues();
-                favorite.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, "1");
-                getActivity().getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
-                        favorite,
-                        CourseContract.SubjectEntry.TABLE_NAME +
-                                "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
-                        new String[]{CourseContract.SubjectEntry.getSubjectTitleFromUri(mUri)});
+
             } else {
                 favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
-                ContentValues favorite = new ContentValues();
-                favorite.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, "0");
 
-                getActivity().getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
-                        favorite,
-                        CourseContract.SubjectEntry.TABLE_NAME +
-                                "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
-                        new String[]{CourseContract.SubjectEntry.getSubjectTitleFromUri(mUri)});
             }
 
         } else if (id == R.id.action_share) {
@@ -242,7 +199,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     }
 
     private void startSharing() {
-        String lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
+        //todo start share action
         SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
         accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
         if (accountName != null) {
@@ -266,103 +223,7 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(DETAIL_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
-    }
-
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-        if (null != mUri) {
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(
-                    getActivity(),
-                    mUri,
-                    DETAIL_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
-        }
-        return null;
-    }
-
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-
-        if (data != null && data.moveToFirst()) {
-            mCursor = data;
-            courseId = data.getString(COL_COURSE_ID);
-            lessonName = data.getString(COL_LESSON_TITLE);
-            collapsingToolbar.setTitle(lessonName);
-            lessonLink = data.getString(COL_LESSON_LINK);
-            mLessonLink.setText(lessonLink);
-            if (mLessonLink.equals("")) {
-                mLink.setText("");
-            }
-
-            lessonDebug = data.getString(COL_LESSON_DEBUG);
-            if (lessonDebug.equals("")) {
-                mDebug.setText("");
-            }
-            mLessonDebug.setText(lessonDebug);
-
-            lessonPracticalTitle = data.getString(COL_LESSON_PRACTICAL_TITLE);
-            mLessonPracticalTitle.setText(lessonPracticalTitle);
-
-            lessonPractical = data.getString(COL_LESSON_PRACTICAL);
-            mLessonPractical.setText(lessonPractical);
-
-            lessonOutline = data.getString(COL_LESSON_OUTLINE);
-            mLessonOutline.setText(lessonOutline);
-
-            teacherEmail = data.getString(COL_TEACHER_EMAIL);
-            teacherPhoto = data.getString(COL_TEACHER_PHOTO);
-            courseName = data.getString(COL_COURSE_NAME);
-            courserColor = data.getInt(COL_TEACHER_COLOR);
-            teacherName = data.getString(COL_TEACHER_NAME);
-
-
-            outlineImageBit = new ImageSaver(getActivity()).
-                    setFileName(lessonName + Constants.LESSON_SUMMARY).
-                    setDirectoryName(Constants.APP_NAME).
-                    load();
-            outlineImage.setImageBitmap(outlineImageBit);
-
-
-            linkImageBit = new ImageSaver(getActivity()).
-                    setFileName(lessonName + Constants.LESSON_LINK).
-                    setDirectoryName(Constants.APP_NAME).
-                    load();
-            linkImage.setImageBitmap(linkImageBit);
-
-            appImageBit = new ImageSaver(getActivity()).
-                    setFileName(lessonName + Constants.LESSON_APP).
-                    setDirectoryName(Constants.APP_NAME).
-                    load();
-            appImage.setImageBitmap(appImageBit);
-
-
-            favorite = Integer.parseInt(data.getString(COL_FAVORITE));
-
-            AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-            if (shareItem != null) {
-                if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
-                    shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
-                }
-            }
-
-        }
-    }
-
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 
 
@@ -383,20 +244,84 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
 
     }
 
+    private void setUpValues(Lesson lesson) {
+        courseId = lesson.getCourseId();
+        lessonName = lesson.getLessonTitle();
+        collapsingToolbar.setTitle(lessonName);
+        lessonLink = lesson.getLessonLink();
+        mLessonLink.setText(lessonLink);
+        if (mLessonLink.equals("")) {
+            mLink.setText("");
+        }
+
+        lessonDebug = lesson.getLessonDebug();
+        if (lessonDebug.equals("")) {
+            mDebug.setText("");
+        }
+        mLessonDebug.setText(lessonDebug);
+
+        lessonPracticalTitle = lesson.getLessonPracticalTitle();
+        mLessonPracticalTitle.setText(lessonPracticalTitle);
+
+        lessonPractical = lesson.getLessonPractical();
+        mLessonPractical.setText(lessonPractical);
+
+        lessonOutline = lesson.getLessonSummary();
+        mLessonOutline.setText(lessonOutline);
+
+        teacherEmail = "";//data.getString(COL_TEACHER_EMAIL);
+        teacherPhoto = "";// data.getString(COL_TEACHER_PHOTO);
+        courseName = "";// data.getString(COL_COURSE_NAME);
+        courserColor = 0; //data.getInt(COL_TEACHER_COLOR);
+        teacherName = "";// data.getString(COL_TEACHER_NAME);
+
+
+        outlineImageBit = new ImageSaver(getActivity()).
+                setFileName(lessonName + Constants.LESSON_SUMMARY).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        outlineImage.setImageBitmap(outlineImageBit);
+
+
+        linkImageBit = new ImageSaver(getActivity()).
+                setFileName(lessonName + Constants.LESSON_LINK).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        linkImage.setImageBitmap(linkImageBit);
+
+        appImageBit = new ImageSaver(getActivity()).
+                setFileName(lessonName + Constants.LESSON_APP).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        appImage.setImageBitmap(appImageBit);
+
+
+        favorite = Integer.parseInt(lesson.getFavoriteLesson());
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+
+        if (shareItem != null) {
+            //todo see the firebase push id
+            shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
+
+        }
+
+    }
+
 
     //firebase share
 
     private void createShareUserLesson() {
-
+        //todo see if course is save a firebase key they and start share
         setUpFireBase();
-        if (mCursor.getString(COL_FIREBASE_COURSE_ID) == null) {
-            addCourseToFirebase();
-        } else {
-            if (mCursor.getString(COL_FIREBASE_LESSON_ID) == null) {
-                coursePushId = mCursor.getString(COL_FIREBASE_COURSE_ID);
-                addLessonToFirebase();
-            }
-        }
+//        if (mCursor.getString(COL_FIREBASE_COURSE_ID) == null) {
+//            addCourseToFirebase();
+//        } else {
+//            if (mCursor.getString(COL_FIREBASE_LESSON_ID) == null) {
+//                coursePushId = mCursor.getString(COL_FIREBASE_COURSE_ID);
+//                addLessonToFirebase();
+//            }
+//        }
 
     }
 
@@ -457,11 +382,11 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
         SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
         String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
 
-        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "", userName, true,
-                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
+//        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "", userName, true,
+//                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         lessonPushId = mLessonDatabaseReference.push().getKey();
 
-        mLessonDatabaseReference.child(lessonPushId).setValue(lesson);
+        mLessonDatabaseReference.child(lessonPushId).setValue(null);
         mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -571,23 +496,14 @@ public class LessonDetailFragment extends Fragment implements LoaderManager.Load
     private void addFirebaseCourseId(String pushId) {
         ContentValues firebasePushId = new ContentValues();
         firebasePushId.put(CourseContract.CourseEntry.COLUMN_FIREBASE_ID, pushId);
-        getActivity().getContentResolver().update(CourseContract.CourseEntry.buildCoursesUri(),
-                firebasePushId,
-                CourseContract.CourseEntry.TABLE_NAME +
-                        "." + CourseContract.CourseEntry.COLUMN_COURSE_ID + " = ? ",
-                new String[]{CourseContract.CourseEntry.getCourseIdFromUri(mUri)});
-        getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+        //todo save courseId to the database
     }
 
     private void addFirebaseLessonId(String pushId) {
         ContentValues firebasePushId = new ContentValues();
         firebasePushId.put(CourseContract.SubjectEntry.COLUMN_FIREBASE_ID, pushId);
-        getActivity().getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
-                firebasePushId,
-                CourseContract.SubjectEntry.TABLE_NAME +
-                        "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
-                new String[]{CourseContract.SubjectEntry.getSubjectTitleFromUri(mUri)});
-        getLoaderManager().restartLoader(DETAIL_LOADER, null, this);
+        //todo save lessonId to the database
+
 
     }
 

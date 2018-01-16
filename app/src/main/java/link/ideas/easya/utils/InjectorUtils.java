@@ -8,6 +8,7 @@ import link.ideas.easya.AppExecutors;
 import link.ideas.easya.data.EasyARepository;
 import link.ideas.easya.data.database.EasyADatabase;
 import link.ideas.easya.factory.CourseListModelFactory;
+import link.ideas.easya.factory.LessonDetailModelFactory;
 import link.ideas.easya.factory.LessonListModelFactory;
 
 /**
@@ -32,6 +33,11 @@ public class InjectorUtils {
     public static LessonListModelFactory provideLessonListViewModelFactory(Context context, String courseId) {
         EasyARepository repository = provideRepository(context.getApplicationContext());
         return new LessonListModelFactory(repository, courseId);
+    }
+
+    public static LessonDetailModelFactory provideLessonDetailViewModelFactory(Context context, int lessonId) {
+        EasyARepository repository = provideRepository(context.getApplicationContext());
+        return new LessonDetailModelFactory(repository, lessonId);
     }
 
 
