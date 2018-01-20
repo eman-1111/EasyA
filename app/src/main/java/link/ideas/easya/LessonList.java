@@ -67,6 +67,7 @@ public class LessonList extends BaseActivity implements
 
         FavLessonListFragment fragmentFav = new FavLessonListFragment();
         fragmentFav.setArguments(arguments);
+
         adapter.addFragment(fragment, getResources().getString(R.string.lesson_tap));
         adapter.addFragment(fragmentFav, getResources().getString(R.string.favorite_lesson_tap));
         viewPager.setAdapter(adapter);

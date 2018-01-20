@@ -25,8 +25,10 @@ import android.widget.TextView;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import link.ideas.easya.AddNewLesson;
 import link.ideas.easya.ImagesSearch;
 import link.ideas.easya.R;
+import link.ideas.easya.adapter.LessonAdapter;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 
@@ -37,12 +39,12 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = ApplyFragment.class.getSimpleName();
 
     TextInputLayout inputLayoutAppTitle, inputLayoutApp;
-    public static EditText lessonLifeAppTitle, lessonLifeApp;
+    public  EditText lessonLifeAppTitle, lessonLifeApp;
     ImageView infoTitle, infoApp;
-    public static ImageView imageApp;
+    public  ImageView imageApp;
 
-    public static Bitmap thumbnail = null;
-    public static String lessonAppTitle = "", lessonApp = "";
+    public  Bitmap thumbnail = null;
+    public String lessonAppTitle = "", lessonApp = "";
 
     public ApplyFragment() {
 
@@ -282,5 +284,16 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    public interface Callback {
+        public void onSavedClicked(String lessonAppTitle,String lessonApp,Bitmap applyImage);
+    }
+
+    public  void getApplyData(){
+        lessonAppTitle = lessonLifeAppTitle.getText().toString();
+        lessonApp = lessonLifeApp.getText().toString();
+        ((Callback) getActivity())
+                .onSavedClicked(lessonAppTitle , lessonApp, thumbnail);
     }
 }

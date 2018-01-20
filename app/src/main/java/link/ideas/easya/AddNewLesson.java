@@ -60,8 +60,9 @@ import me.relex.circleindicator.CircleIndicator;
 
 import static link.ideas.easya.fragment.CourseListFragment.LOG_TAG;
 
-public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-
+public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback,
+        LinkFragment.Callback, SummaryFragment.Callback {
+    private static final String LOG_TAG = AddNewLesson.class.getSimpleName();
 
     ViewPager viewPager;
     CircleIndicator indicator;
@@ -69,11 +70,6 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
 
     String courseId;
     ViewPagerAdapter adapter;
-    boolean edit = false;
-    private Uri mUri;
-    Cursor mCursor = null;
-    private static final int DETAIL_LOADER = 0;
-    String oldLessonName = "";
 
     private FirebaseDatabase mFirebaseDatabase;
 
@@ -89,35 +85,6 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
     Uri appUrl, linkUrl, summaryUrl;
 
 
-    private static final String[] DETAIL_COLUMNS = {
-            CourseContract.SubjectEntry.COLUMN_COURSE_ID,
-            CourseContract.SubjectEntry.COLUMN_LESSON_TITLE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_LINK,
-            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL,
-            CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE,
-            CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG,
-            CourseContract.CourseEntry.COLUMN_COURSE_NAME,
-            CourseContract.CourseEntry.COLUMN_TEACHER_NAME,
-            CourseContract.SubjectEntry.COLUMN_FAVORITE,
-            CourseContract.SubjectEntry.COLUMN_FIREBASE_ID};
-
-
-    public static final int COL_COURSE_ID = 0;
-    public static final int COL_LESSON_TITLE = 1;
-    public static final int COL_LESSON_LINK = 2;
-    public static final int COL_LESSON_PRACTICAL_TITLE = 3;
-    public static final int COL_LESSON_PRACTICAL = 4;
-    public static final int COL_LESSON_OUTLINE = 5;
-    public static final int COL_LESSON_DEBUG = 6;
-
-    public static final int COL_COURSE_NAME = 7;
-    public static final int COL_TEACHER_NAME = 8;
-    public static final int COL_FAVORITE = 9;
-
-    public static final int COL_FIREBASE_COURSE_ID = 10;
-    public static final int COL_FIREBASE_LESSON_ID = 11;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,14 +95,6 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         indicator = (CircleIndicator) findViewById(R.id.indicator);
 
-        Intent intent = getIntent();
-        courseId = intent.getStringExtra(Constants.PREF_COURSE_ID);
-        if (intent.getStringExtra(Constants.PREF_LESSON_URL) != null) {
-            edit = true;
-            mUri = Uri.parse(intent.getStringExtra(Constants.PREF_LESSON_URL));
-            getSupportLoaderManager().initLoader(DETAIL_LOADER, null, this);
-
-        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -162,67 +121,28 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
 
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (null != mUri) {
-            // Now create and return a CursorLoader that will take care of
-            // creating a Cursor for the data being displayed.
-            return new CursorLoader(
-                    this,
-                    mUri,
-                    DETAIL_COLUMNS,
-                    null,
-                    null,
-                    null
-            );
-        }
-        return null;
+    public void onSavedClicked(String lessonAppTitle, String lessonApp, Bitmap applyImage) {
+        imageApp = applyImage;
+        appTitle = lessonAppTitle;
+        appSummary = lessonApp;
+
+        Log.e(LOG_TAG, appTitle + " " + appSummary);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data != null && data.moveToFirst()) {
-            mCursor = data;
-            ladEditData();
-        }
-    }
-
-    private void ladEditData() {
-        String lessonName = mCursor.getString(COL_LESSON_TITLE);
-        SummaryFragment.lessonNameET.setText(lessonName);
-        SummaryFragment.lessonOverViewET.setText(mCursor.getString(COL_LESSON_OUTLINE));
-        oldLessonName = mCursor.getString(COL_LESSON_TITLE);
-
-        LinkFragment.lessonLink.setText(mCursor.getString(COL_LESSON_LINK));
-        LinkFragment.lessonDebug.setText(mCursor.getString(COL_LESSON_DEBUG));
-
-        ApplyFragment.lessonAppTitle = mCursor.getString(COL_LESSON_PRACTICAL_TITLE);
-        ApplyFragment.lessonApp = mCursor.getString(COL_LESSON_PRACTICAL);
-
-
-
-        Bitmap bitmap = new ImageSaver(this).
-                setFileName(lessonName + Constants.LESSON_SUMMARY).
-                setDirectoryName(Constants.APP_NAME).
-                load();
-        SummaryFragment.outlineImage.setImageBitmap(bitmap);
-
-        Bitmap bitmapLink = new ImageSaver(this).
-                setFileName(lessonName + Constants.LESSON_LINK).
-                setDirectoryName(Constants.APP_NAME).
-                load();
-        LinkFragment.imageLink.setImageBitmap(bitmapLink);
-
-        Bitmap bitmapApp = new ImageSaver(this).
-                setFileName(lessonName + Constants.LESSON_APP).
-                setDirectoryName(Constants.APP_NAME).
-                load();
-        ApplyFragment.imageApp.setImageBitmap(bitmapApp);
-
+    public void onSavedClickedSummary(String lessonTitle, String lessonSummary, Bitmap summaryImage) {
+        outlineImage = summaryImage;
+        title = lessonTitle;
+        summary = lessonSummary;
+        Log.e(LOG_TAG, title + " " + summary);
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+    public void onSavedClickedLink(String lessonLink, String lessonDebug, Bitmap linkImage) {
+        imageLink = linkImage;
+        links = lessonLink;
+        debug = lessonDebug;
+        Log.e(LOG_TAG, links + " " + debug);
     }
 
 
@@ -250,9 +170,6 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
         @Override
         public void notifyDataSetChanged() {
             super.notifyDataSetChanged();
-            SummaryFragment.lessonNameET.addTextChangedListener(new AddNewLesson.MyTextWatcher(SummaryFragment.lessonNameET));
-            SummaryFragment.lessonOverViewET.addTextChangedListener(new AddNewLesson.MyTextWatcher(SummaryFragment.lessonOverViewET));
-
         }
     }
 
@@ -285,82 +202,23 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
     }
 
     private void startSaveLesson() {
-        if (validateName() && validateOutline()) {
-            title = SummaryFragment.lessonNameET.getText().toString();
-            summary = SummaryFragment.lessonOverViewET.getText().toString();
 
-            links = LinkFragment.lessonLink.getText().toString();
-            debug = LinkFragment.lessonDebug.getText().toString();
+        SummaryFragment summaryFragment = (SummaryFragment)
+                adapter.getItem(0);
 
-            appTitle = ApplyFragment.lessonLifeAppTitle.getText().toString();
-            appSummary = ApplyFragment.lessonLifeApp.getText().toString();
-
-
-            outlineImage = SummaryFragment.thumbnail;
-            imageLink = LinkFragment.thumbnail;
-            imageApp = ApplyFragment.thumbnail;
-
-
-            byte[] outlineImage_, imageLink_, imageApp_;
-            if (outlineImage != null) {
-                outlineImage_ = Helper.getBytes(outlineImage);
-                new ImageSaver(this).
-                        setFileName(title + Constants.LESSON_SUMMARY).
-                        setDirectoryName(Constants.APP_NAME).
-                        save(outlineImage);
-            } else {
-                outlineImage_ = null;
-            }
-            if (imageLink != null) {
-                new ImageSaver(this).
-                        setFileName(title + Constants.LESSON_LINK).
-                        setDirectoryName(Constants.APP_NAME).
-                        save(imageLink);
-            } else {
-                imageLink_ = null;
-            }
-            if (imageApp != null) {
-                imageApp_ = Helper.getBytes(imageApp);
-                new ImageSaver(this).
-                        setFileName(title + Constants.LESSON_APP).
-                        setDirectoryName(Constants.APP_NAME).
-                        save(imageApp);
-            } else {
-                imageApp_ = null;
-            }
-
-            addLessonData(courseId, title, summary,
-                    links, appTitle,
-                    appSummary, debug);
+        if (summaryFragment.validateSummary()) {
+            summaryFragment.getSummerData();
+            LinkFragment linkFragment = (LinkFragment)
+                    adapter.getItem(1);
+            linkFragment.getLinkData();
+            ApplyFragment applyFragment = (ApplyFragment)
+                    adapter.getItem(2);
+            applyFragment.getApplyData();
+        } else {
+            viewPager.setCurrentItem(0);
         }
     }
 
-    public class MyTextWatcher implements TextWatcher {
-
-        private View view;
-
-        private MyTextWatcher(View view) {
-            this.view = view;
-        }
-
-        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-        }
-
-        public void afterTextChanged(Editable editable) {
-            switch (view.getId()) {
-                case R.id.lesson_name_et:
-                    validateName();
-                    break;
-                case R.id.lesson_outline_et:
-                    validateOutline();
-                    break;
-
-            }
-        }
-    }
 
     /**
      * Helper method to handle insertion of a new location in the weather database.
@@ -373,89 +231,14 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
      */
     void addLessonData(String courseId, String lessonName, String lessonOutline,
                        String lessonLink, String lessonLifeAppTitle,
-                       String lessonLifeApp,  String lessonDebugs) {
-
-        ContentValues courseValues = new ContentValues();
-
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_COURSE_ID, courseId);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_TITLE, lessonName);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_OUTLINE, lessonOutline);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_LINK, lessonLink);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL_TITLE, lessonLifeAppTitle);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_PRACTICAL, lessonLifeApp);
-        courseValues.put(CourseContract.SubjectEntry.COLUMN_LESSON_DEBUG, lessonDebugs);
+                       String lessonLifeApp, String lessonDebugs) {
 
 
-        if (edit) {
-
-            //  int lessonId =
-            // Log.e(LOG_TAG, "mURI: "+ mUri);
-            this.getContentResolver().update(CourseContract.SubjectEntry.buildSubjectsUri(),
-                    courseValues,
-                    CourseContract.SubjectEntry.TABLE_NAME +
-                            "." + CourseContract.SubjectEntry.COLUMN_LESSON_TITLE + " = ? ",
-                    new String[]{oldLessonName});
-            if (mCursor.getString(COL_FIREBASE_LESSON_ID) != null) {
-                if (isDeviceOnline()) {
-                    setUpFireBase();
-                } else {
-                    Snackbar.make(mCardView, getResources().getString(R.string.network_edit),
-                            Snackbar.LENGTH_LONG).show();
-                }
-            }
-
-        } else {
-            courseValues.put(CourseContract.SubjectEntry.COLUMN_FAVORITE, "0");
-            //  Log.e("Key Subject", userKey);
-
-            this.getContentResolver().insert(
-                    CourseContract.SubjectEntry.CONTENT_URI,
-                    courseValues);
-        }
-
-        clearSavedData();
         Intent intent = new Intent(this, LessonList.class)
                 .setData(CourseContract.SubjectEntry.buildSubjectWithID(courseId));
         startActivity(intent);
         finish();
 
-    }
-
-
-    private void clearSavedData() {
-        ApplyFragment.lessonAppTitle = "";
-        ApplyFragment.lessonApp = "";
-
-
-        SummaryFragment.thumbnail = null;
-        LinkFragment.thumbnail = null;
-        ApplyFragment.thumbnail = null;
-    }
-
-    private boolean validateName() {
-        if (SummaryFragment.lessonNameET.getText().toString().trim().isEmpty()) {
-            SummaryFragment.inputLayoutName.setError(getResources().getString(R.string.lesson_name_error));
-            requestFocus(SummaryFragment.lessonNameET);
-            viewPager.setCurrentItem(0);
-            return false;
-        } else {
-            SummaryFragment.inputLayoutName.setErrorEnabled(false);
-        }
-
-        return true;
-    }
-
-    private boolean validateOutline() {
-        if (SummaryFragment.lessonOverViewET.getText().toString().trim().isEmpty()) {
-            SummaryFragment.inputLayoutOutline.setError(getResources().getString(R.string.summary_error));
-            requestFocus(SummaryFragment.lessonOverViewET);
-            viewPager.setCurrentItem(0);
-            return false;
-        } else {
-            SummaryFragment.inputLayoutOutline.setErrorEnabled(false);
-        }
-
-        return true;
     }
 
     private void requestFocus(View view) {
@@ -478,10 +261,6 @@ public class AddNewLesson extends BaseActivity implements LoaderManager.LoaderCa
 
 
     private void setUpFireBase() {
-
-        coursePushId = mCursor.getString(COL_FIREBASE_COURSE_ID);
-        lessonPushId = mCursor.getString(COL_FIREBASE_LESSON_ID);
-
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();

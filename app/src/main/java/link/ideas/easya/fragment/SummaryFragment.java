@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,11 +37,11 @@ import static android.app.Activity.RESULT_OK;
 
 public class SummaryFragment extends Fragment {
 
-    public static Bitmap thumbnail = null;
-    private static final String LOG_TAG = SummaryFragment.class.getSimpleName();
-    public static EditText lessonNameET, lessonOverViewET;
-    public static ImageView outlineImage;
-    public static TextInputLayout inputLayoutName, inputLayoutOutline;
+    Bitmap thumbnail = null;
+    private final String LOG_TAG = SummaryFragment.class.getSimpleName();
+    EditText lessonNameET, lessonOverViewET;
+    ImageView outlineImage;
+    TextInputLayout inputLayoutName, inputLayoutOutline;
     View view;
 
     public SummaryFragment() {
@@ -112,6 +113,7 @@ public class SummaryFragment extends Fragment {
         super.onPause();
         outlineImage.setImageBitmap(null);
     }
+
     public void startImageIntent() {
         Intent intent = new Intent(getActivity(), ImagesSearch.class);
         startActivityForResult(intent, 2);
@@ -256,4 +258,55 @@ public class SummaryFragment extends Fragment {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
+    public interface Callback {
+        public void onSavedClickedSummary(String lessonTitle,String lessonSummary,Bitmap SummaryImage);
+    }
+
+    public  void getSummerData(){
+        ((Callback) getActivity())
+                .onSavedClickedSummary( lessonNameET.getText().toString(), lessonOverViewET.getText().toString(), thumbnail);
+    }
+
+
+
+    private boolean validateName() {
+        if (lessonNameET.getText().toString().trim().isEmpty()) {
+            inputLayoutName.setError(getResources().getString(R.string.lesson_name_error));
+            requestFocus(lessonNameET);
+
+            return false;
+        } else {
+            inputLayoutName.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
+    private boolean validateOutline() {
+        if (lessonOverViewET.getText().toString().trim().isEmpty()) {
+            inputLayoutOutline.setError(getResources().getString(R.string.summary_error));
+            requestFocus(lessonOverViewET);
+            return false;
+        } else {
+            inputLayoutOutline.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+    public boolean validateSummary() {
+        if(validateName() &&  validateOutline()){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+
+    private void requestFocus(View view) {
+        if (view.requestFocus()) {
+            getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        }
+    }
+
 }

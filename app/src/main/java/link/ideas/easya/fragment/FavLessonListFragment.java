@@ -39,6 +39,7 @@ import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.data.database.Course;
 import link.ideas.easya.data.database.ListLesson;
 import link.ideas.easya.factory.CourseListModelFactory;
+import link.ideas.easya.factory.FavLessonListModelFactory;
 import link.ideas.easya.factory.LessonListModelFactory;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.InjectorUtils;
@@ -128,7 +129,7 @@ public class FavLessonListFragment extends Fragment  {
             }
         });
 
-        LessonListModelFactory factory = InjectorUtils.provideLessonListViewModelFactory(getContext(), courseId);
+        FavLessonListModelFactory factory = InjectorUtils.provideFavLessonListViewModelFactory(getContext(), courseId);
         mViewModel = ViewModelProviders.of(this, factory).get(FavLessonListViewModel.class);
 
         mViewModel.getUserLessons().observe(getActivity(), new Observer<List<ListLesson>>() {

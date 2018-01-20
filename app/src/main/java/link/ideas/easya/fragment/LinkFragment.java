@@ -40,12 +40,12 @@ import static android.app.Activity.RESULT_OK;
 public class LinkFragment extends Fragment implements View.OnClickListener {
 
 
-    private static final String LOG_TAG = LinkFragment.class.getSimpleName();
-    public static Bitmap thumbnail = null;
+    private final String LOG_TAG = LinkFragment.class.getSimpleName();
+    Bitmap thumbnail = null;
     TextInputLayout inputLayoutLink, inputLayoutDebug;
-    public static EditText lessonLink, lessonDebug;
+    EditText lessonLink, lessonDebug;
     ImageView infoLink, infoDebug;
-    public static ImageView imageLink;
+    public  ImageView imageLink;
 
     public LinkFragment() {
         setHasOptionsMenu(true);
@@ -287,5 +287,14 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+    }
+
+    public interface Callback {
+        public void onSavedClickedLink(String lessonLink,String lessonDebug,Bitmap linkImage);
+    }
+
+    public  void getLinkData(){
+        ((LinkFragment.Callback) getActivity())
+                .onSavedClickedLink( lessonLink.getText().toString(), lessonDebug.getText().toString(), thumbnail);
     }
 }
