@@ -57,7 +57,7 @@ public class LessonListFragment extends Fragment {
 
     private static final String LOG_TAG = LessonListFragment.class.getSimpleName();
     public static final String COURSE_ID = "course_id";
-    private String courseId;
+    private int courseId;
     TextView emptyView;
 
     LessonListViewModel mViewModel;
@@ -93,7 +93,7 @@ public class LessonListFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            courseId = arguments.getString(LessonListFragment.COURSE_ID);
+            courseId = arguments.getInt(LessonListFragment.COURSE_ID, -1);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);

@@ -30,7 +30,7 @@ public class CourseListViewModel extends ViewModel {
         mRepository.insertCourse(course);
     }
 
-    public void deleteCourse(String courseId) {
+    public void deleteCourse(int courseId) {
         mRepository.deleteCourse(courseId);
     }
 }

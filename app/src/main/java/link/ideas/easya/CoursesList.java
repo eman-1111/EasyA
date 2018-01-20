@@ -36,7 +36,7 @@ public class CoursesList extends BaseActivity implements
     }
 
     @Override
-    public void onItemSelected(String courseId, String courseName) {
+    public void onItemSelected(int courseId, String courseName) {
 
         Intent intent = new Intent(this, LessonList.class);
         intent.putExtra(Constants.PREF_COURSE_NAME, courseName);

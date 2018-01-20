@@ -30,6 +30,6 @@ public interface CourseDao {
     void insertCourse(Course course);
 
 
-    @Query("DELETE FROM course WHERE  courseId = :courseId")
-    void deleteCourse(String courseId);
+    @Query("DELETE FROM course WHERE  id = :id")
+    void deleteCourse(int id);
 }

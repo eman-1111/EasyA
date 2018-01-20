@@ -10,26 +10,25 @@ package link.ideas.easya.data.database;
  */
 public class ListLesson {
     private String courseName;
-    private int id;
+    private int lessonId;
     private int courseId;
     private String lessonTitle;
     private String lessonSummary;
     private String favoriteLesson;
     private String firebaseId;
 
-
     /**
      *
      *  @param courseName                course name
-     *  @param id                        column id for Lesson PrimaryKey
+     *  @param lessonId                        column id for Lesson PrimaryKey
      *  @param courseId                  column CourseId for Course foreignKeys
      *  @param lessonTitle               column lesson title
      *  @param lessonSummary             column lesson summary
      *  @param favoriteLesson            column favorite Lesson
      */
-    public ListLesson(int id, int courseId, String lessonTitle, String lessonSummary,
-                  String courseName, String favoriteLesson, String firebaseId) {
-        this.id = id;
+    public ListLesson(int lessonId, int courseId,String courseName, String lessonTitle, String lessonSummary,
+                   String favoriteLesson, String firebaseId) {
+        this.lessonId = lessonId;
         this.courseId = courseId;
         this.lessonTitle = lessonTitle;
         this.lessonSummary = lessonSummary;
@@ -42,8 +41,8 @@ public class ListLesson {
         return courseName;
     }
 
-    public int getId() {
-        return id;
+    public int getLessonId() {
+        return lessonId;
     }
 
     public int getCourseId() {

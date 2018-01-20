@@ -58,9 +58,9 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAda
             int adapterPostion = getAdapterPosition();
             ListLesson lessonList = listLessons.get(adapterPostion);
 
-            int idCulomn = lessonList.getCourseId();
+            int lessonId = lessonList.getLessonId();
             String titleCulomn = lessonList.getLessonTitle();
-            mClickHolder.onClick(idCulomn, titleCulomn, this);
+            mClickHolder.onClick(lessonId, titleCulomn, this);
 
         }
 
@@ -69,14 +69,14 @@ public class LessonAdapter extends RecyclerView.Adapter<LessonAdapter.SubjectAda
             int adapterPostion = getAdapterPosition();
             ListLesson lessonList = listLessons.get(adapterPostion);
 
-            int idCulomn = lessonList.getCourseId();
+            int lessonId = lessonList.getLessonId();
             String titleCulomn = lessonList.getLessonTitle();
 
             String lessonPush = lessonList.getFirebaseId();
             String coursePush = lessonList.getFirebaseId();
 
 
-            mClickHolder.onLongClick(idCulomn, titleCulomn,
+            mClickHolder.onLongClick(lessonId, titleCulomn,
                     lessonPush, coursePush);
             return true;
         }

@@ -15,8 +15,8 @@ import java.util.Date;
         {@ForeignKey(entity = Course.class, parentColumns = "id", childColumns = "courseId")})
 public class Lesson {
 
-    @PrimaryKey
-    private int id;
+    @PrimaryKey(autoGenerate = true)
+    private int lessonId;
     private int courseId;
     private String lessonTitle;
     private String lessonSummary;
@@ -46,11 +46,11 @@ public class Lesson {
      *  @param lessonCreate              column create lesson date
      *  @param lessonEdit                column edit lesson date
      */
-    public Lesson(int id, int courseId, String lessonTitle, String lessonSummary,
+    public Lesson(int lessonId, int courseId, String lessonTitle, String lessonSummary,
                   String lessonLink, String lessonDebug, String lessonPracticalTitle,
                   String lessonPractical, String favoriteLesson, String firebaseId,
                   Date lessonCreate, Date lessonEdit) {
-        this.id = id;
+        this.lessonId = lessonId;
         this.courseId = courseId;
         this.lessonTitle = lessonTitle;
         this.lessonSummary = lessonSummary;
@@ -95,8 +95,8 @@ public class Lesson {
         this.lessonEdit = lessonEdit;
     }
 
-    public int getId() {
-        return id;
+    public int getLessonId() {
+        return lessonId;
     }
 
     public int getCourseId() {

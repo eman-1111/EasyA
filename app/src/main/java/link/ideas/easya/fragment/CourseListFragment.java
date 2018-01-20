@@ -64,7 +64,7 @@ public class CourseListFragment extends Fragment {
         /**
          * DetailFragmentCallback for when an item has been selected.
          */
-        public void onItemSelected(String  courseId, String courseName);
+        public void onItemSelected(int  courseId, String courseName);
     }
 
     RecyclerView mRecyclerView;
@@ -127,14 +127,14 @@ public class CourseListFragment extends Fragment {
 
         mCourseAdapter = new CourseAdapter(getActivity(), new CourseAdapter.CourseAdapterOnClickHolder() {
             @Override
-            public void onClick(String id, String courseName, CourseAdapter.CourseAdapterViewHolder vh) {
+            public void onClick(int id, String courseName, CourseAdapter.CourseAdapterViewHolder vh) {
                 ((Callback) getActivity())
                         .onItemSelected(id, courseName);
                 mPosition = vh.getAdapterPosition();
             }
 
             @Override
-            public boolean onLongClick(final String courseId, final String coursePushId) {
+            public boolean onLongClick(final int courseId, final String coursePushId) {
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(getActivity());
                 builder2.setMessage(getResources().getString(R.string.delete_course));
                 builder2.setPositiveButton(getResources().getString(R.string.delete),
@@ -160,7 +160,6 @@ public class CourseListFragment extends Fragment {
         mViewModel.getUserCourses().observe(getActivity(), new Observer<List<Course>>() {
             @Override
             public void onChanged(@Nullable List<Course> courses) {
-                Log.e("Courses" ,"f "+ courses.get(0).getCourseName());
                 mCourseAdapter.swapCursor(courses);
                 if (courses.size() != 0 ) {
                     emptyView.setText("");

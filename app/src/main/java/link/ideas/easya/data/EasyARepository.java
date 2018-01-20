@@ -63,13 +63,13 @@ public class EasyARepository {
         return mCourseDao.getCourses();
     }
 
-    public LiveData<List<ListLesson>> getUserLessons(String courseId) {
+    public LiveData<List<ListLesson>> getUserLessons(int courseId) {
         return mLessonDao.getLessons(courseId);
     }
 
 
 
-    public LiveData<List<ListLesson>> getUserFavLessons(String courseId) {
+    public LiveData<List<ListLesson>> getUserFavLessons(int courseId) {
         return mLessonDao.getLessons(courseId);
     }
 
@@ -101,7 +101,7 @@ public class EasyARepository {
         });
     }
 
-    public void deleteCourse(final String courseId) {
+    public void deleteCourse(final int courseId) {
         mAppExecutors.diskIO().execute(new Runnable() {
             @Override
             public void run() {

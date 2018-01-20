@@ -16,7 +16,7 @@ public class FavLessonListViewModel extends ViewModel {
     private final EasyARepository mRepository;
     private final LiveData<List<ListLesson>> mLesson;
 
-    public FavLessonListViewModel(EasyARepository repository , String courseId) {
+    public FavLessonListViewModel(EasyARepository repository , int courseId) {
         mRepository = repository;
         mLesson  = mRepository.getUserFavLessons(courseId);
     }

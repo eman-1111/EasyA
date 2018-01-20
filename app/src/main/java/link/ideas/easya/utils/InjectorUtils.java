@@ -7,6 +7,7 @@ import android.content.Context;
 import link.ideas.easya.AppExecutors;
 import link.ideas.easya.data.EasyARepository;
 import link.ideas.easya.data.database.EasyADatabase;
+import link.ideas.easya.factory.AddLessonFactory;
 import link.ideas.easya.factory.CourseListModelFactory;
 import link.ideas.easya.factory.FavLessonListModelFactory;
 import link.ideas.easya.factory.LessonDetailModelFactory;
@@ -31,12 +32,18 @@ public class InjectorUtils {
         return new CourseListModelFactory(repository);
     }
 
-    public static LessonListModelFactory provideLessonListViewModelFactory(Context context, String courseId) {
+    public static AddLessonFactory provideNewLessonViewModelFactory(Context context, int courseId) {
+        EasyARepository repository = provideRepository(context.getApplicationContext());
+        return new AddLessonFactory(repository, courseId);
+    }
+
+
+    public static LessonListModelFactory provideLessonListViewModelFactory(Context context, int courseId) {
         EasyARepository repository = provideRepository(context.getApplicationContext());
         return new LessonListModelFactory(repository, courseId);
     }
 
-    public static FavLessonListModelFactory provideFavLessonListViewModelFactory(Context context, String courseId) {
+    public static FavLessonListModelFactory provideFavLessonListViewModelFactory(Context context, int courseId) {
         EasyARepository repository = provideRepository(context.getApplicationContext());
         return new FavLessonListModelFactory(repository, courseId);
     }

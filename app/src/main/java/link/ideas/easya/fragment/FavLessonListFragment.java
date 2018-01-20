@@ -55,7 +55,7 @@ public class FavLessonListFragment extends Fragment  {
 
     private static final String LOG_TAG = LessonListFragment.class.getSimpleName();
     public static final String COURSE_ID = "course_id";
-    private String courseId;
+    private int courseId;
     TextView emptyView;
     FavLessonListViewModel mViewModel;
     public FavLessonListFragment() {
@@ -89,8 +89,8 @@ public class FavLessonListFragment extends Fragment  {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            courseId = arguments.getString(LessonListFragment.COURSE_ID);
-            Log.e("COURSE_ID",courseId );
+            courseId = arguments.getInt(LessonListFragment.COURSE_ID);
+            Log.e("COURSE_ID",courseId+"g" );
         }
         View rootView = inflater.inflate(R.layout.fragment_subject_list, container, false);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerview_lesson);

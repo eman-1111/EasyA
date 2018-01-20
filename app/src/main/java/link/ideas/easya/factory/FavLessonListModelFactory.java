@@ -13,9 +13,9 @@ import link.ideas.easya.viewmodel.FavLessonListViewModel;
 public class FavLessonListModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final EasyARepository mRepository;
-    private final String courseId;
+    private final int courseId;
 
-    public FavLessonListModelFactory(EasyARepository repository,  String courseId) {
+    public FavLessonListModelFactory(EasyARepository repository,  int courseId) {
         this.mRepository = repository;
         this.courseId = courseId;
     }

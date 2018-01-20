@@ -30,7 +30,7 @@ import link.ideas.easya.utils.Constants;
 public class LessonList extends BaseActivity implements
         LessonListFragment.Callback, FavLessonListFragment.Callback {
 
-    String courseId;
+    int courseId;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -41,7 +41,7 @@ public class LessonList extends BaseActivity implements
 
         if (savedInstanceState == null) {
             Intent intent = getIntent();
-            courseId = intent.getStringExtra(Constants.PREF_COURSE_ID);
+            courseId = intent.getIntExtra(Constants.PREF_COURSE_ID, -1);
         }
         setDrawer(true);
         setUpAPIs();
@@ -60,7 +60,7 @@ public class LessonList extends BaseActivity implements
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         Bundle arguments = new Bundle();
-        arguments.putString(LessonListFragment.COURSE_ID, courseId);
+        arguments.putInt(LessonListFragment.COURSE_ID, courseId);
 
         LessonListFragment fragment = new LessonListFragment();
         fragment.setArguments(arguments);

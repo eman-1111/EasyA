@@ -56,7 +56,7 @@ public class LessonDaoTest {
         mDatabase.lessonModel().insertLesson(LESSON);
 
         //get lessons list for that course
-        List<ListLesson> lessons =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getCourseId()));
+        List<ListLesson> lessons =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getId()));
         assertThat(lessons.size(), is(1));
         ListLesson lesson = lessons.get(0);
 
@@ -74,12 +74,12 @@ public class LessonDaoTest {
         mDatabase.lessonModel().insertLesson(LESSON);
 
         //get lessons list for that course
-        List<ListLesson> lessons = LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getCourseId()));
+        List<ListLesson> lessons = LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getId()));
         assertThat(lessons.size(), is(1));
         ListLesson lesson = lessons.get(0);
 
         //get lesson`s detail
-        Lesson dpLesson =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLesson(lesson.getId()));
+        Lesson dpLesson =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLesson(lesson.getLessonId()));
 
         //make sure its the same lesson I inserted
         assertEquals(dpLesson.getLessonCreate(), LESSON.getLessonCreate());
@@ -96,15 +96,15 @@ public class LessonDaoTest {
         mDatabase.lessonModel().insertLesson(LESSON);
 
         //get lessons list for that course
-        List<ListLesson> lessons = LiveDataTestUtil.getValue( mDatabase.lessonModel().getLessons(course.getCourseId()));
+        List<ListLesson> lessons = LiveDataTestUtil.getValue( mDatabase.lessonModel().getLessons(course.getId()));
         assertThat(lessons.size(), is(1));
         ListLesson lesson = lessons.get(0);
 
         //delete lesson
-        mDatabase.lessonModel().deleteLesson(lesson.getId());
+        mDatabase.lessonModel().deleteLesson(lesson.getLessonId());
 
         //the Lesson is no longer in the data source
-        List<ListLesson> lessonsA =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getCourseId()));
+        List<ListLesson> lessonsA =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getId()));
         assertThat(lessonsA.size(), is(0));
     }
 
@@ -116,7 +116,7 @@ public class LessonDaoTest {
         mDatabase.lessonModel().insertLesson(LESSON);
 
         //get lessons list for that course
-        List<ListLesson> lessons =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getCourseId()));
+        List<ListLesson> lessons =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getId()));
         assertThat(lessons.size(), is(1));
         ListLesson lesson = lessons.get(0);
 
@@ -124,7 +124,7 @@ public class LessonDaoTest {
         mDatabase.lessonModel().deleteCourseLessons(lesson.getCourseId());
 
         //the Lesson is no longer in the data source
-        List<ListLesson> lessonsA =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getCourseId()));
+        List<ListLesson> lessonsA =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getId()));
         assertThat(lessonsA.size(), is(0));
     }
 

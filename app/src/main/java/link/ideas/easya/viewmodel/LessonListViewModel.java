@@ -17,7 +17,7 @@ public class LessonListViewModel extends ViewModel {
     private final EasyARepository mRepository;
     private final LiveData<List<ListLesson>> mLesson;
 
-    public LessonListViewModel(EasyARepository repository , String courseId) {
+    public LessonListViewModel(EasyARepository repository , int courseId) {
         mRepository = repository;
         mLesson  = mRepository.getUserLessons(courseId);
     }

@@ -18,21 +18,21 @@ import static android.arch.persistence.room.OnConflictStrategy.ABORT;
 public interface LessonDao {
 
 
-    @Query("SELECT course.courseName, lesson.courseId, lesson.id, lesson.lessonTitle," +
-            " lesson.lessonSummary, lesson.favoriteLesson From lesson " +
+    @Query("SELECT lesson.lessonId , lesson.courseId, course.courseName, lesson.lessonTitle," +
+            " lesson.lessonSummary, lesson.favoriteLesson, lesson.firebaseId From lesson " +
             "INNER JOIN course ON lesson.courseId = course.id " +
             "WHERE lesson.courseId = :courseId "+
             "AND course.id = :courseId ")
-    LiveData<List<ListLesson>> getLessons(String courseId);
+    LiveData<List<ListLesson>> getLessons(int courseId);
 
-    @Query("SELECT * From lesson WHERE id = :id ")
-    LiveData<Lesson> getLesson(int id);
+    @Query("SELECT * From lesson WHERE lessonId = :lessonId ")
+    LiveData<Lesson> getLesson(int lessonId);
 
     @Insert(onConflict = ABORT)
     void insertLesson(Lesson lesson);
 
-    @Query("DELETE FROM lesson WHERE id = :id ")
-    void deleteLesson(int id);
+    @Query("DELETE FROM lesson WHERE lessonId = :lessonId ")
+    void deleteLesson(int lessonId);
 
     @Query("DELETE FROM lesson WHERE courseId = :courseId ")
     void deleteCourseLessons(int courseId);
