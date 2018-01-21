@@ -7,11 +7,11 @@ import android.content.Context;
 import link.ideas.easya.AppExecutors;
 import link.ideas.easya.data.EasyARepository;
 import link.ideas.easya.data.database.EasyADatabase;
-import link.ideas.easya.factory.AddLessonFactory;
-import link.ideas.easya.factory.CourseListModelFactory;
-import link.ideas.easya.factory.FavLessonListModelFactory;
-import link.ideas.easya.factory.LessonDetailModelFactory;
-import link.ideas.easya.factory.LessonListModelFactory;
+import link.ideas.easya.ui.add_lesson.AddLessonFactory;
+import link.ideas.easya.ui.course_list.CourseListModelFactory;
+import link.ideas.easya.ui.lesson_list.FavLessonListModelFactory;
+import link.ideas.easya.ui.lesson_detail.LessonDetailModelFactory;
+import link.ideas.easya.ui.lesson_list.LessonListModelFactory;
 
 /**
  * Provides static methods to inject the various classes needed for EasyA

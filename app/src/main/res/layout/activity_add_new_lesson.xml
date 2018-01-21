@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/off_white"
     android:fitsSystemWindows="true"
-    tools:context="link.ideas.easya.AddNewLesson">
+    tools:context="link.ideas.easya.ui.add_lesson.AddNewLesson">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbar"

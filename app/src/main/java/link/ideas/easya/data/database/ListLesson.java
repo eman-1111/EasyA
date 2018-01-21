@@ -1,12 +1,6 @@
 package link.ideas.easya.data.database;
-
-/**
- * Created by Eman on 11/22/2017.
- */
-
 /**
  * Simplified {@link Lesson} which only contains the details needed for the lesson list in
- * the {@link link.ideas.easya.adapter.LessonAdapter}
  */
 public class ListLesson {
     private String courseName;

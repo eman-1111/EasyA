@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="4dp"
     app:sharedElementTransitions="true"
-    tools:context="link.ideas.easya.fragment.LessonListFragment"
+    tools:context="link.ideas.easya.ui.lesson_list.LessonListFragment"
     tools:showIn="@layout/courses_list">
 
       <android.support.v7.widget.RecyclerView

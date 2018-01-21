@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
         <activity
-            android:name=".CoursesList"
+            android:name=".ui.course_list.CoursesList"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.Home">
@@ -31,57 +31,57 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LessonList"
+            android:name=".ui.lesson_list.LessonList"
             android:launchMode="singleTask"
-            android:parentActivityName=".CoursesList"
+            android:parentActivityName=".ui.course_list.CoursesList"
             android:theme="@style/AppTheme.Translucent.Lesson" />
         <activity
-            android:name=".LessonDetail"
+            android:name=".ui.lesson_detail.LessonDetail"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.Translucent.Detail" />
         <activity
-            android:name=".AddFriendActivity"
+            android:name=".ui.add_friend.AddFriendActivity"
             android:label="@string/add_friends"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ImagesSearch"
-            android:parentActivityName=".AddNewLesson"
+            android:name=".ui.image_search.ImagesSearch"
+            android:parentActivityName=".ui.add_lesson.AddNewLesson"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".AddNewLesson"
+            android:name=".ui.add_lesson.AddNewLesson"
             android:launchMode="singleTask"
-            android:parentActivityName=".LessonList" />
+            android:parentActivityName=".ui.lesson_list.LessonList" />
         <activity
-            android:name=".ProfileActivity"
+            android:name=".ui.profile.ProfileActivity"
             android:launchMode="singleTask"
-            android:parentActivityName=".CoursesList" />
+            android:parentActivityName=".ui.course_list.CoursesList" />
         <activity
-            android:name=".FriendsList"
+            android:name=".ui.friends_list.FriendsList"
             android:launchMode="singleTask"
-            android:parentActivityName=".ProfileActivity" />
+            android:parentActivityName=".ui.profile.ProfileActivity" />
         <activity
-            android:name=".CourseListFriends"
+            android:name=".ui.friend_couse_list.CourseListFriends"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.Home" />
 
         <activity
-            android:name=".LessonListFriends"
+            android:name=".ui.friend_lesson_list.LessonListFriends"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.Translucent.Lesson" />
 
         <activity
-            android:name=".LessonDetailFriend"
+            android:name=".ui.friend_lesson_detail.LessonDetailFriend"
             android:launchMode="singleTask"
-            android:parentActivityName=".LessonListFriends"
+            android:parentActivityName=".ui.friend_lesson_list.LessonListFriends"
             android:theme="@style/AppTheme.Translucent.Detail" />
 
         <activity
-            android:name=".HelpActivity"
+            android:name=".ui.help.HelpActivity"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme" />
         <!-- Detail Widget -->

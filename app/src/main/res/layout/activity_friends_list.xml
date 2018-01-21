@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="link.ideas.easya.FriendsList">
+    tools:context="link.ideas.easya.ui.friends_list.FriendsList">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

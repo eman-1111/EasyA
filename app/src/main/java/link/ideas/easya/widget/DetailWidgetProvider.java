@@ -12,8 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
-import link.ideas.easya.CoursesList;
-import link.ideas.easya.LessonList;
+import link.ideas.easya.ui.course_list.CoursesList;
+import link.ideas.easya.ui.lesson_list.LessonList;
 import link.ideas.easya.R;
 import link.ideas.easya.utils.Constants;
 
