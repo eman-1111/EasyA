@@ -27,8 +27,10 @@ import static org.junit.Assert.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class CourseDaoTest {
     private static final Course COURSE = new Course("sas", "Math", "Eman",
-            "eman.ashour1111@gmail.com", null, 2, null);
+            "eman.ashour1111@gmail.com", null, 2, "",
+            null,null);
     private EasyADatabase mDatabase;
+
 
     @Before
     public void initDb() throws Exception {
@@ -39,7 +41,6 @@ public class CourseDaoTest {
                 .allowMainThreadQueries()
                 .build();
     }
-    //todo know how to test synchronous room equivalent
     @Test
     public void insertAndGetCourse() throws InterruptedException  {
         //inserting new user into the course table
@@ -85,7 +86,32 @@ public class CourseDaoTest {
         //make sure its the same course I inserted
         assertEquals(course.getTeacherEmail(), COURSE.getTeacherEmail());
     }
+    @Test
+    public void editCourse() throws InterruptedException{
+        long courseId = mDatabase.courseModel().insertCourse(COURSE);
+        COURSE.setId((int) courseId);
+        COURSE.setCourseName("Math3");
 
+        mDatabase.courseModel().updateCourse(COURSE);
+
+        //get that course
+        Course dbCourse = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse((int) courseId));
+        assertEquals(dbCourse.getCourseName(), COURSE.getCourseName());
+
+    }
+
+    @Test
+    public void updatePuchId() throws InterruptedException{
+        long courseId = mDatabase.courseModel().insertCourse(COURSE);
+        COURSE.setCourseName("23456tg");
+
+        mDatabase.courseModel().updateFirebaseId((int)courseId, "23456tg");
+
+        //get that course
+        Course dbCourse = LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse((int) courseId));
+        assertEquals(dbCourse.getFirebaseId(), "23456tg");
+
+    }
     @Test
     public void deleteAndGetCourse()throws InterruptedException {
         //insert new course

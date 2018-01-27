@@ -4,10 +4,10 @@ import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
-import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 /**
@@ -27,9 +27,15 @@ public interface CourseDao {
     LiveData<Course> getCourse(String courseId);
 
     @Insert(onConflict = REPLACE)
-    void insertCourse(Course course);
+    long insertCourse(Course course);
 
+    @Update(onConflict = REPLACE)
+    void updateCourse(Course course);
+
+    @Query("UPDATE course SET firebaseId = :firebaseId  WHERE id = :id")
+     int updateFirebaseId(int id, String firebaseId);
 
     @Query("DELETE FROM course WHERE  id = :id")
     void deleteCourse(int id);
+
 }

@@ -31,9 +31,17 @@ public class Lesson {
     @TypeConverters(DateConverter.class)
     private Date lessonEdit;
 
+    private String lastEditName;
+    private boolean isAgreed;
+    private String lessonImage;
+    private String linkImage;
+    private String appImage;
+    private long lessonCreateF;
+    private long lessonEditF;
+
     /**
      *  This constructor is used by Room to create LessonEntry
-     *  @param id                        column id for Lesson PrimaryKey
+     *  @param lessonId                  column id for Lesson PrimaryKey
      *  @param courseId                  column CourseId for Course foreignKeys
      *  @param lessonTitle               column lesson title
      *  @param lessonSummary             column lesson summary
@@ -93,6 +101,34 @@ public class Lesson {
         this.firebaseId = firebaseId;
         this.lessonCreate = lessonCreate;
         this.lessonEdit = lessonEdit;
+    }
+
+    @Ignore
+    public Lesson() {
+
+    }
+
+    @Ignore
+    public Lesson(String lessonTitle, String lessonLink, String lessonImage,String lastEditName,
+                  boolean isAgreed,long lessonCreate, long lessonEdit) {
+        this.lessonTitle = lessonTitle;
+        this.lessonLink = lessonLink;
+        this.lessonImage = lessonImage;
+        this.lastEditName = lastEditName;
+        this.isAgreed = isAgreed;
+        this.lessonCreateF = lessonCreate;
+        this.lessonEditF = lessonEdit;
+    }
+    @Ignore
+    public Lesson(String lessonSummary, String linkImage, String lessonPracticalTitle,
+                        String lessonPractical, String appImage,String lessonDebug) {
+
+        this.lessonSummary = lessonSummary;
+        this.linkImage = linkImage;
+        this.lessonPracticalTitle = lessonPracticalTitle;
+        this.lessonPractical = lessonPractical;
+        this.appImage = appImage;
+        this.lessonDebug = lessonDebug;
     }
 
     public int getLessonId() {
@@ -187,4 +223,63 @@ public class Lesson {
         this.lessonEdit = lessonEdit;
     }
 
+    public void setLessonId(int lessonId) {
+        this.lessonId = lessonId;
+    }
+
+    public String getLastEditName() {
+        return lastEditName;
+    }
+
+    public void setLastEditName(String lastEditName) {
+        this.lastEditName = lastEditName;
+    }
+
+    public boolean isAgreed() {
+        return isAgreed;
+    }
+
+    public void setAgreed(boolean agreed) {
+        isAgreed = agreed;
+    }
+
+    public String getLessonImage() {
+        return lessonImage;
+    }
+
+    public void setLessonImage(String lessonImage) {
+        this.lessonImage = lessonImage;
+    }
+
+    public String getLinkImage() {
+        return linkImage;
+    }
+
+    public void setLinkImage(String linkImage) {
+        this.linkImage = linkImage;
+    }
+
+    public String getAppImage() {
+        return appImage;
+    }
+
+    public void setAppImage(String appImage) {
+        this.appImage = appImage;
+    }
+
+    public long getLessonCreateF() {
+        return lessonCreateF;
+    }
+
+    public void setLessonCreateF(long lessonCreateF) {
+        this.lessonCreateF = lessonCreateF;
+    }
+
+    public long getLessonEditF() {
+        return lessonEditF;
+    }
+
+    public void setLessonEditF(long lessonEditF) {
+        this.lessonEditF = lessonEditF;
+    }
 }

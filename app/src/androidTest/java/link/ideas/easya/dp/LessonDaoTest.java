@@ -29,7 +29,8 @@ import static org.junit.Assert.assertThat;
 @RunWith(AndroidJUnit4.class)
 public class LessonDaoTest {
     private static final Course COURSE = new Course("sas", "Math", "Eman",
-            "eman.ashour1111@gmail.com", null, 2, null);
+            "eman.ashour1111@gmail.com", null, 2, "",
+            null,null);
 
     private static final Calendar calendar = Calendar.getInstance();
     private static final Date time = calendar.getTime();
@@ -106,6 +107,37 @@ public class LessonDaoTest {
         //the Lesson is no longer in the data source
         List<ListLesson> lessonsA =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLessons(course.getId()));
         assertThat(lessonsA.size(), is(0));
+    }
+    @Test
+    public void editLesson() throws InterruptedException{
+        mDatabase.courseModel().insertCourse(COURSE);
+        Course course =  LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse(COURSE.getCourseId()));
+        LESSON.setCourseId(course.getId());
+        long lessonId =   mDatabase.lessonModel().insertLesson(LESSON);
+
+        LESSON.setLessonId((int) lessonId);
+        LESSON.setLessonTitle("Addition");
+        mDatabase.lessonModel().updateLesson(LESSON);
+
+        //get lessons list for that course
+        Lesson dpLesson =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLesson((int) lessonId));
+        assertEquals(dpLesson.getLessonTitle(), LESSON.getLessonTitle());
+
+    }
+
+    @Test
+    public void updatePushId() throws InterruptedException{
+        mDatabase.courseModel().insertCourse(COURSE);
+        Course course =  LiveDataTestUtil.getValue(mDatabase.courseModel().getCourse(COURSE.getCourseId()));
+        LESSON.setCourseId(course.getId());
+        long lessonId =  mDatabase.lessonModel().insertLesson(LESSON);
+
+        mDatabase.lessonModel().updateFirebaseId((int)lessonId, "vsad54k9");
+
+        //get lessons list for that course
+        Lesson dpLesson =  LiveDataTestUtil.getValue(mDatabase.lessonModel().getLesson((int) lessonId));
+        assertEquals(dpLesson.getFirebaseId(), "vsad54k9");
+
     }
 
     @Test

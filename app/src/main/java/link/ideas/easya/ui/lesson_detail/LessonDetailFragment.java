@@ -41,13 +41,14 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Date;
 
+import link.ideas.easya.data.database.Course;
+import link.ideas.easya.data.database.DateConverter;
 import link.ideas.easya.ui.add_lesson.AddNewLesson;
 import link.ideas.easya.R;
 import link.ideas.easya.data.CourseContract;
-import link.ideas.easya.models.Course;
 import link.ideas.easya.data.database.Lesson;
-import link.ideas.easya.models.LessonDetail;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
 import link.ideas.easya.utils.ImageSaver;
@@ -127,6 +128,7 @@ public class LessonDetailFragment extends Fragment {
                 provideLessonDetailViewModelFactory(getActivity(), lessonId);
         mViewModel = ViewModelProviders.of(this, factory)
                 .get(LessonDetailViewModel.class);
+
         mViewModel.getUserLesson().observe(this, new Observer<Lesson>() {
             @Override
             public void onChanged(@Nullable Lesson lesson) {
@@ -134,7 +136,18 @@ public class LessonDetailFragment extends Fragment {
             }
         });
 
+
         return rootView;
+    }
+
+    private void setCourseData(Course course) {
+
+        coursePushId = course.getFirebaseId();
+        teacherEmail = course.getTeacherEmail();
+        teacherPhoto = course.getTeacherPhotoURL();
+        courseName = course.getCourseName();
+        courserColor = course.getTeacherColor();
+        teacherName = course.getTeacherName();
     }
 
 
@@ -201,7 +214,7 @@ public class LessonDetailFragment extends Fragment {
         SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
         accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
         if (accountName != null) {
-            if (lessonPushId == null) {
+            if (lessonPushId.equals("")) {
                 shareItem.setEnabled(false);
                 shareItem.setCheckable(false);
                 shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
@@ -244,6 +257,15 @@ public class LessonDetailFragment extends Fragment {
 
     private void setUpValues(Lesson lesson) {
         courseId = lesson.getCourseId();
+
+        mViewModel.getCourse(courseId).observe(this, new Observer<Course>() {
+            @Override
+            public void onChanged(@Nullable Course course) {
+                setCourseData(course);
+            }
+        });
+
+        lessonPushId = lesson.getFirebaseId();
         lessonName = lesson.getLessonTitle();
         collapsingToolbar.setTitle(lessonName);
         lessonLink = lesson.getLessonLink();
@@ -266,12 +288,6 @@ public class LessonDetailFragment extends Fragment {
 
         lessonOutline = lesson.getLessonSummary();
         mLessonOutline.setText(lessonOutline);
-
-        teacherEmail = "";//data.getString(COL_TEACHER_EMAIL);
-        teacherPhoto = "";// data.getString(COL_TEACHER_PHOTO);
-        courseName = "";// data.getString(COL_COURSE_NAME);
-        courserColor = 0; //data.getInt(COL_TEACHER_COLOR);
-        teacherName = "";// data.getString(COL_TEACHER_NAME);
 
 
         outlineImageBit = new ImageSaver(getActivity()).
@@ -296,11 +312,11 @@ public class LessonDetailFragment extends Fragment {
 
         favorite = Integer.parseInt(lesson.getFavoriteLesson());
 
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         if (shareItem != null) {
             //todo see the firebase push id
-            shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
+            if (!lessonPushId.equals(""))
+                shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
 
         }
 
@@ -312,21 +328,19 @@ public class LessonDetailFragment extends Fragment {
     private void createShareUserLesson() {
         //todo see if course is save a firebase key they and start share
         setUpFireBase();
-//        if (mCursor.getString(COL_FIREBASE_COURSE_ID) == null) {
-//            addCourseToFirebase();
-//        } else {
-//            if (mCursor.getString(COL_FIREBASE_LESSON_ID) == null) {
-//                coursePushId = mCursor.getString(COL_FIREBASE_COURSE_ID);
-//                addLessonToFirebase();
-//            }
-//        }
+        if (coursePushId.equals("")) {
+            addCourseToFirebase();
+        } else {
+            if (lessonPushId.equals("")) {
+                addLessonToFirebase();
+            }
+        }
 
     }
 
     private void setUpFireBase() {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mFirebaseStorage = FirebaseStorage.getInstance();
-
         mCoursDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_COURSES).
                 child(Helper.encodeEmail(accountName)).child(Constants.FIREBASE_LOCATION_USER_COURSES);
         mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
@@ -334,17 +348,16 @@ public class LessonDetailFragment extends Fragment {
     }
 
     private void addCourseToFirebase() {
-
-        Course course = new Course(courseName, teacherName, teacherEmail, teacherPhoto, courserColor,
-                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
+        Date todayDate = Helper.getNormalizedUtcDateForToday();
+        Course course = new Course(courseId, courseName, teacherName, teacherEmail, teacherPhoto,
+                courserColor, DateConverter.toTimestamp(todayDate), DateConverter.toTimestamp(todayDate));
 
         coursePushId = mCoursDatabaseReference.push().getKey();
         mCoursDatabaseReference.child(coursePushId).setValue(course);
         mCoursDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                addFirebaseCourseId(coursePushId);
+                mViewModel.updateFirebaseId(coursePushId);
                 addLessonToFirebase();
             }
 
@@ -379,29 +392,28 @@ public class LessonDetailFragment extends Fragment {
 
         SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
         String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
+        Date todayDate = Helper.getNormalizedUtcDateForToday();
+        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "", userName, true,
+                DateConverter.toTimestamp(todayDate), DateConverter.toTimestamp(todayDate));
 
-//        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "", userName, true,
-//                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
         lessonPushId = mLessonDatabaseReference.push().getKey();
-
-        mLessonDatabaseReference.child(lessonPushId).setValue(null);
+        mLessonDatabaseReference.child(lessonPushId).setValue(lesson);
         mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                addFirebaseLessonId(lessonPushId);
+                mViewModel.updateFirebaseIdL(lessonPushId);
                 addLessonDetailToFirebase();
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                //todo set error
             }
         });
 
     }
 
     private void addLessonDetailToFirebase() {
-
         if (linkImageBit != null) {
             addImageToFirebaseLink(linkImageBit);
         } else if (appImageBit != null) {
@@ -414,9 +426,9 @@ public class LessonDetailFragment extends Fragment {
     }
 
     private void addLessonDetailsToFirebase() {
-        LessonDetail lessonDetail = new LessonDetail(lessonOutline, linkUrl + "",
-                lessonPracticalTitle, lessonPractical, appUrl + "", lessonDebug,
-                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
+        Lesson lessonDetail = new Lesson(lessonOutline, linkUrl + "",
+                lessonPracticalTitle, lessonPractical, appUrl + "", lessonDebug);
+
         mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
         if (isOnLesson) {
             shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
@@ -491,19 +503,6 @@ public class LessonDetailFragment extends Fragment {
         });
     }
 
-    private void addFirebaseCourseId(String pushId) {
-        ContentValues firebasePushId = new ContentValues();
-        firebasePushId.put(CourseContract.CourseEntry.COLUMN_FIREBASE_ID, pushId);
-        //todo save courseId to the database
-    }
-
-    private void addFirebaseLessonId(String pushId) {
-        ContentValues firebasePushId = new ContentValues();
-        firebasePushId.put(CourseContract.SubjectEntry.COLUMN_FIREBASE_ID, pushId);
-        //todo save lessonId to the database
-
-
-    }
 
     public boolean isDeviceOnline() {
         ConnectivityManager connMgr =

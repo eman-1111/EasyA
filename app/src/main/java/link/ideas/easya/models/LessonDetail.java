@@ -15,15 +15,12 @@ public class LessonDetail {
     private String lessonAppTitle;
     private String lessonAppDescription;
     private String appImage;
-    private Map<String, Object> timestampLastChanged;
-    private Map<String, Object> timestampCreated;
 
     public LessonDetail() {
     }
 
     public LessonDetail(String lessonSummery, String linkImage, String lessonAppTitle,
-                        String lessonAppDescription, String appImage,String lessonDebug,
-                        Map<String, Object> timestampLastChanged, Map<String, Object> timestampCreated) {
+                        String lessonAppDescription, String appImage,String lessonDebug) {
 
         this.lessonSummery = lessonSummery;
         this.linkImage = linkImage;
@@ -31,8 +28,6 @@ public class LessonDetail {
         this.lessonAppDescription = lessonAppDescription;
         this.appImage = appImage;
         this.lessonDebug = lessonDebug;
-        this.timestampLastChanged = timestampLastChanged;
-        this.timestampCreated = timestampCreated;
     }
 
     public String getLessonSummery() {
@@ -59,14 +54,6 @@ public class LessonDetail {
         return lessonDebug;
     }
 
-    public Map<String, Object> getTimestampLastChanged() {
-        return timestampLastChanged;
-    }
-
-    public Map<String, Object> getTimestampCreated() {
-        return timestampCreated;
-    }
-
     public void setLessonSummery(String lessonSummery) {
         this.lessonSummery = lessonSummery;
     }
@@ -91,11 +78,4 @@ public class LessonDetail {
         this.lessonDebug = lessonDebug;
     }
 
-    public void setTimestampLastChanged(Map<String, Object> timestampLastChanged) {
-        this.timestampLastChanged = timestampLastChanged;
-    }
-
-    public void setTimestampCreated(Map<String, Object> timestampCreated) {
-        this.timestampCreated = timestampCreated;
-    }
 }

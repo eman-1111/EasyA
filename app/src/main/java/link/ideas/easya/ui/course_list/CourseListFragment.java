@@ -311,7 +311,8 @@ public class CourseListFragment extends Fragment {
     private void addCourseData(String courseName, String teacherName, String courseId,
                                String teacherEmail, String teacherPhotoURL,int color) {
         Course course = new Course(courseId, courseName, teacherName, teacherEmail,
-                teacherPhotoURL,color, "");
+                teacherPhotoURL,color, "",  Helper.getNormalizedUtcDateForToday(),
+                Helper.getNormalizedUtcDateForToday());
         mViewModel.createNewCourse(course);
 
     }

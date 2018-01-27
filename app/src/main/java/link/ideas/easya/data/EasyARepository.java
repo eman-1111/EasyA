@@ -54,25 +54,11 @@ public class EasyARepository {
         return sInstance;
     }
 
-    public LiveData<Lesson> getUserLesson(int lessonId) {
-        return mLessonDao.getLesson(lessonId);
-    }
 
 
     public LiveData<List<Course>> getUserCourses() {
         return mCourseDao.getCourses();
     }
-
-    public LiveData<List<ListLesson>> getUserLessons(int courseId) {
-        return mLessonDao.getLessons(courseId);
-    }
-
-
-
-    public LiveData<List<ListLesson>> getUserFavLessons(int courseId) {
-        return mLessonDao.getLessons(courseId);
-    }
-
 
     public void insertCourse(final Course course) {
         mAppExecutors.diskIO().execute(new Runnable() {
@@ -82,12 +68,72 @@ public class EasyARepository {
             }
         });
     }
+    public void updateCourse(final Course course) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mCourseDao.updateCourse(course);
+            }
+        });
+    }
+
+    public void updateFirebaseId(final int id, final String pushId) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mCourseDao.updateFirebaseId(id, pushId);
+            }
+        });
+    }
+    public void deleteCourse(final int courseId) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mCourseDao.deleteCourse(courseId);
+            }
+        });
+    }
+
+
+    public LiveData<Course> getUserCourse(int courseId) {
+        return mCourseDao.getCourse(courseId);
+    }
+
+
+    public LiveData<List<ListLesson>> getUserLessons(int courseId) {
+        return mLessonDao.getLessons(courseId);
+    }
+
+    public LiveData<Lesson> getUserLesson(int lessonId) {
+        return mLessonDao.getLesson(lessonId);
+    }
+
+    public LiveData<List<ListLesson>> getUserFavLessons(int courseId) {
+        return mLessonDao.getLessons(courseId);
+    }
+
 
     public void insertLesson(final Lesson lesson) {
         mAppExecutors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
                 mLessonDao.insertLesson(lesson);
+            }
+        });
+    }
+    public void updateFirebaseIdL(final int id, final String pushId) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mLessonDao.updateFirebaseId(id, pushId);
+            }
+        });
+    }
+    public void udDateLesson(final Lesson lesson) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mLessonDao.updateLesson(lesson);
             }
         });
     }
@@ -101,12 +147,6 @@ public class EasyARepository {
         });
     }
 
-    public void deleteCourse(final int courseId) {
-        mAppExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                mCourseDao.deleteCourse(courseId);
-            }
-        });
-    }
 }
+
+
