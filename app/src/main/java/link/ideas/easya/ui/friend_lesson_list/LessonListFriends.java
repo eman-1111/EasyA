@@ -26,11 +26,11 @@ import com.google.firebase.database.DataSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.models.User;
 import link.ideas.easya.ui.friend_couse_list.CourseListFriends;
 import link.ideas.easya.ui.friend_lesson_detail.LessonDetailFriend;
 import link.ideas.easya.R;
-import link.ideas.easya.models.Lesson;
 import link.ideas.easya.ui.BaseActivity;
 import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Constants;

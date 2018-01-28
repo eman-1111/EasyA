@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import link.ideas.easya.R;
-import link.ideas.easya.models.Course;
+import link.ideas.easya.data.database.Course;
 import link.ideas.easya.utils.Helper;
 
 /**
@@ -96,7 +96,7 @@ public class CourseFriendAdapter extends RecyclerView.Adapter<CourseFriendAdapte
         holder.teacherName.setText(teacherName);
         holder.teacherName.setContentDescription(mContext.getString(R.string.a11y_teacher_name,teacherName));
 
-        int courseItemColor = course.getColorId();
+        int courseItemColor = course.getTeacherColor();
         holder.listItemCours.setBackground
                 (mContext.getResources().getDrawable(Helper.getCourseColor(courseItemColor)));
     }

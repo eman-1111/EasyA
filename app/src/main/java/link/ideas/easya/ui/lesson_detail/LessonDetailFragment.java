@@ -47,7 +47,6 @@ import link.ideas.easya.data.database.Course;
 import link.ideas.easya.data.database.DateConverter;
 import link.ideas.easya.ui.add_lesson.AddNewLesson;
 import link.ideas.easya.R;
-import link.ideas.easya.data.CourseContract;
 import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;

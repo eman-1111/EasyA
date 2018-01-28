@@ -325,9 +325,7 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
     }
 
     private void addLessonDetailsToFirebase() {
-//        link.ideas.easya.models.LessonDetail lessonDetail = new link.ideas.easya.models.LessonDetail(summary, linkUrl + "",
-//                appTitle, appSummary, appUrl + "", debug,
-//                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
+
 //        mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
 
         Snackbar.make(mCardView, getResources().getString(R.string.lesson_edited),

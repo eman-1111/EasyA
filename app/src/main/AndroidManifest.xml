@@ -98,17 +98,13 @@
                 android:resource="@xml/widget_info_detail" />
         </receiver>
 
-        <service
-            android:name=".widget.DetailWidgetRemoteViewsService"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <!--<service-->
+            <!--android:name=".widget.DetailWidgetRemoteViewsService"-->
+            <!--android:enabled="true"-->
+            <!--android:exported="false"-->
+            <!--android:permission="android.permission.BIND_REMOTEVIEWS" />-->
 
-        <provider
-            android:name=".data.CourseProvider"
-            android:authorities="@string/content_authority"
-            android:exported="false"
-            android:syncable="true" />
+
 
         <meta-data
             android:name="com.google.android.gms.version"

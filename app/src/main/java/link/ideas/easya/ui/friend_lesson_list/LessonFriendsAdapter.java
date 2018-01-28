@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import java.util.List;
 import link.ideas.easya.R;
-import link.ideas.easya.models.Lesson;
+import link.ideas.easya.data.database.Lesson;
 
 
 /**
@@ -56,7 +56,7 @@ public class LessonFriendsAdapter extends RecyclerView.Adapter<LessonFriendsAdap
     }
 
     public LessonFriendsAdapter(List<Lesson> friendsLesson, List<String> lessonPushIds , Context context,
-                               LessonFriendsAdapter.CourseAdapterFriendsOnClickHolder dh) {
+                                LessonFriendsAdapter.CourseAdapterFriendsOnClickHolder dh) {
         mContext = context;
         mClickHolder = dh;
         this.friendsLesson = friendsLesson;
@@ -87,7 +87,7 @@ public class LessonFriendsAdapter extends RecyclerView.Adapter<LessonFriendsAdap
         Lesson lesson = friendsLesson.get(position);
 
 
-        String lessonName = lesson.getLessonName();
+        String lessonName = lesson.getLessonTitle();
         holder.lessonName.setText(lessonName);
         holder.lessonName.setContentDescription(mContext.getString(R.string.a11y_lesson_name,lessonName));
 

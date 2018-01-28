@@ -21,8 +21,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 
 import link.ideas.easya.R;
-import link.ideas.easya.models.Lesson;
-import link.ideas.easya.models.LessonDetail;
+import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.ui.BaseActivity;
 import link.ideas.easya.utils.Constants;
 
@@ -38,8 +37,8 @@ public class LessonDetailFriend extends BaseActivity {
 
     String coursePushId, lessonPushId;
 
-    LessonDetail lessonDetail;
-    Lesson lesson;
+
+    Lesson lesson, lessonDetail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,7 @@ public class LessonDetailFriend extends BaseActivity {
         coursePushId = intent.getStringExtra(Constants.PREF_COURSE_PUSH_ID);
         lessonPushId = intent.getStringExtra(Constants.PREF_LESSON_PUSH_ID);
         lesson = (Lesson) intent.getParcelableExtra(Constants.PREF_LESSON_OBJECT);
-        Log.e("data", coursePushId + " " + lessonPushId + " " + lesson.getLessonName());
+        Log.e("data", coursePushId + " " + lessonPushId + " " + lesson.getLessonTitle());
         initializeScreen();
 
     }
@@ -105,7 +104,7 @@ public class LessonDetailFriend extends BaseActivity {
         liveData.observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(@Nullable DataSnapshot dataSnapshot) {
-                lessonDetail = dataSnapshot.getValue(LessonDetail.class);
+                lessonDetail = dataSnapshot.getValue(Lesson.class);
 
                 progress.setVisibility(View.GONE);
                 setUpView();
@@ -114,13 +113,13 @@ public class LessonDetailFriend extends BaseActivity {
     }
 
     private void setUpView() {
-        String lessonName = lesson.getLessonName();
+        String lessonName = lesson.getLessonTitle();
         collapsingToolbar.setTitle(lessonName);
         mLessonLink.setText(lesson.getLessonLink());
         mLessonDebug.setText(lessonDetail.getLessonDebug());
-        mLessonPracticalTitle.setText(lessonDetail.getLessonAppTitle());
-        mLessonPractical.setText(lessonDetail.getLessonAppDescription());
-        mLessonOutline.setText(lessonDetail.getLessonSummery());
+        mLessonPracticalTitle.setText(lessonDetail.getLessonPracticalTitle());
+        mLessonPractical.setText(lessonDetail.getLessonPractical());
+        mLessonOutline.setText(lessonDetail.getLessonSummary());
 
         String outlineImageUrl = lesson.getLessonImage();
 

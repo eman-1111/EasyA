@@ -78,7 +78,6 @@ import link.ideas.easya.ui.friends_list.FriendsList;
 import link.ideas.easya.ui.help.HelpActivity;
 import link.ideas.easya.ui.profile.ProfileActivity;
 import link.ideas.easya.R;
-import link.ideas.easya.data.CourseContract;
 
 import link.ideas.easya.models.User;
 import link.ideas.easya.utils.CircleTransform;
@@ -703,51 +702,8 @@ public class BaseActivity extends AppCompatActivity
      */
     long addCourseData(String courseName, String teacherName, String teacherEmail,
                        String teacherPhoto, String courseId, int selectedColorId) {
-
-        long courseID;
-
-        Cursor courseCursor = this.getContentResolver().query(
-                CourseContract.CourseEntry.CONTENT_URI,
-                new String[]{CourseContract.CourseEntry._ID},
-                CourseContract.CourseEntry.COLUMN_COURSE_NAME + " = ?",
-                new String[]{courseName},
-                null);
-
-        if (courseCursor.moveToFirst()) {
-            int courseIdIndex = courseCursor.getColumnIndex(CourseContract.CourseEntry._ID);
-            courseID = courseCursor.getLong(courseIdIndex);
-        } else {
-
-            ContentValues courseValues = new ContentValues();
-
-            if (teacherEmail == null) {
-                teacherEmail = getResources().getString(R.string.not_found);
-            }
-            if (teacherPhoto == null) {
-                teacherPhoto = getResources().getString(R.string.not_found);
-            }
-
-            courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_ID, courseId);
-            courseValues.put(CourseContract.CourseEntry.COLUMN_COURSE_NAME, courseName);
-            courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_EMAIL, teacherEmail);
-            courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_PHOTO_URL, teacherPhoto);
-            courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_NAME, teacherName);
-            courseValues.put(CourseContract.CourseEntry.COLUMN_TEACHER_COLOR, selectedColorId);
-
-
-            // Finally, insert Course data into the database.
-            Uri insertedUri = this.getContentResolver().insert(
-                    CourseContract.CourseEntry.CONTENT_URI,
-                    courseValues);
-
-
-            // The resulting URI contains the ID for the row.  Extract the locationId from the Uri.
-            courseID = ContentUris.parseId(insertedUri);
-        }
-
-        courseCursor.close();
-        // Wait, that worked?  Yes!
-        return courseID;
+        //todo add course from class room
+        return 0;
     }
 
 

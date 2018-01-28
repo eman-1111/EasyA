@@ -23,7 +23,7 @@ import com.google.firebase.database.DataSnapshot;
 import java.util.ArrayList;
 
 import link.ideas.easya.R;
-import link.ideas.easya.models.Course;
+import link.ideas.easya.data.database.Course;
 import link.ideas.easya.ui.BaseActivity;
 import link.ideas.easya.ui.friend_lesson_list.LessonListFriends;
 import link.ideas.easya.utils.Constants;

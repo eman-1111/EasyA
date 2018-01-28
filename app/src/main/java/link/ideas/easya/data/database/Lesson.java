@@ -5,6 +5,8 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.arch.persistence.room.TypeConverters;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import java.util.Date;
 
@@ -13,7 +15,7 @@ import java.util.Date;
  */
 @Entity(tableName = "lesson", foreignKeys =
         {@ForeignKey(entity = Course.class, parentColumns = "id", childColumns = "courseId")})
-public class Lesson {
+public class Lesson implements Parcelable {
 
     @PrimaryKey(autoGenerate = true)
     private int lessonId;
@@ -40,19 +42,20 @@ public class Lesson {
     private long lessonEditF;
 
     /**
-     *  This constructor is used by Room to create LessonEntry
-     *  @param lessonId                  column id for Lesson PrimaryKey
-     *  @param courseId                  column CourseId for Course foreignKeys
-     *  @param lessonTitle               column lesson title
-     *  @param lessonSummary             column lesson summary
-     *  @param lessonLink                column lesson link, Link the to something Familiar
-     *  @param lessonDebug               column lesson debug,the difference between Link and lesson
-     *  @param lessonPracticalTitle      column lesson Practical Title, example of the lesson
-     *  @param lessonPractical           column lesson Practical summary
-     *  @param favoriteLesson            column favorite Lesson
-     *  @param firebaseId                column fire base Lesson id
-     *  @param lessonCreate              column create lesson date
-     *  @param lessonEdit                column edit lesson date
+     * This constructor is used by Room to create LessonEntry
+     *
+     * @param lessonId             column id for Lesson PrimaryKey
+     * @param courseId             column CourseId for Course foreignKeys
+     * @param lessonTitle          column lesson title
+     * @param lessonSummary        column lesson summary
+     * @param lessonLink           column lesson link, Link the to something Familiar
+     * @param lessonDebug          column lesson debug,the difference between Link and lesson
+     * @param lessonPracticalTitle column lesson Practical Title, example of the lesson
+     * @param lessonPractical      column lesson Practical summary
+     * @param favoriteLesson       column favorite Lesson
+     * @param firebaseId           column fire base Lesson id
+     * @param lessonCreate         column create lesson date
+     * @param lessonEdit           column edit lesson date
      */
     public Lesson(int lessonId, int courseId, String lessonTitle, String lessonSummary,
                   String lessonLink, String lessonDebug, String lessonPracticalTitle,
@@ -73,17 +76,17 @@ public class Lesson {
     }
 
     /**
-     *  @param courseId                  column CourseId for Course foreignKeys
-     *  @param lessonTitle               column lesson title
-     *  @param lessonSummary             column lesson summary
-     *  @param lessonLink                column lesson link, Link the to something Familiar
-     *  @param lessonDebug               column lesson debug,the difference between Link and lesson
-     *  @param lessonPracticalTitle      column lesson Practical Title, example of the lesson
-     *  @param lessonPractical           column lesson Practical summary
-     *  @param favoriteLesson            column favorite Lesson
-     *  @param firebaseId                column fire base Lesson id
-     *  @param lessonCreate              column create lesson date
-     *  @param lessonEdit                column edit lesson date
+     * @param courseId             column CourseId for Course foreignKeys
+     * @param lessonTitle          column lesson title
+     * @param lessonSummary        column lesson summary
+     * @param lessonLink           column lesson link, Link the to something Familiar
+     * @param lessonDebug          column lesson debug,the difference between Link and lesson
+     * @param lessonPracticalTitle column lesson Practical Title, example of the lesson
+     * @param lessonPractical      column lesson Practical summary
+     * @param favoriteLesson       column favorite Lesson
+     * @param firebaseId           column fire base Lesson id
+     * @param lessonCreate         column create lesson date
+     * @param lessonEdit           column edit lesson date
      */
     @Ignore
     public Lesson(int courseId, String lessonTitle, String lessonSummary,
@@ -109,8 +112,8 @@ public class Lesson {
     }
 
     @Ignore
-    public Lesson(String lessonTitle, String lessonLink, String lessonImage,String lastEditName,
-                  boolean isAgreed,long lessonCreate, long lessonEdit) {
+    public Lesson(String lessonTitle, String lessonLink, String lessonImage, String lastEditName,
+                  boolean isAgreed, long lessonCreate, long lessonEdit) {
         this.lessonTitle = lessonTitle;
         this.lessonLink = lessonLink;
         this.lessonImage = lessonImage;
@@ -119,9 +122,10 @@ public class Lesson {
         this.lessonCreateF = lessonCreate;
         this.lessonEditF = lessonEdit;
     }
+
     @Ignore
     public Lesson(String lessonSummary, String linkImage, String lessonPracticalTitle,
-                        String lessonPractical, String appImage,String lessonDebug) {
+                  String lessonPractical, String appImage, String lessonDebug) {
 
         this.lessonSummary = lessonSummary;
         this.linkImage = linkImage;
@@ -282,4 +286,69 @@ public class Lesson {
     public void setLessonEditF(long lessonEditF) {
         this.lessonEditF = lessonEditF;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(lessonId);
+        dest.writeInt(courseId);
+        dest.writeString(lessonTitle);
+        dest.writeString(lessonSummary);
+        dest.writeString(lessonLink);
+        dest.writeString(lessonDebug);
+        dest.writeString(lessonPracticalTitle);
+        dest.writeString(lessonPractical);
+        dest.writeString(favoriteLesson);
+        dest.writeString(firebaseId);
+        dest.writeLong(lessonCreate != null ? lessonCreate.getTime() : -1L);
+        dest.writeLong(lessonEdit != null ? lessonEdit.getTime() : -1L);
+        dest.writeString(lastEditName);
+        dest.writeByte((byte) (isAgreed ? 0x01 : 0x00));
+        dest.writeString(lessonImage);
+        dest.writeString(linkImage);
+        dest.writeString(appImage);
+        dest.writeLong(lessonCreateF);
+        dest.writeLong(lessonEditF);
+    }
+
+    protected Lesson(Parcel in) {
+        lessonId = in.readInt();
+        courseId = in.readInt();
+        lessonTitle = in.readString();
+        lessonSummary = in.readString();
+        lessonLink = in.readString();
+        lessonDebug = in.readString();
+        lessonPracticalTitle = in.readString();
+        lessonPractical = in.readString();
+        favoriteLesson = in.readString();
+        firebaseId = in.readString();
+        long tmpLessonCreate = in.readLong();
+        lessonCreate = tmpLessonCreate != -1 ? new Date(tmpLessonCreate) : null;
+        long tmpLessonEdit = in.readLong();
+        lessonEdit = tmpLessonEdit != -1 ? new Date(tmpLessonEdit) : null;
+        lastEditName = in.readString();
+        isAgreed = in.readByte() != 0x00;
+        lessonImage = in.readString();
+        linkImage = in.readString();
+        appImage = in.readString();
+        lessonCreateF = in.readLong();
+        lessonEditF = in.readLong();
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<Lesson> CREATOR = new Parcelable.Creator<Lesson>() {
+        @Override
+        public Lesson createFromParcel(Parcel in) {
+            return new Lesson(in);
+        }
+
+        @Override
+        public Lesson[] newArray(int size) {
+            return new Lesson[size];
+        }
+    };
 }
