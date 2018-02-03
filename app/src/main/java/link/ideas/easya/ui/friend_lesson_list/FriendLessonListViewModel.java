@@ -10,6 +10,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import link.ideas.easya.data.firebase.FirebaseQueryLiveData;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.InjectorUtils;
 
 /**
  * Created by Eman on 1/11/2018.
@@ -30,12 +31,12 @@ public class FriendLessonListViewModel extends ViewModel {
         return coursePushId;
     }
 
-    public void setCoursePushId(String coursePushId) {
+    public FriendLessonListViewModel(String coursePushId) {
         this.coursePushId = coursePushId;
         LESSON_LIST_REF =
                 FirebaseDatabase.getInstance().getReference().
                         child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
 
-        liveData = new FirebaseQueryLiveData(LESSON_LIST_REF);
+        liveData = InjectorUtils.getFirebaseRef(LESSON_LIST_REF);
     }
 }

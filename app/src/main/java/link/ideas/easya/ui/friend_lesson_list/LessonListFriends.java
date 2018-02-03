@@ -35,6 +35,7 @@ import link.ideas.easya.ui.BaseActivity;
 import link.ideas.easya.utils.CircleTransform;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.InjectorUtils;
 
 public class LessonListFriends extends BaseActivity {
 
@@ -94,8 +95,8 @@ public class LessonListFriends extends BaseActivity {
         mRecyclerView.setAdapter(mLessonFriendsAdapter);
 
 
-        viewModel = ViewModelProviders.of(this).get(FriendLessonListViewModel.class);
-        viewModel.setCoursePushId(coursePushId);
+        FriendLessonListFactory factory = InjectorUtils.provideFriendLessonListViewModelFactory(coursePushId);
+        viewModel = ViewModelProviders.of(this,factory).get(FriendLessonListViewModel.class);
 
         if (isDeviceOnline()) {
             attachDatabaseReadListener();

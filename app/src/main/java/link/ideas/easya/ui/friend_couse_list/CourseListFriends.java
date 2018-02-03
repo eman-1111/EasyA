@@ -28,6 +28,7 @@ import link.ideas.easya.ui.BaseActivity;
 import link.ideas.easya.ui.friend_lesson_list.LessonListFriends;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.InjectorUtils;
 
 public class CourseListFriends extends BaseActivity {
 
@@ -86,9 +87,8 @@ public class CourseListFriends extends BaseActivity {
             }
         });
         mRecyclerView.setAdapter(mCourseFriendAdapter);
-
-        courseViewModel = ViewModelProviders.of(this).get(FriendCourseListViewModel.class);
-        courseViewModel.setAccountName(friendAccount);
+        FriendCourseModelFactory factory = InjectorUtils.provideFriendCoursViewModelFactory(friendAccount);
+        courseViewModel = ViewModelProviders.of(this,factory).get(FriendCourseListViewModel.class);
 
         studyingViewModel = ViewModelProviders.of(this).get(StudyingViewModel.class);
         studyingViewModel.setAccountName(friendAccount);

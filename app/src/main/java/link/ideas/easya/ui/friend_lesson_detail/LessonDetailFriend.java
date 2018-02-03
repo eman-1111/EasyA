@@ -24,6 +24,7 @@ import link.ideas.easya.R;
 import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.ui.BaseActivity;
 import link.ideas.easya.utils.Constants;
+import link.ideas.easya.utils.InjectorUtils;
 
 public class LessonDetailFriend extends BaseActivity {
 
@@ -83,8 +84,9 @@ public class LessonDetailFriend extends BaseActivity {
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
-        viewModel = ViewModelProviders.of(this).get(FriendLessonDetailViewModel.class);
-        viewModel.setLessonIds(coursePushId, lessonPushId);
+        FriendLessonDetailFactory factory = InjectorUtils.freindLessonDetailViewModelFactory(coursePushId, lessonPushId);
+
+        viewModel = ViewModelProviders.of(this,factory).get(FriendLessonDetailViewModel.class);
 
 
         if (isDeviceOnline()) {

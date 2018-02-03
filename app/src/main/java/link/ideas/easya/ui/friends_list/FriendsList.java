@@ -27,6 +27,7 @@ import link.ideas.easya.ui.friend_couse_list.CourseListFriends;
 import link.ideas.easya.ui.friend_lesson_list.LessonListFriends;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.InjectorUtils;
 
 public class FriendsList extends BaseActivity {
 
@@ -92,8 +93,8 @@ public class FriendsList extends BaseActivity {
 
         // Obtain a new or prior instance of HotStockViewModel from the accountName
         // ViewModelProviders utility class.
-        FriendsListViewModel viewModel = ViewModelProviders.of(this).get(FriendsListViewModel.class);
-        viewModel.setAccountName(accountName);
+        FriendListFactory factory = InjectorUtils.provideFriendListViewModelFactory(accountName);
+        FriendsListViewModel viewModel = ViewModelProviders.of(this,factory).get(FriendsListViewModel.class);
 
         LiveData<DataSnapshot> liveData = viewModel.getDataSnapshotLiveData();
 

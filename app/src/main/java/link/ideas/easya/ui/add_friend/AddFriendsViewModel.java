@@ -11,6 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import link.ideas.easya.data.firebase.FirebaseQueryLiveData;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.InjectorUtils;
 
 
 /**
@@ -21,7 +22,7 @@ public class AddFriendsViewModel extends ViewModel {
 
     private static DatabaseReference FRIENDS_ADD_REF = FirebaseDatabase.getInstance().
             getReference().child(Constants.FIREBASE_LOCATION_USERS);
-    private FirebaseQueryLiveData liveData = new FirebaseQueryLiveData(FRIENDS_ADD_REF);
+    private FirebaseQueryLiveData liveData = InjectorUtils.getFirebaseRef(FRIENDS_ADD_REF);
 
 
     @NonNull

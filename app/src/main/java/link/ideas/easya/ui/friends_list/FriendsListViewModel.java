@@ -11,6 +11,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import link.ideas.easya.data.firebase.FirebaseQueryLiveData;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.InjectorUtils;
 
 /**
  * Created by Eman on 1/10/2018.
@@ -31,12 +32,12 @@ public class FriendsListViewModel extends ViewModel {
         return accountName;
     }
 
-    public void setAccountName(String accountName) {
+    public FriendsListViewModel(String accountName) {
         this.accountName = accountName;
         FRIENDS_LIST_REF =
                 FirebaseDatabase.getInstance().getReference().
                         child(Constants.FIREBASE_LOCATION_USER_FRIENDS)
                         .child(Helper.encodeEmail(accountName));
-        liveData = new FirebaseQueryLiveData(FRIENDS_LIST_REF);
+        liveData = InjectorUtils.getFirebaseRef(FRIENDS_LIST_REF);
     }
 }
