@@ -84,7 +84,7 @@ public class LessonDetailFriend extends BaseActivity {
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
-        FriendLessonDetailFactory factory = InjectorUtils.freindLessonDetailViewModelFactory(coursePushId, lessonPushId);
+        FriendLessonDetailFactory factory = InjectorUtils.provideFreindLessonDetailViewModelFactory(coursePushId, lessonPushId);
 
         viewModel = ViewModelProviders.of(this,factory).get(FriendLessonDetailViewModel.class);
 

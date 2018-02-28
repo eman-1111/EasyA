@@ -3,15 +3,12 @@ package link.ideas.easya.ui.lesson_detail;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -29,22 +26,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
-import java.util.Date;
 
 import link.ideas.easya.data.database.Course;
-import link.ideas.easya.data.database.DateConverter;
 import link.ideas.easya.ui.add_lesson.AddNewLesson;
 import link.ideas.easya.R;
 import link.ideas.easya.data.database.Lesson;
@@ -75,29 +59,21 @@ public class LessonDetailFragment extends Fragment {
     ProgressDialog mProgressDialog;
 
     ImageView outlineImage, linkImage, appImage;
-    String accountName;
     String teacherEmail, teacherPhoto, courseName, teacherName, lessonName, lessonOutline, lessonLink,
             lessonDebug, lessonPracticalTitle, lessonPractical;
     int courseId;
 
     Bitmap outlineImageBit = null, linkImageBit = null, appImageBit = null;
-    Uri appUrl, linkUrl, summaryUrl;
     int courserColor = 0, favorite = 0;
     String coursePushId, lessonPushId;
-
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mCoursDatabaseReference;
-    private DatabaseReference mLessonDatabaseReference;
-    private DatabaseReference mLessonDetailDatabaseReference;
-
-    private FirebaseStorage mFirebaseStorage;
-    private StorageReference mUserImagesReferenceSummary, mUserImagesReferenceLink, mUserImagesReferenceApp;
 
 
     String lessonNames;
     int lessonId;
     LessonDetailViewModel mViewModel;
 
+    Lesson shareLesson;
+    Course shareCourse;
 
     public LessonDetailFragment() {
         setHasOptionsMenu(true);
@@ -211,16 +187,19 @@ public class LessonDetailFragment extends Fragment {
     private void startSharing() {
         //todo start share action
         SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
-        accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+        String accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
+        String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
         if (accountName != null) {
             if (lessonPushId.equals("")) {
                 shareItem.setEnabled(false);
                 shareItem.setCheckable(false);
                 shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
-                showProgressDialog();
+            //    showProgressDialog();
                 Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_uploading),
                         Snackbar.LENGTH_LONG).show();
-                createShareUserLesson();
+
+                mViewModel.shareUserLesson(shareCourse, shareLesson, accountName, userName
+                        , outlineImageBit, linkImageBit, appImageBit);
             } else {
                 Helper.startDialog(getActivity(), "",
                         getResources().getString(R.string.shared_lesson_warning));
@@ -256,10 +235,11 @@ public class LessonDetailFragment extends Fragment {
 
     private void setUpValues(Lesson lesson) {
         courseId = lesson.getCourseId();
-
+        shareLesson = lesson;
         mViewModel.getCourse(courseId).observe(this, new Observer<Course>() {
             @Override
             public void onChanged(@Nullable Course course) {
+                shareCourse = course;
                 setCourseData(course);
             }
         });
@@ -322,185 +302,6 @@ public class LessonDetailFragment extends Fragment {
     }
 
 
-    //firebase share
-
-    private void createShareUserLesson() {
-        //todo see if course is save a firebase key they and start share
-        setUpFireBase();
-        if (coursePushId.equals("")) {
-            addCourseToFirebase();
-        } else {
-            if (lessonPushId.equals("")) {
-                addLessonToFirebase();
-            }
-        }
-
-    }
-
-    private void setUpFireBase() {
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseStorage = FirebaseStorage.getInstance();
-        mCoursDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_COURSES).
-                child(Helper.encodeEmail(accountName)).child(Constants.FIREBASE_LOCATION_USER_COURSES);
-        mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
-
-    }
-
-    private void addCourseToFirebase() {
-        Date todayDate = Helper.getNormalizedUtcDateForToday();
-        Course course = new Course(courseId, courseName, teacherName, teacherEmail, teacherPhoto,
-                courserColor, DateConverter.toTimestamp(todayDate), DateConverter.toTimestamp(todayDate));
-
-        coursePushId = mCoursDatabaseReference.push().getKey();
-        mCoursDatabaseReference.child(coursePushId).setValue(course);
-        mCoursDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mViewModel.updateFirebaseId(coursePushId);
-                addLessonToFirebase();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
-
-    private void addLessonToFirebase() {
-
-        mUserImagesReferenceSummary = mFirebaseStorage.getReference()
-                .child(coursePushId + "/" + lessonName + "/summary.jpg");
-        mUserImagesReferenceLink = mFirebaseStorage.getReference()
-                .child(coursePushId + "/" + lessonName + "/link.jpg");
-        mUserImagesReferenceApp = mFirebaseStorage.getReference()
-                .child(coursePushId + "/" + lessonName + "/app.jpg");
-
-        if (outlineImageBit != null) {
-            addImageToFirebase(outlineImageBit);
-        } else {
-            addLessonLinkToFirebase();
-        }
-
-    }
-
-    private void addLessonLinkToFirebase() {
-
-        mLessonDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
-        String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
-        Date todayDate = Helper.getNormalizedUtcDateForToday();
-        Lesson lesson = new Lesson(lessonName, lessonLink, summaryUrl + "", userName, true,
-                DateConverter.toTimestamp(todayDate), DateConverter.toTimestamp(todayDate));
-
-        lessonPushId = mLessonDatabaseReference.push().getKey();
-        mLessonDatabaseReference.child(lessonPushId).setValue(lesson);
-        mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mViewModel.updateFirebaseIdL(lessonPushId);
-                addLessonDetailToFirebase();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                //todo set error
-            }
-        });
-
-    }
-
-    private void addLessonDetailToFirebase() {
-        if (linkImageBit != null) {
-            addImageToFirebaseLink(linkImageBit);
-        } else if (appImageBit != null) {
-            addImageToFirebaseApp(appImageBit);
-        } else {
-            addLessonDetailsToFirebase();
-        }
-
-
-    }
-
-    private void addLessonDetailsToFirebase() {
-        Lesson lessonDetail = new Lesson(lessonOutline, linkUrl + "",
-                lessonPracticalTitle, lessonPractical, appUrl + "", lessonDebug);
-
-        mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
-        if (isOnLesson) {
-            shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
-            shareItem.setEnabled(true);
-            shareItem.setCheckable(true);
-            Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_added),
-                    Snackbar.LENGTH_LONG).show();
-            hideProgressDialog();
-        }
-    }
-
-    private void addImageToFirebase(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-        UploadTask uploadTask = mUserImagesReferenceSummary.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                summaryUrl = taskSnapshot.getDownloadUrl();
-                addLessonLinkToFirebase();
-
-            }
-        });
-    }
-
-    private void addImageToFirebaseLink(Bitmap bitmap) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = mUserImagesReferenceLink.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                linkUrl = taskSnapshot.getDownloadUrl();
-                if (appImageBit != null) {
-                    addImageToFirebaseApp(appImageBit);
-                } else {
-                    addLessonDetailsToFirebase();
-                }
-            }
-        });
-    }
-
-    private void addImageToFirebaseApp(Bitmap bitmap) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-        UploadTask uploadTask = mUserImagesReferenceApp.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                appUrl = taskSnapshot.getDownloadUrl();
-                addLessonDetailsToFirebase();
-            }
-        });
-    }
 
 
     public boolean isDeviceOnline() {
@@ -517,21 +318,21 @@ public class LessonDetailFragment extends Fragment {
     }
 
 
-    public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(getActivity());
-            mProgressDialog.setMessage(getString(R.string.lesson_uploading));
-            mProgressDialog.setIndeterminate(true);
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.setCanceledOnTouchOutside(false);
-        }
-
-        mProgressDialog.show();
-    }
-
-    public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-    }
+//    public void showProgressDialog() {
+//        if (mProgressDialog == null) {
+//            mProgressDialog = new ProgressDialog(getActivity());
+//            mProgressDialog.setMessage(getString(R.string.lesson_uploading));
+//            mProgressDialog.setIndeterminate(true);
+//            mProgressDialog.setCancelable(false);
+//            mProgressDialog.setCanceledOnTouchOutside(false);
+//        }
+//
+//        mProgressDialog.show();
+//    }
+//
+//    public void hideProgressDialog() {
+//        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+//            mProgressDialog.dismiss();
+//        }
+//    }
 }
