@@ -8,6 +8,7 @@ import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -22,10 +23,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import java.io.IOException;
 
+import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.ui.image_search.ImagesSearch;
 import link.ideas.easya.R;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.ImageSaver;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,13 +45,6 @@ public class SummaryFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,7 +52,14 @@ public class SummaryFragment extends Fragment {
         // Inflate the layout for this fragment
 
         view = inflater.inflate(R.layout.fragment_add_summary, container, false);
+
         setUpID(view);
+
+        if(getArguments() != null){
+            Lesson lesson = getArguments().getParcelable(Constants.PREF_LESSON);
+            setSummaryData(lesson.getLessonTitle(),
+                    lesson.getLessonSummary(), lesson.getLessonTitle());
+        }
         return view;
     }
 
@@ -301,6 +304,17 @@ public class SummaryFragment extends Fragment {
         if (view.requestFocus()) {
             getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+    }
+
+    private void setSummaryData(String lessonTitle, String lessonOver, String image) {
+        lessonNameET.setText(lessonTitle);
+        lessonOverViewET.setText(lessonOver);
+
+        Bitmap outlineImageBit = new ImageSaver(getActivity()).
+                setFileName(image + Constants.LESSON_SUMMARY).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        outlineImage.setImageBitmap(outlineImageBit);
     }
 
 }

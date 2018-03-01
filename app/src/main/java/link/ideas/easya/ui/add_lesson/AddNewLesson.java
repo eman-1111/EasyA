@@ -53,16 +53,15 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
     AddLessonViewModel mViewModel;
     ViewPagerAdapter adapter;
 
-    private FirebaseDatabase mFirebaseDatabase;
-
-
 
     Bitmap outlineImage = null, imageLink = null, imageApp = null;
     String title, summary, links, debug, appTitle, appSummary;
-
+    String lessonPushId, coursePushId;
     int courseId;
+    boolean isUpdated;
+    Lesson lesson;
 
-
+    //todo update the lesson on the database and fix image 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,7 +69,16 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
         setDrawer(false);
 
         Intent intent = getIntent();
-        courseId = intent.getIntExtra(Constants.PREF_COURSE_ID,-1);
+        courseId = intent.getIntExtra(Constants.PREF_COURSE_ID, -1);
+
+
+
+        lesson = intent.getParcelableExtra(Constants.PREF_LESSON);
+
+        if (lesson != null) {
+            isUpdated = true;
+            coursePushId = intent.getStringExtra(Constants.PREF_COURSE_PUSH_ID);
+        }
 
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         indicator = (CircleIndicator) findViewById(R.id.indicator);
@@ -94,14 +102,29 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(this.getSupportFragmentManager());
 
-        adapter.addFragment(new SummaryFragment());
-        adapter.addFragment(new LinkFragment());
-        adapter.addFragment(new ApplyFragment());
+        SummaryFragment summaryFragment= new SummaryFragment();
+        LinkFragment linkFragment= new LinkFragment();
+        ApplyFragment applyFragment= new ApplyFragment();
+
+
+
+
+        if (isUpdated) {
+            Bundle bundle = new Bundle();
+            bundle.putParcelable(Constants.PREF_LESSON, lesson);
+            summaryFragment.setArguments(bundle);
+            linkFragment.setArguments(bundle);
+            applyFragment.setArguments(bundle);
+
+        }
+
+        adapter.addFragment(summaryFragment);
+        adapter.addFragment(linkFragment);
+        adapter.addFragment(applyFragment);
 
         viewPager.setAdapter(adapter);
 
     }
-
 
     @Override
     public void onSavedClicked(String lessonAppTitle, String lessonApp, Bitmap applyImage) {
@@ -205,9 +228,9 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
 
 
     void addLessonData() {
-       Lesson lesson = new Lesson(courseId, title,summary, links, debug, appTitle,appSummary,
-               "0","", Helper.getNormalizedUtcDateForToday() ,
-               Helper.getNormalizedUtcDateForToday());
+        Lesson lesson = new Lesson(courseId, title, summary, links, debug, appTitle, appSummary,
+                "0", "", Helper.getNormalizedUtcDateForToday(),
+                Helper.getNormalizedUtcDateForToday());
         mViewModel.addNewLesson(lesson);
         saveImage();
         Intent intent = new Intent(this, LessonList.class);
@@ -240,6 +263,7 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
         }
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -250,7 +274,6 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
             }
         }
     }
-
 
 
 }

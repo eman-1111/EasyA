@@ -21,10 +21,12 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
+import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.ui.image_search.ImagesSearch;
 import link.ideas.easya.R;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.ImageSaver;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -40,7 +42,7 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
     TextInputLayout inputLayoutLink, inputLayoutDebug;
     EditText lessonLink, lessonDebug;
     ImageView infoLink, infoDebug;
-    public  ImageView imageLink;
+    public ImageView imageLink;
 
     public LinkFragment() {
         setHasOptionsMenu(true);
@@ -56,19 +58,18 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_link, container, false);
         setUpIds(view);
+
+
+        if (getArguments() != null) {
+            Lesson lesson = getArguments().getParcelable(Constants.PREF_LESSON);
+            setLinkData(lesson.getLessonLink(),
+                    lesson.getLessonDebug(), lesson.getLessonTitle());
+        }
         return view;
 
     }
@@ -99,11 +100,11 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
             case R.id.link_info:
                 info = this.getString(R.string.info_link);
 
-                Helper.startDialog(getActivity(), "",info);
+                Helper.startDialog(getActivity(), "", info);
                 break;
             case R.id.debug_info:
                 info = this.getString(R.string.info_debug);
-                Helper.startDialog(getActivity(), "",info);
+                Helper.startDialog(getActivity(), "", info);
                 break;
 
             case R.id.link_image:
@@ -126,7 +127,6 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-
 
 
     @Override
@@ -285,11 +285,23 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
     }
 
     public interface Callback {
-        public void onSavedClickedLink(String lessonLink,String lessonDebug,Bitmap linkImage);
+        public void onSavedClickedLink(String lessonLink, String lessonDebug, Bitmap linkImage);
     }
 
-    public  void getLinkData(){
+    public void getLinkData() {
         ((LinkFragment.Callback) getActivity())
-                .onSavedClickedLink( lessonLink.getText().toString(), lessonDebug.getText().toString(), thumbnail);
+                .onSavedClickedLink(lessonLink.getText().toString(), lessonDebug.getText().toString(), thumbnail);
+    }
+
+
+    private void setLinkData(String lessonLinkS, String lessonDebugS, String linkImage) {
+        lessonLink.setText(lessonLinkS);
+        lessonDebug.setText(lessonDebugS);
+
+        Bitmap linkImageBit = new ImageSaver(getActivity()).
+                setFileName(linkImage + Constants.LESSON_LINK).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        imageLink.setImageBitmap(linkImageBit);
     }
 }

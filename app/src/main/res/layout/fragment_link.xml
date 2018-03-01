@@ -114,7 +114,7 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@string/a11y_link_image"
                     android:background="@drawable/background4"
-                    android:scaleType="fitXY" />
+                    android:scaleType="centerCrop" />
 
                 <TextView
                     android:layout_width="wrap_content"

@@ -106,7 +106,7 @@
                     android:layout_gravity="center"
                     android:adjustViewBounds="true"
                     android:background="@drawable/bachground2"
-                    android:scaleType="fitXY" />
+                    android:scaleType="centerCrop" />
 
                 <TextView
                     android:layout_width="wrap_content"

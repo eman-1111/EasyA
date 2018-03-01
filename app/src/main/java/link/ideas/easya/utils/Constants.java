@@ -26,6 +26,7 @@ public class Constants {
     public static final String PREF_FRIEND_ACCOUNT = "friendAccount";
     public static final String PREF_COURSE_PUSH_ID = "coursePushId";
     public static final String PREF_LESSON_PUSH_ID = "lessonPushId";
+    public static final String PREF_LESSON = "lesson";
     public static final String PREF_LESSON_OBJECT = "lessonObject";
     public static final String PREF_COURSE_NAME = "CourseName";
     public static final String PREF_LESSON_URL = "LessonURL";

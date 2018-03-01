@@ -92,14 +92,14 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
         });
     }
 
-    private void addLessonToFirebase(String shareCourse, Lesson shareLesson
+    private void addLessonToFirebase(String coursePushId, Lesson shareLesson
             , String userName, Bitmap outlineImageBit, Bitmap linkImageBit, Bitmap appImageBit) {
 
         if (outlineImageBit != null) {
-            addImageToFirebase(shareCourse, shareLesson, userName
+            addImageToFirebase(coursePushId, shareLesson, userName
                     , outlineImageBit, linkImageBit, appImageBit);
         } else {
-            addLessonLinkToFirebase(shareCourse, shareLesson, userName
+            addLessonLinkToFirebase(coursePushId, shareLesson, userName
                     , linkImageBit, appImageBit);
         }
 
@@ -162,12 +162,12 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
 
     }
 
-    private void addImageToFirebase(final String shareCourse, final Lesson shareLesson
+    private void addImageToFirebase(final String coursePushId, final Lesson shareLesson
             , final String userName, final Bitmap outlineImageBit,
                                     final Bitmap linkImageBit, final Bitmap appImageBit) {
 
         StorageReference mUserImagesReferenceSummary = FirebaseStorage.getInstance().getReference()
-                .child(shareCourse + "/" + shareLesson.getLessonTitle() + "/summary.jpg");
+                .child(coursePushId + "/" + shareLesson.getLessonTitle() + "/summary.jpg");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         outlineImageBit.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -182,7 +182,7 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
                 summaryUrl = taskSnapshot.getDownloadUrl();
-                addLessonLinkToFirebase(shareCourse, shareLesson, userName
+                addLessonLinkToFirebase(coursePushId, shareLesson, userName
                         , linkImageBit, appImageBit);
 
             }

@@ -21,10 +21,12 @@ import android.widget.TextView;
 
 import java.io.IOException;
 
+import link.ideas.easya.data.database.Lesson;
 import link.ideas.easya.ui.image_search.ImagesSearch;
 import link.ideas.easya.R;
 import link.ideas.easya.utils.Constants;
 import link.ideas.easya.utils.Helper;
+import link.ideas.easya.utils.ImageSaver;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -33,11 +35,11 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = ApplyFragment.class.getSimpleName();
 
     TextInputLayout inputLayoutAppTitle, inputLayoutApp;
-    public  EditText lessonLifeAppTitle, lessonLifeApp;
+    public EditText lessonLifeAppTitle, lessonLifeApp;
     ImageView infoTitle, infoApp;
-    public  ImageView imageApp;
+    public ImageView imageApp;
 
-    public  Bitmap thumbnail = null;
+    public Bitmap thumbnail = null;
     public String lessonAppTitle = "", lessonApp = "";
 
     public ApplyFragment() {
@@ -46,19 +48,18 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_apply, container, false);
         setUpIds(view);
+
+
+        if (getArguments() != null) {
+            Lesson lesson = getArguments().getParcelable(Constants.PREF_LESSON);
+            setApplyData(lesson.getLessonPracticalTitle(),
+                    lesson.getLessonPractical(), lesson.getLessonTitle());
+        }
         return view;
     }
 
@@ -91,15 +92,15 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.title_info:
                 info = this.getString(R.string.info_title);
-                Helper.startDialog(getActivity(), "",info);
+                Helper.startDialog(getActivity(), "", info);
                 break;
             case R.id.app_info:
                 info = this.getString(R.string.info_descr);
-                Helper.startDialog(getActivity(), "",info);
+                Helper.startDialog(getActivity(), "", info);
                 break;
 
             case R.id.app_image:
-                lessonAppTitle =lessonLifeAppTitle.getText().toString();
+                lessonAppTitle = lessonLifeAppTitle.getText().toString();
                 lessonApp = lessonLifeApp.getText().toString();
                 if (Build.VERSION.SDK_INT >= 23) {
                     if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
@@ -120,7 +121,6 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
         }
 
     }
-
 
 
     @Override
@@ -273,7 +273,8 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
                     startDialog();
                 } else {
                     Helper.startDialog(getActivity(), "",
-                            getResources().getString(R.string.get_image_permissions));                }
+                            getResources().getString(R.string.get_image_permissions));
+                }
                 break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -281,13 +282,23 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     }
 
     public interface Callback {
-        public void onSavedClicked(String lessonAppTitle,String lessonApp,Bitmap applyImage);
+        public void onSavedClicked(String lessonAppTitle, String lessonApp, Bitmap applyImage);
     }
 
-    public  void getApplyData(){
+    public void getApplyData() {
         lessonAppTitle = lessonLifeAppTitle.getText().toString();
         lessonApp = lessonLifeApp.getText().toString();
         ((Callback) getActivity())
-                .onSavedClicked(lessonAppTitle , lessonApp, thumbnail);
+                .onSavedClicked(lessonAppTitle, lessonApp, thumbnail);
+    }
+
+    private void setApplyData(String lessonAppTitle, String lessonApp, String applyImage) {
+        lessonLifeAppTitle.setText(lessonAppTitle);
+        lessonLifeApp.setText(lessonApp);
+        Bitmap appImageBit = new ImageSaver(getActivity()).
+                setFileName(applyImage + Constants.LESSON_APP).
+                setDirectoryName(Constants.APP_NAME).
+                load();
+        imageApp.setImageBitmap(appImageBit);
     }
 }

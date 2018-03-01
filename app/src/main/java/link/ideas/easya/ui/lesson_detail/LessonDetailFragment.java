@@ -173,6 +173,9 @@ public class LessonDetailFragment extends Fragment {
             return true;
         } else if (id == R.id.action_edit) {
             Intent intent = new Intent(getActivity(), AddNewLesson.class);
+            intent.putExtra(Constants.PREF_COURSE_PUSH_ID,coursePushId);
+            intent.putExtra(Constants.PREF_LESSON,shareLesson );
+            intent.putExtra(Constants.PREF_COURSE_ID, courseId);
             startActivity(intent);
         } else if (id == R.id.action_favorite) {
 
