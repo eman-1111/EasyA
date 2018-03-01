@@ -61,7 +61,7 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
     boolean isUpdated;
     Lesson lesson;
 
-    //todo update the lesson on the database and fix image 
+    //todo update the lesson on the database and fix image and get the id
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
