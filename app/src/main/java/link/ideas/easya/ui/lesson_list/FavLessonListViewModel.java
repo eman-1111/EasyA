@@ -18,7 +18,7 @@ public class FavLessonListViewModel extends ViewModel {
 
     public FavLessonListViewModel(EasyARepository repository , int courseId) {
         mRepository = repository;
-        mLesson  = mRepository.getUserFavLessons(courseId);
+        mLesson  = mRepository. getUserFavLessons(courseId,"1");
     }
 
     public LiveData<List<ListLesson>> getUserLessons() {

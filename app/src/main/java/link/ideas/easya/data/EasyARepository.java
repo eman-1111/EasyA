@@ -104,12 +104,14 @@ public class EasyARepository {
         return mLessonDao.getLessons(courseId);
     }
 
+
+
     public LiveData<Lesson> getUserLesson(int lessonId) {
         return mLessonDao.getLesson(lessonId);
     }
 
-    public LiveData<List<ListLesson>> getUserFavLessons(int courseId) {
-        return mLessonDao.getLessons(courseId);
+    public LiveData<List<ListLesson>> getUserFavLessons(int courseId, String fav) {
+        return mLessonDao.getFavLessons(courseId, fav);
     }
 
 
@@ -129,6 +131,16 @@ public class EasyARepository {
             }
         });
     }
+
+    public void updateFavorite(final int id, final String favoriteLesson) {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mLessonDao.updateFavorite(id, favoriteLesson);
+            }
+        });
+    }
+
     public void udDateLesson(final Lesson lesson) {
         mAppExecutors.diskIO().execute(new Runnable() {
             @Override

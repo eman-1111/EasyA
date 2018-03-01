@@ -27,6 +27,15 @@ public interface LessonDao {
             "AND course.id = :courseId ")
     LiveData<List<ListLesson>> getLessons(int courseId);
 
+
+    @Query("SELECT lesson.lessonId , lesson.courseId, course.courseName, lesson.lessonTitle," +
+            " lesson.lessonSummary, lesson.favoriteLesson, lesson.firebaseId From lesson " +
+            "INNER JOIN course ON lesson.courseId = course.id " +
+            "WHERE lesson.courseId = :courseId "+
+            "AND course.id = :courseId " +
+            "AND lesson.favoriteLesson = :fav ")
+    LiveData<List<ListLesson>> getFavLessons(int courseId, String fav);
+
     @Query("SELECT * From lesson WHERE lessonId = :lessonId ")
     LiveData<Lesson> getLesson(int lessonId);
 
@@ -37,12 +46,15 @@ public interface LessonDao {
     void updateLesson(Lesson lesson);
 
     @Query("UPDATE lesson SET firebaseId = :firebaseId  WHERE lessonId = :lessonId")
-    int updateFirebaseId(int lessonId, String firebaseId);
+    void updateFirebaseId(int lessonId, String firebaseId);
 
     @Query("DELETE FROM lesson WHERE lessonId = :lessonId ")
     void deleteLesson(int lessonId);
 
     @Query("DELETE FROM lesson WHERE courseId = :courseId ")
     void deleteCourseLessons(int courseId);
+
+    @Query("UPDATE lesson SET favoriteLesson = :favoriteLesson  WHERE lessonId = :lessonId")
+    void updateFavorite(int lessonId, String favoriteLesson);
 
 }

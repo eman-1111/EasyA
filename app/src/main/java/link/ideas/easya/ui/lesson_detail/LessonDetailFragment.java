@@ -27,7 +27,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import link.ideas.easya.data.database.Course;
 import link.ideas.easya.ui.add_lesson.AddNewLesson;
 import link.ideas.easya.R;
@@ -51,14 +52,38 @@ public class LessonDetailFragment extends Fragment {
     MenuItem shareItem = null;
 
     boolean isOnLesson = true;
-    TextView mLessonLink, mLessonDebug, mLessonPracticalTitle, mLessonPractical,
-            mLessonOutline, mLink, mDebug;
 
+    @BindView(R.id.lesson_linkx_content_tv)
+    TextView mLessonLink;
+    @BindView(R.id.lesson_debug_content_tv)
+    TextView mLessonDebug;
+    @BindView(R.id.lesson_app_title_d_tv)
+    TextView mLessonPracticalTitle;
+    @BindView(R.id.lesson_app_content_tv)
+    TextView mLessonPractical;
+    @BindView(R.id.lesson_overview_content_tv)
+    TextView mLessonOutline;
+    @BindView(R.id.lesson_linkx_d_tv)
+    TextView mLink;
+    @BindView(R.id.lesson_debugx_title_tv)
+    TextView mDebug;
+
+    @BindView(R.id.coordinator_layout)
     CoordinatorLayout coordinatorLayout;
+    @BindView(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbar;
-    ProgressDialog mProgressDialog;
 
-    ImageView outlineImage, linkImage, appImage;
+    @BindView(R.id.outlook_iv)
+    ImageView outlineImage;
+    @BindView(R.id.link_iv)
+    ImageView linkImage;
+    @BindView(R.id.app_iv)
+    ImageView appImage;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+
     String teacherEmail, teacherPhoto, courseName, teacherName, lessonName, lessonOutline, lessonLink,
             lessonDebug, lessonPracticalTitle, lessonPractical;
     int courseId;
@@ -71,6 +96,7 @@ public class LessonDetailFragment extends Fragment {
     String lessonNames;
     int lessonId;
     LessonDetailViewModel mViewModel;
+    LessonDetailPresenterContract mActionsListener;
 
     Lesson shareLesson;
     Course shareCourse;
@@ -90,20 +116,18 @@ public class LessonDetailFragment extends Fragment {
         }
 
         View rootView = inflater.inflate(R.layout.fragment_subject_detail, container, false);
+        ButterKnife.bind(this, rootView);
 
-        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        collapsingToolbar =
-                (CollapsingToolbarLayout) rootView.findViewById(R.id.collapsing_toolbar);
-        setUpIds(rootView);
         LessonDetailModelFactory factory = InjectorUtils.
                 provideLessonDetailViewModelFactory(getActivity(), lessonId);
         mViewModel = ViewModelProviders.of(this, factory)
                 .get(LessonDetailViewModel.class);
 
+        mActionsListener = new LessonDetailPresenter(mViewModel);
         mViewModel.getUserLesson().observe(this, new Observer<Lesson>() {
             @Override
             public void onChanged(@Nullable Lesson lesson) {
@@ -115,15 +139,6 @@ public class LessonDetailFragment extends Fragment {
         return rootView;
     }
 
-    private void setCourseData(Course course) {
-
-        coursePushId = course.getFirebaseId();
-        teacherEmail = course.getTeacherEmail();
-        teacherPhoto = course.getTeacherPhotoURL();
-        courseName = course.getCourseName();
-        courserColor = course.getTeacherColor();
-        teacherName = course.getTeacherName();
-    }
 
 
     @Override
@@ -143,8 +158,6 @@ public class LessonDetailFragment extends Fragment {
             favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_white_24dp));
         }
         shareItem = menu.findItem(R.id.action_share);
-        //todo see if shared on firebase
-        shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
 
     }
 
@@ -164,10 +177,13 @@ public class LessonDetailFragment extends Fragment {
         } else if (id == R.id.action_favorite) {
 
             MenuItem favItem = menu.findItem(R.id.action_favorite);
+
             if (favorite == 0) {
+                mViewModel.updateFavorite("1");
                 favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_white_24dp));
 
             } else {
+                mViewModel.updateFavorite("0");
                 favItem.setIcon(getResources().getDrawable(R.drawable.ic_favorite_border_white_24dp));
 
             }
@@ -194,11 +210,11 @@ public class LessonDetailFragment extends Fragment {
                 shareItem.setEnabled(false);
                 shareItem.setCheckable(false);
                 shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_yellow_24dp));
-            //    showProgressDialog();
+                //    showProgressDialog();
                 Snackbar.make(coordinatorLayout, getResources().getString(R.string.lesson_uploading),
                         Snackbar.LENGTH_LONG).show();
 
-                mViewModel.shareUserLesson(shareCourse, shareLesson, accountName, userName
+                mActionsListener.shareUserLesson(shareCourse, shareLesson, accountName, userName
                         , outlineImageBit, linkImageBit, appImageBit);
             } else {
                 Helper.startDialog(getActivity(), "",
@@ -216,22 +232,6 @@ public class LessonDetailFragment extends Fragment {
     }
 
 
-    private void setUpIds(View rootView) {
-        mLessonLink = (TextView) rootView.findViewById(R.id.lesson_linkx_content_tv);
-        mLink = (TextView) rootView.findViewById(R.id.lesson_linkx_d_tv);
-        mLessonPracticalTitle = (TextView) rootView.findViewById(R.id.lesson_app_title_d_tv);
-        mLessonPractical = (TextView) rootView.findViewById(R.id.lesson_app_content_tv);
-        mLessonDebug = (TextView) rootView.findViewById(R.id.lesson_debug_content_tv);
-        mDebug = (TextView) rootView.findViewById(R.id.lesson_debugx_title_tv);
-        mLessonOutline = (TextView) rootView.findViewById(R.id.lesson_overview_content_tv);
-
-        linkImage = (ImageView) rootView.findViewById(R.id.link_iv);
-        appImage = (ImageView) rootView.findViewById(R.id.app_iv);
-        outlineImage = (ImageView) rootView.findViewById(R.id.outlook_iv);
-
-        coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.coordinator_layout);
-
-    }
 
     private void setUpValues(Lesson lesson) {
         courseId = lesson.getCourseId();
@@ -240,7 +240,12 @@ public class LessonDetailFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Course course) {
                 shareCourse = course;
-                setCourseData(course);
+                coursePushId = course.getFirebaseId();
+                teacherEmail = course.getTeacherEmail();
+                teacherPhoto = course.getTeacherPhotoURL();
+                courseName = course.getCourseName();
+                courserColor = course.getTeacherColor();
+                teacherName = course.getTeacherName();
             }
         });
 
@@ -293,15 +298,12 @@ public class LessonDetailFragment extends Fragment {
 
 
         if (shareItem != null) {
-            //todo see the firebase push id
             if (!lessonPushId.equals(""))
                 shareItem.setIcon(getResources().getDrawable(R.drawable.ic_share_blue_24dp));
 
         }
 
     }
-
-
 
 
     public boolean isDeviceOnline() {

@@ -55,16 +55,11 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
 
     private FirebaseDatabase mFirebaseDatabase;
 
-    private DatabaseReference mLessonDatabaseReference;
-    private DatabaseReference mLessonDetailDatabaseReference;
 
-    private FirebaseStorage mFirebaseStorage;
-    private StorageReference mUserImagesReferenceSummary, mUserImagesReferenceLink, mUserImagesReferenceApp;
 
     Bitmap outlineImage = null, imageLink = null, imageApp = null;
     String title, summary, links, debug, appTitle, appSummary;
-    String lessonPushId, coursePushId;
-    Uri appUrl, linkUrl, summaryUrl;
+
     int courseId;
 
 
@@ -257,143 +252,6 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
     }
 
 
-    private void setUpFireBase() {
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mFirebaseStorage = FirebaseStorage.getInstance();
-
-        mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL);
-
-        mUserImagesReferenceSummary = mFirebaseStorage.getReference()
-                .child(coursePushId + "/" + title + "/summary.jpg");
-        mUserImagesReferenceLink = mFirebaseStorage.getReference()
-                .child(coursePushId + "/" + title + "/link.jpg");
-        mUserImagesReferenceApp = mFirebaseStorage.getReference()
-                .child(coursePushId + "/" + title + "/app.jpg");
-
-        addLessonToFirebase();
-    }
-
-    private void addLessonToFirebase() {
-        if (outlineImage != null) {
-            addImageToFirebase(outlineImage);
-        } else {
-            addLessonLinkToFirebase();
-        }
-
-    }
-
-    private void addLessonLinkToFirebase() {
-
-        mLessonDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
-
-        SharedPreferences prefs = getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
-        String userName = prefs.getString(Constants.PREF_ACCOUNT_USER_NAME, null);
-//
-//        Lesson lesson = new Lesson(title, links, summaryUrl + "", userName, true,
-//                Helper.getTimestampCreated(), Helper.getTimestampLastChanged());
-//        lessonPushId = mLessonDatabaseReference.child(lessonPushId).getKey();
-//
-//        mLessonDatabaseReference.child(lessonPushId).setValue(lesson);
-        mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                addLessonDetailToFirebase();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
-
-    private void addLessonDetailToFirebase() {
-
-        if (imageLink != null) {
-            addImageToFirebaseLink(imageLink);
-        } else if (imageApp != null) {
-            addImageToFirebaseApp(imageApp);
-        } else {
-            addLessonDetailsToFirebase();
-        }
-
-
-    }
-
-    private void addLessonDetailsToFirebase() {
-
-//        mLessonDetailDatabaseReference.child(coursePushId).child(lessonPushId).setValue(lessonDetail);
-
-        Snackbar.make(mCardView, getResources().getString(R.string.lesson_edited),
-                Snackbar.LENGTH_LONG).show();
-    }
-
-    private void addImageToFirebase(Bitmap bitmap) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-        UploadTask uploadTask = mUserImagesReferenceSummary.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                summaryUrl = taskSnapshot.getDownloadUrl();
-                addLessonLinkToFirebase();
-
-            }
-        });
-    }
-
-
-    private void addImageToFirebaseLink(Bitmap bitmap) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-
-        UploadTask uploadTask = mUserImagesReferenceLink.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                linkUrl = taskSnapshot.getDownloadUrl();
-                if (imageApp != null) {
-                    addImageToFirebaseApp(imageApp);
-                } else {
-                    addLessonDetailsToFirebase();
-                }
-            }
-        });
-    }
-
-    private void addImageToFirebaseApp(Bitmap bitmap) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] data = baos.toByteArray();
-        UploadTask uploadTask = mUserImagesReferenceApp.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                appUrl = taskSnapshot.getDownloadUrl();
-                addLessonDetailsToFirebase();
-            }
-        });
-    }
 }
 

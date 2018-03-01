@@ -2,15 +2,15 @@ package link.ideas.easya.ui.lesson_detail;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import link.ideas.easya.R;
-import link.ideas.easya.ui.BaseActivity;
 import link.ideas.easya.ui.lesson_list.LessonList;
 import link.ideas.easya.utils.Constants;
 
 
-public class LessonDetail extends BaseActivity {
+public class LessonDetail extends AppCompatActivity {
     String lessonName;
     int lessonId;
 
@@ -19,9 +19,6 @@ public class LessonDetail extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject_detail);
-        setDrawer(false);
-
-
         if (savedInstanceState == null) {
 
 

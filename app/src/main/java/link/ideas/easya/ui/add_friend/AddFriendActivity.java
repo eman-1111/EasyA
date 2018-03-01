@@ -20,6 +20,8 @@ import com.google.firebase.database.DataSnapshot;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import link.ideas.easya.ui.friends_list.FriendsList;
 import link.ideas.easya.R;
 import link.ideas.easya.models.User;
@@ -37,16 +39,24 @@ public class AddFriendActivity extends BaseActivity {
 
     private AutocompleteFriendAdapter mFriendsAutocompleteAdapter;
     private String mInput;
-    private ListView mListViewAutocomplete;
-    LinearLayout progress;
 
+    @BindView(R.id.list_view_friends_autocomplete)
+    ListView mListViewAutocomplete;
+    @BindView(R.id.lin_Progress)
+    LinearLayout progress;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.edit_text_add_friend_email)
     EditText mEditTextAddFriendEmail;
+
+
     private static final String LOG_TAG = AddFriendActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
+        ButterKnife.bind(this);
         setDrawer(false);
         initializeScreen();
     }
@@ -61,13 +71,9 @@ public class AddFriendActivity extends BaseActivity {
      * Link layout elements from XML and setup the toolbar
      */
     public void initializeScreen() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mEditTextAddFriendEmail = (EditText) findViewById(R.id.edit_text_add_friend_email);
-        mListViewAutocomplete = (ListView) findViewById(R.id.list_view_friends_autocomplete);
-        progress = (LinearLayout) findViewById(R.id.lin_Progress);
 
         userList = new ArrayList<User>();
         userEmail = new ArrayList<String>();
