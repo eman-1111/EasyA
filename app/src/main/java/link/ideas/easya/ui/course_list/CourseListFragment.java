@@ -135,7 +135,8 @@ public class CourseListFragment extends Fragment {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 if (coursePushId != null) {
-                                    deleteLessonFromFirebase(coursePushId);
+                                    //todo delete course from firebas
+
                                 }
                                 mViewModel.deleteCourse(courseId);
                                 Helper.updateWidgets(getContext());
@@ -203,40 +204,6 @@ public class CourseListFragment extends Fragment {
                 .alpha(1f)
                 .setInterpolator(new AccelerateDecelerateInterpolator())
                 .start();
-    }
-
-    private void deleteLessonFromFirebase(String coursePushId) {
-
-        SharedPreferences prefs = getActivity().getSharedPreferences(Constants.PREF_USER_DATA, MODE_PRIVATE);
-        String accountName = prefs.getString(Constants.PREF_ACCOUNT_NAME, null);
-
-
-        FirebaseDatabase mFirebaseDatabase = FirebaseDatabase.getInstance();
-        FirebaseStorage mFirebaseStorage = FirebaseStorage.getInstance();
-
-        DatabaseReference mCoursDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_COURSES).
-                child(Helper.encodeEmail(accountName))
-                .child(Constants.FIREBASE_LOCATION_USER_COURSES).child(coursePushId);
-        mCoursDatabaseReference.removeValue();
-
-        DatabaseReference mLessonDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS)
-                .child(coursePushId);
-        mLessonDatabaseReference.removeValue();
-
-        DatabaseReference mLessonDetailDatabaseReference = mFirebaseDatabase.getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL)
-                .child(coursePushId);
-
-        mLessonDetailDatabaseReference.removeValue();
-
-        StorageReference mUserImagesReference= mFirebaseStorage.getReference();
-        mUserImagesReference.child(coursePushId);
-
-
-        mUserImagesReference.delete();
-
     }
 
     public void startDialog() {
