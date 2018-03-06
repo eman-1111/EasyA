@@ -106,16 +106,12 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
         LinkFragment linkFragment= new LinkFragment();
         ApplyFragment applyFragment= new ApplyFragment();
 
-
-
-
         if (isUpdated) {
             Bundle bundle = new Bundle();
             bundle.putParcelable(Constants.PREF_LESSON, lesson);
             summaryFragment.setArguments(bundle);
             linkFragment.setArguments(bundle);
             applyFragment.setArguments(bundle);
-
         }
 
         adapter.addFragment(summaryFragment);

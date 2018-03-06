@@ -39,6 +39,7 @@ public class Course {
      * @param courseId        course Id
      * @param courseName      course name
      * @param teacherName     course teacher name
+
      * @param teacherEmail    course teacher email
      * @param teacherPhotoURL course teacher photo
      * @param teacherColor    course teacher color

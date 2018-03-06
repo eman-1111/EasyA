@@ -256,14 +256,14 @@ public class LessonDetailFragment extends Fragment {
         lessonName = lesson.getLessonTitle();
         collapsingToolbar.setTitle(lessonName);
         lessonLink = lesson.getLessonLink();
-        mLessonLink.setText(lessonLink);
-        if (mLessonLink.equals("")) {
-            mLink.setText("");
-        }
 
+        mLessonLink.setText(lessonLink);
         lessonDebug = lesson.getLessonDebug();
         if (lessonDebug.equals("")) {
             mDebug.setText("");
+        }
+        if (mLessonLink.equals("")) {
+            mLink.setText("");
         }
         mLessonDebug.setText(lessonDebug);
 

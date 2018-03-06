@@ -89,7 +89,9 @@ public class EasyARepository {
         mAppExecutors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
+                mLessonDao.deleteCourseLessons(courseId);
                 mCourseDao.deleteCourse(courseId);
+
             }
         });
     }

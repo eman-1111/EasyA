@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +68,7 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
         if (getArguments() != null) {
             Lesson lesson = getArguments().getParcelable(Constants.PREF_LESSON);
+            Log.e("name" ,lesson.getLessonTitle());
             setLinkData(lesson.getLessonLink(),
                     lesson.getLessonDebug(), lesson.getLessonTitle());
         }
@@ -298,10 +300,10 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
         lessonLink.setText(lessonLinkS);
         lessonDebug.setText(lessonDebugS);
 
-        Bitmap linkImageBit = new ImageSaver(getActivity()).
+        thumbnail = new ImageSaver(getActivity()).
                 setFileName(linkImage + Constants.LESSON_LINK).
                 setDirectoryName(Constants.APP_NAME).
                 load();
-        imageLink.setImageBitmap(linkImageBit);
+
     }
 }

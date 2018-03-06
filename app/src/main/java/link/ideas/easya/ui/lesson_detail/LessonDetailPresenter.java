@@ -38,7 +38,6 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
     }
 
 
-    private Uri appUrl, linkUrl, summaryUrl;
 
     @Override
     public void shareUserLesson(Course shareCourse, Lesson shareLesson, String accountName
@@ -49,9 +48,8 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
             addCourseToFirebase(shareCourse, shareLesson, accountName, userName
                     , outlineImageBit, linkImageBit, appImageBit);
         } else {
-            DatabaseReference mCoursDatabaseReference = FirebaseDatabase.getInstance().getReference().child(Constants.FIREBASE_LOCATION_USERS_COURSES).
-                    child(Helper.encodeEmail(accountName)).child(Constants.FIREBASE_LOCATION_USER_COURSES);
-            final String coursePushId = mCoursDatabaseReference.push().getKey();
+
+            final String coursePushId =shareCourse.getFirebaseId();
             if (shareLesson.getFirebaseId().equals("")) {
                 addLessonToFirebase(coursePushId, shareLesson, userName
                         , outlineImageBit, linkImageBit, appImageBit);
@@ -95,35 +93,40 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
     private void addLessonToFirebase(String coursePushId, Lesson shareLesson
             , String userName, Bitmap outlineImageBit, Bitmap linkImageBit, Bitmap appImageBit) {
 
+        DatabaseReference mLessonDatabaseReference = FirebaseDatabase.getInstance().getReference().
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId);
+        final String lessonPushId = mLessonDatabaseReference.push().getKey();
+
+
         if (outlineImageBit != null) {
-            addImageToFirebase(coursePushId, shareLesson, userName
+            addImageToFirebase(coursePushId,lessonPushId, shareLesson, userName
                     , outlineImageBit, linkImageBit, appImageBit);
         } else {
-            addLessonLinkToFirebase(coursePushId, shareLesson, userName
-                    , linkImageBit, appImageBit);
+            addLessonLinkToFirebase(coursePushId,lessonPushId, shareLesson, userName
+                    , linkImageBit, appImageBit, null);
         }
 
     }
 
-    private void addLessonLinkToFirebase(final String courseFirebaseId, final Lesson shareLesson
-            , final String userName, final Bitmap linkImageBit, final Bitmap appImageBit) {
+    private void addLessonLinkToFirebase(final String coursePushId, final String lessonPushId,
+                                         final Lesson shareLesson
+            , final String userName, final Bitmap linkImageBit, final Bitmap appImageBit, Uri summaryUrl ) {
 
         DatabaseReference mLessonDatabaseReference = FirebaseDatabase.getInstance().getReference().
-                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(courseFirebaseId);
-
+                child(Constants.FIREBASE_LOCATION_USERS_LESSONS).child(coursePushId).child(lessonPushId);
 
         Date todayDate = Helper.getNormalizedUtcDateForToday();
         Lesson lessonLinks = new Lesson(shareLesson.getLessonTitle(), shareLesson.getLessonLink()
                 , summaryUrl + "", userName, true,
                 DateConverter.toTimestamp(todayDate), DateConverter.toTimestamp(todayDate));
 
-        final String lessonPushId = mLessonDatabaseReference.push().getKey();
-        mLessonDatabaseReference.child(lessonPushId).setValue(lessonLinks);
+
+        mLessonDatabaseReference.setValue(lessonLinks);
         mLessonDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mViewModel.updateFirebaseIdL(lessonPushId);
-                addLessonDetailToFirebase(courseFirebaseId, shareLesson, linkImageBit, appImageBit);
+                addLessonDetailToFirebase(coursePushId,lessonPushId, shareLesson, linkImageBit, appImageBit);
             }
 
             @Override
@@ -134,25 +137,26 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
 
     }
 
-    private void addLessonDetailToFirebase(String courseFirebaseId, Lesson shareLesson, Bitmap linkImageBit,
+    private void addLessonDetailToFirebase(String courseFirebaseId, String lessonFirebaseId, Lesson shareLesson, Bitmap linkImageBit,
                                            Bitmap appImageBit) {
 
         if (linkImageBit != null) {
-            addImageToFirebaseLink(courseFirebaseId, shareLesson
+            addImageToFirebaseLink(courseFirebaseId,  lessonFirebaseId,shareLesson
                     , linkImageBit, appImageBit);
         } else if (appImageBit != null) {
-            addImageToFirebaseApp(courseFirebaseId, shareLesson, appImageBit);
+            addImageToFirebaseApp(courseFirebaseId,  lessonFirebaseId,shareLesson, appImageBit, null);
         } else {
-            addLessonDetailsToFirebase(courseFirebaseId, shareLesson);
+            addLessonDetailsToFirebase(courseFirebaseId, lessonFirebaseId, shareLesson, null, null);
         }
 
 
     }
 
-    private void addLessonDetailsToFirebase(String courseFirebaseId, Lesson shareLesson) {
+    private void addLessonDetailsToFirebase(String courseFirebaseId, final String lessonFirebaseId,Lesson shareLesson,
+                                            Uri appUrl ,Uri linkUrl) {
         DatabaseReference mLessonDetailDatabaseReference = FirebaseDatabase.getInstance().getReference()
                 .child(Constants.FIREBASE_LOCATION_USERS_LESSONS_DETAIL).
-                        child(courseFirebaseId).child(shareLesson.getFirebaseId());
+                        child(courseFirebaseId).child(lessonFirebaseId);
 
         Lesson lessonDetail = new Lesson(shareLesson.getLessonSummary(), linkUrl + "",
                 shareLesson.getLessonPracticalTitle(), shareLesson.getLessonPractical(),
@@ -162,12 +166,12 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
 
     }
 
-    private void addImageToFirebase(final String coursePushId, final Lesson shareLesson
+    private void addImageToFirebase(final String coursePushId,  final String lessonPushId,final Lesson shareLesson
             , final String userName, final Bitmap outlineImageBit,
                                     final Bitmap linkImageBit, final Bitmap appImageBit) {
 
         StorageReference mUserImagesReferenceSummary = FirebaseStorage.getInstance().getReference()
-                .child(coursePushId + "/" + shareLesson.getLessonTitle() + "/summary.jpg");
+                .child(coursePushId + "/" + lessonPushId+ "/"+  shareLesson.getLessonTitle() + "/summary.jpg");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         outlineImageBit.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -181,19 +185,19 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                summaryUrl = taskSnapshot.getDownloadUrl();
-                addLessonLinkToFirebase(coursePushId, shareLesson, userName
-                        , linkImageBit, appImageBit);
+                Uri summaryUrl = taskSnapshot.getDownloadUrl();
+                addLessonLinkToFirebase(coursePushId, lessonPushId,shareLesson, userName
+                        , linkImageBit, appImageBit,  summaryUrl);
 
             }
         });
     }
 
-    private void addImageToFirebaseLink(final String courseFirebaseId, final Lesson shareLesson,
+    private void addImageToFirebaseLink(final String courseFirebaseId, final String lessonFirebaseId,final Lesson shareLesson,
                                         final Bitmap linkImageBit, final Bitmap appImageBit) {
 
         StorageReference mUserImagesReferenceLink = FirebaseStorage.getInstance().getReference()
-                .child(courseFirebaseId + "/" + shareLesson.getLessonTitle() + "/link.jpg");
+                .child(courseFirebaseId + "/" + lessonFirebaseId+ "/"+ shareLesson.getLessonTitle() + "/link.jpg");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         linkImageBit.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -207,21 +211,21 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                linkUrl = taskSnapshot.getDownloadUrl();
+                Uri linkUrl = taskSnapshot.getDownloadUrl();
                 if (appImageBit != null) {
-                    addImageToFirebaseApp(courseFirebaseId, shareLesson, appImageBit);
+                    addImageToFirebaseApp(courseFirebaseId,lessonFirebaseId,  shareLesson, appImageBit, linkUrl);
                 } else {
-                    addLessonDetailsToFirebase(courseFirebaseId, shareLesson);
+                    addLessonDetailsToFirebase(courseFirebaseId,lessonFirebaseId, shareLesson, null, linkUrl);
                 }
             }
         });
     }
 
-    private void addImageToFirebaseApp(final String courseFirebaseId, final Lesson shareLesson
-            , final Bitmap appImageBit) {
+    private void addImageToFirebaseApp(final String courseFirebaseId, final String lessonFirebaseId,final Lesson shareLesson
+            , final Bitmap appImageBit,final Uri linkUrl) {
 
         StorageReference mUserImagesReferenceApp = FirebaseStorage.getInstance().getReference()
-                .child(courseFirebaseId + "/" + shareLesson.getLessonTitle() + "/app.jpg");
+                .child(courseFirebaseId + "/" + lessonFirebaseId+ "/"+   shareLesson.getLessonTitle() + "/app.jpg");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         appImageBit.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         byte[] data = baos.toByteArray();
@@ -233,8 +237,8 @@ public class LessonDetailPresenter implements LessonDetailPresenterContract {
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                appUrl = taskSnapshot.getDownloadUrl();
-                addLessonDetailsToFirebase(courseFirebaseId, shareLesson);
+                Uri  appUrl = taskSnapshot.getDownloadUrl();
+                addLessonDetailsToFirebase(courseFirebaseId,lessonFirebaseId, shareLesson,appUrl, linkUrl );
             }
         });
     }

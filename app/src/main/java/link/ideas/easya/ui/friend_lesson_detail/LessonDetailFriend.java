@@ -118,6 +118,7 @@ public class LessonDetailFriend extends BaseActivity {
         String lessonName = lesson.getLessonTitle();
         collapsingToolbar.setTitle(lessonName);
         mLessonLink.setText(lesson.getLessonLink());
+
         mLessonDebug.setText(lessonDetail.getLessonDebug());
         mLessonPracticalTitle.setText(lessonDetail.getLessonPracticalTitle());
         mLessonPractical.setText(lessonDetail.getLessonPractical());

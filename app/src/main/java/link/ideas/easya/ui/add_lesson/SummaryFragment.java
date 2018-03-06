@@ -310,11 +310,11 @@ public class SummaryFragment extends Fragment {
         lessonNameET.setText(lessonTitle);
         lessonOverViewET.setText(lessonOver);
 
-        Bitmap outlineImageBit = new ImageSaver(getActivity()).
+        thumbnail = new ImageSaver(getActivity()).
                 setFileName(image + Constants.LESSON_SUMMARY).
                 setDirectoryName(Constants.APP_NAME).
                 load();
-        outlineImage.setImageBitmap(outlineImageBit);
+
     }
 
 }

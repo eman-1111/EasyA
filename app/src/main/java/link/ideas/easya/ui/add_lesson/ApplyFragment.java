@@ -295,10 +295,10 @@ public class ApplyFragment extends Fragment implements View.OnClickListener {
     private void setApplyData(String lessonAppTitle, String lessonApp, String applyImage) {
         lessonLifeAppTitle.setText(lessonAppTitle);
         lessonLifeApp.setText(lessonApp);
-        Bitmap appImageBit = new ImageSaver(getActivity()).
+        thumbnail = new ImageSaver(getActivity()).
                 setFileName(applyImage + Constants.LESSON_APP).
                 setDirectoryName(Constants.APP_NAME).
                 load();
-        imageApp.setImageBitmap(appImageBit);
+
     }
 }
