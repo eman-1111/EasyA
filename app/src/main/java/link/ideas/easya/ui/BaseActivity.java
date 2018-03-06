@@ -218,7 +218,6 @@ public class BaseActivity extends AppCompatActivity
 
             boolean setStudyingOnce = mSharedPreferences.getBoolean(Constants.PREF_SET_STUDYING, false);
             if (!setStudyingOnce) {
-                Log.e(LOG_TAG, "setStudyingOnce " + setStudyingOnce);
                 editor.putBoolean(Constants.PREF_SET_STUDYING, true);
                 editor.apply();
                 showUserStudying(true);
@@ -246,7 +245,6 @@ public class BaseActivity extends AppCompatActivity
                 SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor editor = mSharedPreferences.edit();
                 editor.apply();
-                Log.e(LOG_TAG, "isApplicationInBackground");
                 editor.putBoolean(Constants.PREF_SET_STUDYING, false);
                 showUserStudying(false);
             }
@@ -255,12 +253,7 @@ public class BaseActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onTrimMemory(int level) {
-        super.onTrimMemory(level);
-        Log.e(LOG_TAG, "onTrimMemory");
 
-    }
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -309,7 +302,6 @@ public class BaseActivity extends AppCompatActivity
                 }
                 break;
             case REQUEST_ACCOUNT_PICKER:
-                Log.e("REQUEST_ACCOUNT_PICKER","resultCode: " + resultCode + RESULT_OK +Auth.GoogleSignInApi.getSignInResultFromIntent(data) );
                 if (resultCode == RESULT_OK) {
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     try {

@@ -79,10 +79,9 @@ public class SummaryFragment extends Fragment {
                 if (Build.VERSION.SDK_INT >= 23) {
                     if (getActivity().checkSelfPermission(Manifest.permission.CAMERA)
                             == PackageManager.PERMISSION_GRANTED) {
-                        Log.e(LOG_TAG, "PERMISSION_GRANTED");
+
                         startDialog();
                     } else {
-                        Log.e(LOG_TAG, "Not PERMISSION_GRANTED(Else.VERSION.SDK_INT");
                         //  ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, 1);
                         requestPermissions(new String[]{Manifest.permission.CAMERA,
                                 Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -239,13 +238,11 @@ public class SummaryFragment extends Fragment {
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case 101:
-                Log.e(LOG_TAG, "onRequestPermissionsResult 1");
+
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.e(LOG_TAG, "onRequestPermissionsResult 2");
 
                     startDialog();
                 } else {
-                    Log.e(LOG_TAG, "onRequestPermissionsResult 3");
 
                     Helper.startDialog(getActivity(), "",
                             getResources().getString(R.string.get_image_permissions));

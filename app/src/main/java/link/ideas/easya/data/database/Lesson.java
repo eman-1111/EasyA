@@ -106,6 +106,7 @@ public class Lesson implements Parcelable {
         this.lessonEdit = lessonEdit;
     }
 
+
     @Ignore
     public Lesson() {
 

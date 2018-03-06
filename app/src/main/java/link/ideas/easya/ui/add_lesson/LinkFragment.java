@@ -68,7 +68,7 @@ public class LinkFragment extends Fragment implements View.OnClickListener {
 
         if (getArguments() != null) {
             Lesson lesson = getArguments().getParcelable(Constants.PREF_LESSON);
-            Log.e("name" ,lesson.getLessonTitle());
+
             setLinkData(lesson.getLessonLink(),
                     lesson.getLessonDebug(), lesson.getLessonTitle());
         }

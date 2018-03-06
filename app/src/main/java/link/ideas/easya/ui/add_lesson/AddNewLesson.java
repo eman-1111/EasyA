@@ -58,6 +58,7 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
     String title, summary, links, debug, appTitle, appSummary;
     String lessonPushId, coursePushId;
     int courseId;
+    int lessonId = -1;
     boolean isUpdated;
     Lesson lesson;
 
@@ -72,11 +73,12 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
         courseId = intent.getIntExtra(Constants.PREF_COURSE_ID, -1);
 
 
-
         lesson = intent.getParcelableExtra(Constants.PREF_LESSON);
 
         if (lesson != null) {
             isUpdated = true;
+            lessonId = lesson.getLessonId();
+            lessonPushId = lesson.getFirebaseId();
             coursePushId = intent.getStringExtra(Constants.PREF_COURSE_PUSH_ID);
         }
 
@@ -102,9 +104,9 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
     private void setupViewPager(ViewPager viewPager) {
         adapter = new ViewPagerAdapter(this.getSupportFragmentManager());
 
-        SummaryFragment summaryFragment= new SummaryFragment();
-        LinkFragment linkFragment= new LinkFragment();
-        ApplyFragment applyFragment= new ApplyFragment();
+        SummaryFragment summaryFragment = new SummaryFragment();
+        LinkFragment linkFragment = new LinkFragment();
+        ApplyFragment applyFragment = new ApplyFragment();
 
         if (isUpdated) {
             Bundle bundle = new Bundle();
@@ -128,7 +130,7 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
         appTitle = lessonAppTitle;
         appSummary = lessonApp;
 
-        Log.e(LOG_TAG, appTitle + " " + appSummary);
+        Log.v(LOG_TAG, appTitle + " " + appSummary);
     }
 
     @Override
@@ -136,7 +138,7 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
         outlineImage = summaryImage;
         title = lessonTitle;
         summary = lessonSummary;
-        Log.e(LOG_TAG, title + " " + summary);
+        Log.v(LOG_TAG, title + " " + summary);
     }
 
     @Override
@@ -144,7 +146,7 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
         imageLink = linkImage;
         links = lessonLink;
         debug = lessonDebug;
-        Log.e(LOG_TAG, links + " " + debug);
+        Log.v(LOG_TAG, links + " " + debug);
     }
 
 
@@ -224,10 +226,19 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
 
 
     void addLessonData() {
-        Lesson lesson = new Lesson(courseId, title, summary, links, debug, appTitle, appSummary,
-                "0", "", Helper.getNormalizedUtcDateForToday(),
-                Helper.getNormalizedUtcDateForToday());
-        mViewModel.addNewLesson(lesson);
+
+        Lesson lessons;
+        if (lessonId != -1) {
+             lessons = new Lesson(lessonId, courseId, title, summary, links, debug, appTitle, appSummary,
+                    "0", "", Helper.getNormalizedUtcDateForToday(),
+                    Helper.getNormalizedUtcDateForToday());
+        } else {
+            lessons = new Lesson(courseId, title, summary, links, debug, appTitle, appSummary,
+                    lesson.getFavoriteLesson(), lesson.getFirebaseId(), Helper.getNormalizedUtcDateForToday(),
+                    Helper.getNormalizedUtcDateForToday());
+        }
+
+        mViewModel.addNewLesson(lessons, isUpdated);
         saveImage();
         Intent intent = new Intent(this, LessonList.class);
         intent.putExtra(Constants.PREF_COURSE_ID, courseId);
