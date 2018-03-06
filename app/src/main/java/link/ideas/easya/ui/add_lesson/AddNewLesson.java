@@ -229,12 +229,13 @@ public class AddNewLesson extends BaseActivity implements ApplyFragment.Callback
 
         Lesson lessons;
         if (lessonId != -1) {
-             lessons = new Lesson(lessonId, courseId, title, summary, links, debug, appTitle, appSummary,
-                    "0", "", Helper.getNormalizedUtcDateForToday(),
-                    Helper.getNormalizedUtcDateForToday());
-        } else {
             lessons = new Lesson(courseId, title, summary, links, debug, appTitle, appSummary,
                     lesson.getFavoriteLesson(), lesson.getFirebaseId(), Helper.getNormalizedUtcDateForToday(),
+                    Helper.getNormalizedUtcDateForToday());
+
+        } else {
+            lessons = new Lesson(lessonId, courseId, title, summary, links, debug, appTitle, appSummary,
+                    "0", "", Helper.getNormalizedUtcDateForToday(),
                     Helper.getNormalizedUtcDateForToday());
         }
 
