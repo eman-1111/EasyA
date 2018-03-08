@@ -28,11 +28,11 @@ import link.ideas.easya.utils.Helper;
  * Created by Eman on 3/1/2018.
  */
 
-public class LessonDetailPresenter implements LessonDetailPresenterContract {
+public class ShareLesson implements ShareLessonContract {
 
     LessonDetailViewModel mViewModel;
 
-    public LessonDetailPresenter(LessonDetailViewModel mViewModel){
+    public ShareLesson(LessonDetailViewModel mViewModel){
         this.mViewModel = mViewModel;
 
     }

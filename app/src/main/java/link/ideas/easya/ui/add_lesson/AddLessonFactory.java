@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 
 import link.ideas.easya.data.EasyARepository;
-import link.ideas.easya.ui.add_lesson.AddLessonViewModel;
 
 /**
  * Factory method that allows us to create a ViewModel with a constructor that takes a
@@ -13,7 +12,7 @@ import link.ideas.easya.ui.add_lesson.AddLessonViewModel;
 public class AddLessonFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final EasyARepository mRepository;
-    int courseId;
+    private final int courseId;
     public AddLessonFactory(EasyARepository repository,int courseId) {
         this.mRepository = repository;
         this.courseId = courseId;

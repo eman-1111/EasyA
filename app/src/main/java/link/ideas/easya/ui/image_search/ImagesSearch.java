@@ -2,13 +2,14 @@ package link.ideas.easya.ui.image_search;
 
 import android.app.Activity;
 import android.app.SearchManager;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -26,55 +27,58 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
-import link.ideas.easya.BuildConfig;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import link.ideas.easya.R;
 import link.ideas.easya.models.Image;
 import link.ideas.easya.ui.BaseActivity;
+import link.ideas.easya.utils.InjectorUtils;
 
 
 public class ImagesSearch extends BaseActivity {
     ImageAdapter mImageAdapter;
 
-    Bundle data;
     static Bitmap imageB = null;
-    LinearLayout linlaHeaderProgress;
-    ImageView ivNoResult;
+
     String searchValue;
+
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+
+    @BindView(R.id.lin_Progress)
+    LinearLayout linlaHeaderProgress;
+
+    @BindView(R.id.iv_no_result)
+    ImageView ivNoResult;
+
+    @BindView(R.id.image_gridview)
+    GridView gridView;
+
+    ImageSearchViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_image_search);
+        ButterKnife.bind(this);
+
         setDrawer(false);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        linlaHeaderProgress = (LinearLayout) findViewById(R.id.lin_Progress);
-        ivNoResult = (ImageView) findViewById(R.id.iv_no_result);
+        ImageSearchFactory factory = InjectorUtils.provideSearchViewModelFactory(this);
+        mViewModel = ViewModelProviders.of(this, factory).get(ImageSearchViewModel.class);
 
-        mImageAdapter = new ImageAdapter(this, R.layout.list_item_search, new ArrayList<Image>());
-        GridView gridView = (GridView) findViewById(R.id.image_gridview);
+        mImageAdapter = new ImageAdapter(this, R.layout.list_item_search, new ArrayList<Image.Photos.photo>());
         gridView.setAdapter(mImageAdapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                startDialog(view, mImageAdapter.getItem(position));
-
+                startDialog(mImageAdapter.getItem(position));
             }
         });
 
@@ -84,16 +88,32 @@ public class ImagesSearch extends BaseActivity {
 
     private void upDateSearch(String query) {
 
-        if (query != null) {
+        if (query != null && query.length() > 1) {
             if (isDeviceOnline()) {
-                FetchImage fetchImage = new FetchImage();
-                fetchImage.execute(query);
+
+                linlaHeaderProgress.setVisibility(View.VISIBLE);
+                mViewModel.getSearchQuery(query).observe(this, new Observer<Image>() {
+                    @Override
+                    public void onChanged(@Nullable Image image) {
+
+                        Log.e("Nullable2",image.getPhotos().getTotal());
+                        if ( image.getPhotos().getPhoto().size() > 0) {
+                            linlaHeaderProgress.setVisibility(View.GONE);
+                            mImageAdapter.clear();
+                            mImageAdapter.addAll(image.getPhotos().getPhoto());
+                            mImageAdapter.notifyDataSetChanged();
+                            ivNoResult.setVisibility(View.GONE);
+                        } else {
+                            mImageAdapter.clear();
+                            ivNoResult.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
             } else {
                 //TODO tell the user there is no internet connection
             }
 
         }
-
     }
 
     @Override
@@ -116,8 +136,6 @@ public class ImagesSearch extends BaseActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
-                // Perform search here!
-                Log.e("query", "query: " + query);
                 upDateSearch(query);
 
                 return true;
@@ -150,176 +168,9 @@ public class ImagesSearch extends BaseActivity {
         }
     }
 
-    public class FetchImage extends AsyncTask<String, Void, ArrayList<Image>> {
-        public final String LOG_TAG = FetchImage.class.getSimpleName();
-
-        @Override
-        protected void onPostExecute(ArrayList<Image> result) {
-
-            if (result != null) {
-                linlaHeaderProgress.setVisibility(View.GONE);
-                if (result.size() > 0) {
-                    mImageAdapter.clear();
-                    mImageAdapter.addAll(result);
-                    mImageAdapter.notifyDataSetChanged();
-                } else {
-                    mImageAdapter.clear();
-                    ivNoResult.setVisibility(View.VISIBLE);
-                }
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            // SHOW THE SPINNER WHILE LOADING FEEDS
-            linlaHeaderProgress.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected ArrayList<Image> doInBackground(String... params) {
-            Log.d(LOG_TAG, "Starting sync");
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String imageJsonStr = null;
 
 
-            String apiKey = BuildConfig.UNIQUE_FLICKR_KEY;;
-            String pagesValue = "20";
-            String formValue = "json";
-            final String callBack = "1";
-            ArrayList<Image> imageUrl = null;
-
-            try {
-
-
-                final String IMAGE_BASE_URL =
-                        "https://api.flickr.com/services/rest/?method=flickr.photos.search";
-                final String PAGES = "per_page";
-                final String KEY_PARAM = "api_key";
-                final String SEARCH = "tags";
-                final String FORMAT = "format";
-                final String JSON_CALL_BACK = "nojsoncallback";
-//                final String API_SIG = "api_sig";
-//                final String AUTH_TOKEN = "auth_token";
-
-                //https://api.flickr.com/services/rest/?method=flickr.photos.search&
-                // api_key=f5caac7e998b2510dbe40f47f8f3c469&tags=cat&per_page=10&format=json&nojsoncallback=1
-
-                Uri builtUri = Uri.parse(IMAGE_BASE_URL).buildUpon()
-                        .appendQueryParameter(KEY_PARAM, apiKey)
-                        .appendQueryParameter(SEARCH, params[0])
-                        .appendQueryParameter(PAGES, pagesValue)
-                        .appendQueryParameter(FORMAT, formValue)
-                        .appendQueryParameter(JSON_CALL_BACK, callBack)
-                        .build();
-
-                URL url = new URL(builtUri.toString());
-                Log.e("URL", builtUri.toString());
-
-                // Create the request to themoviedb, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    // return;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-
-                }
-
-                imageJsonStr = buffer.toString();
-                imageUrl = getImageDataFromJson(imageJsonStr);
-
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attempting
-                // to parse it.
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-
-            return imageUrl;
-        }
-
-        private ArrayList<Image> getImageDataFromJson(String imageJsonStr)
-                throws JSONException {
-
-            final String OWM_RESULT = "photos";
-
-            final String OWM_PHOTO = "photo";
-            final String OWM_ID = "id";
-            final String OWM_SECRET = "secret";
-            final String OWM_SERVER = "server";
-            final String OWM_FARM = "farm";
-
-
-            try {
-
-
-                JSONObject imagesJson = new JSONObject(imageJsonStr);
-                JSONObject photosJson = imagesJson.getJSONObject(OWM_RESULT);
-                JSONArray imageArray = photosJson.getJSONArray(OWM_PHOTO);
-                ArrayList<Image> images = new ArrayList<Image>();
-                for (int i = 0; i < imageArray.length(); i++) {
-
-                    String id;
-                    String secret;
-                    String server;
-                    String farm;
-
-
-                    JSONObject fullImage = imageArray.getJSONObject(i);
-
-                    id = fullImage.getString(OWM_ID);
-                    secret = fullImage.getString(OWM_SECRET);
-                    server = fullImage.getString(OWM_SERVER);
-                    farm = fullImage.getString(OWM_FARM);
-
-                    Image image = new Image(id, secret, server, farm);
-
-                    images.add(image);
-                }
-                return images;
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, e.getMessage(), e);
-                e.printStackTrace();
-            }
-
-            return null;
-
-        }
-    }
-
-
-    protected void startDialog(final View view, final Image image) {
+    protected void startDialog( final Image.Photos.photo image) {
 
 
         LayoutInflater li = LayoutInflater.from(this);

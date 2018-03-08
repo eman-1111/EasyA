@@ -16,6 +16,7 @@ import link.ideas.easya.ui.friend_couse_list.FriendCourseModelFactory;
 import link.ideas.easya.ui.friend_lesson_detail.FriendLessonDetailFactory;
 import link.ideas.easya.ui.friend_lesson_list.FriendLessonListFactory;
 import link.ideas.easya.ui.friends_list.FriendListFactory;
+import link.ideas.easya.ui.image_search.ImageSearchFactory;
 import link.ideas.easya.ui.lesson_list.FavLessonListModelFactory;
 import link.ideas.easya.ui.lesson_detail.LessonDetailModelFactory;
 import link.ideas.easya.ui.lesson_list.LessonListModelFactory;
@@ -74,6 +75,11 @@ public class InjectorUtils {
     }
     public static FirebaseQueryLiveData getFirebaseRef(DatabaseReference ref){
         return new FirebaseQueryLiveData(ref);
+    }
+
+    public static ImageSearchFactory provideSearchViewModelFactory(Context context) {
+        EasyARepository repository = provideRepository(context.getApplicationContext());
+        return new ImageSearchFactory(repository);
     }
 
 }

@@ -20,11 +20,11 @@ import link.ideas.easya.R;
 /**
  * Created by eman_ashour on 6/14/2016.
  */
-public class ImageAdapter extends ArrayAdapter<Image> {
+public class ImageAdapter extends ArrayAdapter<Image.Photos.photo> {
 
     Context context;
 
-    public ImageAdapter(Context context, int resourceId, ArrayList<Image> image) {
+    public ImageAdapter(Context context, int resourceId, ArrayList<Image.Photos.photo> image) {
         super(context, resourceId, image);
         this.context = context;
     }
@@ -38,7 +38,7 @@ public class ImageAdapter extends ArrayAdapter<Image> {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
-        Image image = getItem(position);
+        Image.Photos.photo image = getItem(position);
 
         if (convertView == null) {
 

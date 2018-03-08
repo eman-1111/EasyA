@@ -1,6 +1,5 @@
 package link.ideas.easya.ui.lesson_detail;
 
-import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -96,7 +95,7 @@ public class LessonDetailFragment extends Fragment {
     String lessonNames;
     int lessonId;
     LessonDetailViewModel mViewModel;
-    LessonDetailPresenterContract mActionsListener;
+    ShareLessonContract mActionsListener;
 
     Lesson shareLesson;
     Course shareCourse;
@@ -127,7 +126,7 @@ public class LessonDetailFragment extends Fragment {
         mViewModel = ViewModelProviders.of(this, factory)
                 .get(LessonDetailViewModel.class);
 
-        mActionsListener = new LessonDetailPresenter(mViewModel);
+        mActionsListener = new ShareLesson(mViewModel);
         mViewModel.getUserLesson().observe(this, new Observer<Lesson>() {
             @Override
             public void onChanged(@Nullable Lesson lesson) {
